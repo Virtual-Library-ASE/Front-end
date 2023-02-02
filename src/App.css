@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  background-color: #d0ceba;
+  min-height: 98vh;
 }
 
 .App-logo {
@@ -14,16 +16,133 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
 }
 
+h2 {
+  font-size: 44px;
+}
+
+.nav {
+  display: flex;
+  color: #000;
+  width: 1200px;
+}
+
+.nav-item {
+  width: 200px;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background-color: #607744;
+  color: #fff;
+  border-radius: 20px;
+}
+
+.banner {
+  height: 200px;
+  margin: 20px;
+  display: flex;
+}
+.banner .img {
+  position: relative;
+}
+.banner .img img {
+  height: 200px;
+  border-radius: 30px;
+  margin: 10px;
+}
+
+.banner .img .btn {
+  position: absolute;
+  bottom: 10px;
+  left: 75px;
+  background-color: #fff;
+  border-radius: 30px;
+  width: 200px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.banner .img  .btn span {
+  color: #000;
+  font-size: 16px;
+}
+
+
+.banner .img  .btn:hover {
+  background-color: #d0ceba;
+}
+
+.login-dialog {
+  background-color: rgba(0,0,0,0.3);
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+}
+
+.container {
+  position: absolute;
+  background-color: #d0ceba;
+  width: 40%;
+  height: 400px;
+  top: 30%;
+  left: 50%;
+  margin-left: -20%;
+  border-radius: 50px;
+  border: 3px solid #fff;
+}
+
+.container .header {
+  margin: 10% 0 5%;
+  color: #634133;
+  font-size: 40px;
+}
+
+.container input {
+  border-radius: 30px;
+  outline: none;
+  border: 1px solid #fff;
+  box-shadow: 3px 3px 3px #666666;
+  margin: 10px;
+  height: 30px;
+}
+
+.container .footer div {
+  background-color: #607744;
+  border-radius: 30px;
+  width: 30%;
+  font-size: 18px;
+  height: 30px;
+  margin: 0 auto 10px;
+  box-shadow: 3px 3px 3px #666666;
+  cursor: pointer;
+}
+
+.container .footer div:hover {
+  background-color: #48592f;
+}
+
+.exit {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  cursor: pointer;
+}
+.exit:hover {
+  color: #000;
+}
+
+.email input,
+.pwd input {
+  width: 78%;
+}
 .App-link {
   color: #61dafb;
 }
