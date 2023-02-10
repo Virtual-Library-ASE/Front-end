@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 function App() {
   return (
     <div className="App">
-      <div className="title">Virtual Library</div>
+      <div className="text-6xl font-bold text-center p-8">Virtual Library</div>
       <header className="App-header">
         header
       </header>
