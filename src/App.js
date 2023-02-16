@@ -2,6 +2,11 @@ import pic1 from './images/pic1.png'
 import './App.css'
 import React from 'react'
 import { useState } from 'react'
+import PersonIcon from '@mui/icons-material/Person';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import SearchIcon from '@mui/icons-material/Search';
+import { Card, Container } from '@mui/material';
+import BasicCard from './cards';
 
 function App() {
   // let isShowLoginDialog = true
@@ -19,6 +24,9 @@ function App() {
           <div className="nav-item">Contact Us</div>
           <div className="nav-item" onClick={() => {setShowLoginDialog(!isShowLoginDialog)}}>Sign Up</div>
           <div className="nav-item" onClick={() => {setShowSignUpDialog(!isShowSignUpDialog)}}>Log In </div>
+          <div className="nav-item"><ShoppingCartIcon size="medium"/></div>
+          <div className="nav-item"><SearchIcon size="medium"/></div>
+          <div className="nav-item"><PersonIcon size="medium"/></div>
           <div>
             <i className="el-icon-edit"></i>
             <i className="el-icon-share"></i>
@@ -44,6 +52,10 @@ function App() {
             <div className="btn"><span>Book a desk</span></div>
           </div>
         </div>
+         <div className='img'>
+        <BasicCard />
+        </div> 
+
 
         <div className={(isShowLoginDialog ? 'show' : 'hidden') + ' login-dialog'}>
           <div className="container">
@@ -91,6 +103,7 @@ function App() {
         </div>
       </header>
     </div>
+            
   )
 }
 
