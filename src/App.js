@@ -6,12 +6,14 @@ import PersonIcon from '@mui/icons-material/Person';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SearchIcon from '@mui/icons-material/Search';
 import { Card, Container } from '@mui/material';
+import TableBarIcon from '@mui/icons-material/TableBar';
 import BasicCard from './cards';
 
 function App() {
   // let isShowLoginDialog = true
   const [isShowLoginDialog, setShowLoginDialog] = useState(false)
   const [isShowSignUpDialog, setShowSignUpDialog] = useState(false)
+  const [isShowBookingDialog, setShowBookingDialog] = useState(false)
 
   return (
     <div className="App">
@@ -20,8 +22,8 @@ function App() {
         <div className="nav">
           <div className="nav-item">Home</div>
           <div className="nav-item">New Books</div>
-          <div className="nav-item">Desks</div>
-          <div className="nav-item">Contact Us</div>
+          <div className="nav-item" onClick={() => {setShowBookingDialog(!isShowBookingDialog)}}>Book Desks</div>
+          {/* <div className="nav-item">Contact Us</div>  */}
           <div className="nav-item" onClick={() => {setShowLoginDialog(!isShowLoginDialog)}}>Sign Up</div>
           <div className="nav-item" onClick={() => {setShowSignUpDialog(!isShowSignUpDialog)}}>Log In </div>
           <div className="nav-item"><ShoppingCartIcon size="medium"/></div>
@@ -98,6 +100,30 @@ function App() {
             <div className="footer">
               <div className="sign-up">Log In</div>
               <div className="log-in" onClick={() => { setShowLoginDialog(!isShowLoginDialog) }}>Sign Up instead?</div>
+            </div>
+          </div>
+        </div>
+
+        <div className={(isShowBookingDialog ? 'show' : 'hidden') + ' signup-dialog'}>
+          <div className="container">
+            <div className="exit" onClick={() => { setShowBookingDialog(!isShowBookingDialog) }}>X</div>
+            <div className="header">
+              Booking Desks
+            </div>
+            <div className="body">
+              <div className="nav-item">
+                <TableBarIcon style ={{align: "left"}}/> <TableBarIcon style ={{align: "left"}}/> <TableBarIcon/>
+              </div>
+              <div className="nav-item">
+                <TableBarIcon style ={{align: "left"}}/> <TableBarIcon style ={{align: "left"}}/> <TableBarIcon/>
+              </div>
+              <div className="nav-item">
+                <TableBarIcon style ={{align: "left"}}/> <TableBarIcon style ={{align: "left"}}/> <TableBarIcon/>
+              </div>
+            </div>
+            <div className="footer">
+              {/* <div className="sign-up">Log In</div>
+              <div className="log-in" onClick={() => { setShowLoginDialog(!isShowBookingDialog) }}>Sign Up instead?</div> */}
             </div>
           </div>
         </div>
