@@ -1,9 +1,8 @@
 import "./home.css";
 import React from "react";
 import Header from "../../components/header/header";
+import Container from "../../components/container/container";
 import Footer from "../../components/footer/footer";
-import logo from "../../resources/images/logo.svg";
-import Button from "@mui/material/Button";
 
 class Home extends React.Component {
   constructor(props) {
@@ -26,6 +25,7 @@ class Home extends React.Component {
           navItems={this.state.navItems}
           onClick={(index) => this.handleNav(index)}
         />
+        <Container />
         <Footer />
       </div>
     );
