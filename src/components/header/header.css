@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
   margin: 0;
   padding: 0;
@@ -18,7 +22,6 @@ ul, ol, li {
 }
 
 .header {
-  font-size: 24px;
   color: #000;
 }
 
@@ -40,30 +43,9 @@ ul, ol, li {
 }
 
 /* modules/navigation.css */
-.navigation {
-  display: flex;
-  justify-content: space-between;
-}
-
-.nav-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.right {
-  font-size: 24px;
-}
-
-.inline {
-  display: flex;
-  gap: 1.5em;
-}
-
 .item {
-  display: block;
+  @apply block cursor-pointer;
   padding-inline: 1em;
-  cursor: pointer;
 }
 
 .is-active {
