@@ -18,11 +18,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div className="title">Virtual Library</div>
+        <div className="title">Facial Recognition Relaplacing Leap Card ? </div>
         <div className="nav">
           <div className="nav-item">Home</div>
-          <div className="nav-item">New Books</div>
-          <div className="nav-item" onClick={() => {setShowBookingDialog(!isShowBookingDialog)}}>Book Desks</div>
+          <div className="nav-item">History</div>
+          <div className="nav-item" onClick={() => {setShowBookingDialog(!isShowBookingDialog)}}>History</div>
           {/* <div className="nav-item">Contact Us</div>  */}
           <div className="nav-item" onClick={() => {setShowLoginDialog(!isShowLoginDialog)}}>Sign Up</div>
           <div className="nav-item" onClick={() => {setShowSignUpDialog(!isShowSignUpDialog)}}>Log In </div>
