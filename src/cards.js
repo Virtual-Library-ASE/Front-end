@@ -23,22 +23,22 @@ export default function BasicCard() {
           ABOUT US
         </Typography>
         <Typography variant="h5" component="div">
-          {bull}Group 5 Die Hardware{bull}
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="white">
-          Tobias Klumpp
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="white">
-          Pietro Faccaio
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="white">
-          Per Anderesen
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="white">
-          Karun Manoharan
+          {bull}Group 6{bull}
         </Typography>
         <Typography sx={{ mb: 1.5 }} color="white">
           Prishita Singh
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="white">
+          Wei Wei Wan
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="white">
+          Madhura
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="white">
+          Mansi
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="white">
+          Sharon
         </Typography>
         <Typography variant="body2">
           <br />
