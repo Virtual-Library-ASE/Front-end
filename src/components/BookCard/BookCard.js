@@ -2,7 +2,7 @@ import "./BookCard.css";
 
 function BookCard(props) {
   return (
-    <div className="card cursor-pointer mx-4">
+    <div className="card cursor-pointer w-1/3">
       <figure className="figure">
         <img
           src={props.src}

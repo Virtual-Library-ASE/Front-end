@@ -22,7 +22,9 @@ const Home = () => {
         navItems={navItem.navItems}
         onClick={(index) => handleNav(index)}
       />
-      <HomePage />
+      <div className="body">
+        <HomePage />
+      </div>
       <Footer />
     </div>
   );

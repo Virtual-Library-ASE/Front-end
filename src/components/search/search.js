@@ -2,7 +2,7 @@ import "./search.css";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 import React, { Component } from "react";
-import { Search, Grid } from "semantic-ui-react";
+import { Search } from "semantic-ui-react";
 
 const source = _.times(5, () => ({
   title: faker.company.companyName(),

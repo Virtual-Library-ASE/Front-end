@@ -5,14 +5,16 @@ import { Icon } from "semantic-ui-react";
 
 function BasicHeader(props) {
   return (
-    <header className="header text-3xl font-bold mb-14">
+    <header className="hd flex text-2xl font-bold mb-14 w-full p-4 sticky sticky--top">
+      <div id="logo">asdasdas</div>
       <nav className="navigation flex justify-between">
-        <ul className="nav-list flex gap-4">
+        <ul className="nav-list flex">
           {props.navItems.map((item, index) => (
             <li
               key={index}
               className={
-                "item " + (props.isActiveIndex === index ? "is-active" : "")
+                "mx-3 px-2 item " +
+                (props.isActiveIndex === index ? "is-active" : "")
               }
               onClick={() => {
                 props.onClick(index);
@@ -25,7 +27,7 @@ function BasicHeader(props) {
 
         <ul className="nav-list right flex">
           <li className="item">
-            <Search className="h-2"></Search>
+            <Search />
           </li>
           <li className="item">
             <Icon name="user" className="user-icon" />

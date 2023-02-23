@@ -19,7 +19,7 @@ function Reservation() {
   const desk = require("../../resources/images/reservation/desk.jpg");
   return (
     <div className="reservation">
-      <Header size="large">Start Reading</Header>
+      <Header size="medium">Start Reading</Header>
       <div className="flex px-2">
         <ImageCard url={book} text="Book a desk"></ImageCard>
         <ImageCard url={desk} text="Rent a book"></ImageCard>
@@ -65,8 +65,8 @@ function BookList() {
   ];
   return (
     <div className="book-list mt-14">
-      <Header size="large">Book Recommended</Header>
-      <div className="flex flex-wrap justify-between">
+      <Header size="medium">Book Recommended</Header>
+      <div className="flex flex-wrap">
         {bookList.map((item, index) => (
           <BookCard src={item.cover} title={item.title} key={index} />
         ))}
