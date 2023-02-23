@@ -3,7 +3,7 @@ import "./footer.css";
 
 function Footer() {
   return (
-    <div className="Footer mt-14 absolute bottom-4 left-1/2">
+    <div className="Footer mt-14 h-14 w-full text-center">
       @Developed by ASE Group 6. All rights reserved
     </div>
   );

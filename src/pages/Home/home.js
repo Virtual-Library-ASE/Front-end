@@ -4,20 +4,22 @@ import Header from "../../components/header/header";
 import HomePage from "../HomePage/homepage";
 import Footer from "../../components/footer/footer";
 
-const Home = (props) => {
-  const [state, setState] = useState({
+const Home = () => {
+  const [navIndex, setNavIndex] = useState({
     isActiveIndex: 0,
-    navItems: ["Home", "Books", "Desks", "About", "Contact"],
-    currPage: props.page,
   });
 
-  const handleNav = (index) => setState({ isActiveIndex: index });
+  const [navItem] = useState({
+    navItems: ["Home", "Books", "Desks", "About", "Contact"],
+  });
+
+  const handleNav = (index) => setNavIndex({ isActiveIndex: index });
 
   return (
     <div className="Home">
       <Header
-        isActiveIndex={state.isActiveIndex}
-        navItems={state.navItems}
+        isActiveIndex={navIndex.isActiveIndex}
+        navItems={navItem.navItems}
         onClick={(index) => handleNav(index)}
       />
       <HomePage />
