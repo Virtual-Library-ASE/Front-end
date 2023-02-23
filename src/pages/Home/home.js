@@ -13,9 +13,7 @@ class Home extends React.Component {
     };
   }
 
-  handleNav(index) {
-    this.setState({ isActiveIndex: index });
-  }
+  handleNav = (index) => this.setState({ isActiveIndex: index });
 
   render() {
     return (

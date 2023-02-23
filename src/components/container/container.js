@@ -38,7 +38,7 @@ export default function Container() {
     },
   ];
   return (
-    <div className="container mt-8 flex flex-wrap">
+    <div className="container mt-20 flex flex-wrap">
       {bookList.map((item, index) => (
         <CardImage src={item.cover} title={item.title} key={index} />
       ))}

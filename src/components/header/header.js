@@ -1,49 +1,39 @@
 import React from "react";
 import "./header.css";
+import Search from "../search/search";
+import { Icon } from "semantic-ui-react";
 
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import PersonIcon from "@mui/icons-material/Person";
-import Avatar from "@mui/material/Avatar";
-
-function Header(props) {
+function BasicHeader(props) {
   return (
-    <div>
-      <header className="header text-2xl font-bold sticky sticky--top">
-        <nav className="navigation flex justify-between">
-          <ul className="nav-list flex gap-4">
-            {props.navItems.map((item, index) => (
-              <li
-                key={index}
-                className={
-                  "item " + (props.isActiveIndex === index ? "is-active" : "")
-                }
-                onClick={() => {
-                  props.onClick(index);
-                }}
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
+    <header className="header text-2xl font-bold h-10">
+      <nav className="navigation flex justify-between">
+        <ul className="nav-list flex gap-4">
+          {props.navItems.map((item, index) => (
+            <li
+              key={index}
+              className={
+                "item " + (props.isActiveIndex === index ? "is-active" : "")
+              }
+              onClick={() => {
+                props.onClick(index);
+              }}
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
 
-          <ul className="nav-list right flex gap-4">
-            <li className="item w-3">
-              <SearchOutlinedIcon sx={{ fontSize: 32 }} />
-            </li>
-            <li className="item w-3">
-              <PersonIcon sx={{ fontSize: 32 }} />
-            </li>
-            <li className="item w-3">
-              <Avatar
-                alt="your avatar"
-                src={require("../../resources/images/avatar.png")}
-              ></Avatar>
-            </li>
-          </ul>
-        </nav>
-      </header>
-    </div>
+        <ul className="nav-list right flex w-1/4">
+          <li className="item">
+            <Search className="h-2"></Search>
+          </li>
+          <li className="item">
+            <Icon name="user" className="user-icon" />
+          </li>
+        </ul>
+      </nav>
+    </header>
   );
 }
 
-export default Header;
+export default BasicHeader;

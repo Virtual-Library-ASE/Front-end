@@ -22,7 +22,9 @@ ul, ol, li {
 }
 
 .header {
+  width: 100%;
   color: #000;
+  line-height: 3rem;
 }
 
 .header::after {
@@ -40,6 +42,10 @@ ul, ol, li {
 
 .header.is-active::after {
   opacity: 1;
+}
+
+.user-icon:hover {
+  color: #934b00;
 }
 
 /* modules/navigation.css */

@@ -1,14 +1,8 @@
-import React from 'react'
-import './footer.css';
-
-import Button from '@mui/material/Button';
+import React from "react";
+import "./footer.css";
 
 function Footer() {
-  return (
-    <div className="Footer">
-      Footer
-    </div>
-  );
+  return <div className="Footer">Footer</div>;
 }
 
 export default Footer;
