@@ -24,7 +24,7 @@ ul, ol, li {
 .header {
   width: 100%;
   color: #000;
-  line-height: 3rem;
+  line-height: 3.6rem;
 }
 
 .header::after {

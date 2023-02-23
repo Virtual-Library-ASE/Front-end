@@ -1,8 +1,6 @@
 import "./container.css";
 import BookCard from "../BookCard/BookCard";
 import { Header } from "semantic-ui-react";
-import { Image } from "semantic-ui-react";
-import book from "../../resources/images/reservation/book.jpg";
 
 const ImageCard = ({ url, text }) => {
   return (
