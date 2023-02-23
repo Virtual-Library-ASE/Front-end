@@ -1,5 +1,6 @@
-import "./container.css";
-import BookCard from "../BookCard/BookCard";
+import "./homepage.css";
+
+import BookCard from "../../components/BookCard/BookCard";
 import { Header } from "semantic-ui-react";
 
 const ImageCard = ({ url, text }) => {
@@ -74,11 +75,11 @@ function BookList() {
   );
 }
 
-const Container = () => (
-  <div className="container">
+const HomePage = () => (
+  <div className="homepage">
     <Reservation></Reservation>
     <BookList></BookList>
   </div>
 );
 
-export default Container;
+export default HomePage;

@@ -1,7 +1,7 @@
 import "./home.css";
 import React from "react";
 import Header from "../../components/header/header";
-import Container from "../../components/container/container";
+import HomePage from "../HomePage/homepage";
 import Footer from "../../components/footer/footer";
 
 class Home extends React.Component {
@@ -23,7 +23,7 @@ class Home extends React.Component {
           navItems={this.state.navItems}
           onClick={(index) => this.handleNav(index)}
         />
-        <Container />
+        <HomePage />
         <Footer />
       </div>
     );
