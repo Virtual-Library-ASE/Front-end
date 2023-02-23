@@ -5,7 +5,7 @@ import { Icon } from "semantic-ui-react";
 
 function BasicHeader(props) {
   return (
-    <header className="header text-2xl font-bold h-10">
+    <header className="header text-2xl font-bold h-10 mb-14">
       <nav className="navigation flex justify-between">
         <ul className="nav-list flex gap-4">
           {props.navItems.map((item, index) => (

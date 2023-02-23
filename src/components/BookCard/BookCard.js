@@ -1,6 +1,6 @@
-import "./ImageCard.css";
+import "./BookCard.css";
 
-function ImageCard(props) {
+function BookCard(props) {
   return (
     <div className="card cursor-pointer mx-4">
       <figure className="figure">
@@ -23,4 +23,4 @@ function ImageCard(props) {
   );
 }
 
-export default ImageCard;
+export default BookCard;
