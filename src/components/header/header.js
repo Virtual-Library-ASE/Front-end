@@ -4,9 +4,13 @@ import Search from "../search/search";
 import { Icon } from "semantic-ui-react";
 
 function BasicHeader(props) {
+  const logo = require("../../resources/images/logo.png");
+
   return (
     <header className="hd flex text-2xl font-bold mb-14 w-full p-4 sticky sticky--top">
-      <div id="logo">asdasdas</div>
+      <div id="logo">
+        <img src={logo} alt="logo" />
+      </div>
       <nav className="navigation flex justify-between">
         <ul className="nav-list flex">
           {props.navItems.map((item, index) => (
