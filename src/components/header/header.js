@@ -9,7 +9,9 @@ function BasicHeader(props) {
   return (
     <header className="hd flex text-2xl font-bold mb-14 w-full p-4 sticky sticky--top">
       <div id="logo">
-        <img src={logo} alt="logo" />
+        <a href="/">
+          <img src={logo} alt="logo" />
+        </a>
       </div>
       <nav className="navigation flex justify-between">
         <ul className="nav-list flex">
