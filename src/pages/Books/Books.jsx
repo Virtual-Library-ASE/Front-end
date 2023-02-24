@@ -1,6 +1,6 @@
 import "./Books.css";
 
 const Books = () => {
-  return <>Book</>;
+  return <div className="books">book</div>;
 };
 export default Books;

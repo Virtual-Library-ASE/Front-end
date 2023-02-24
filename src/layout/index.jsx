@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
 import Main from "./Main/Main";
@@ -7,6 +7,9 @@ import BasicCarousel from "../components/Carousel/Carousel";
 
 export default function Layouts() {
   const navigate = useNavigate();
+  const location = useLocation();
+  let currRouter = location.pathname.split("/")[1];
+
   const [navIndex, setNavIndex] = useState({
     isActiveIndex: 0,
   });
@@ -44,9 +47,9 @@ export default function Layouts() {
         navItems={navList.navList}
         onClick={(index) => handleNav(index)}
       />
-      <BasicCarousel />
+      {currRouter !== "about" ? <BasicCarousel /> : ""}
       <Main />
-      <Footer />
+      {currRouter !== "about" ? <Footer /> : ""}
     </>
   );
 }

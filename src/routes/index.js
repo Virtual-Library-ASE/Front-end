@@ -1,12 +1,9 @@
-import { useRoutes } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 import PublicLayout from "../layout/index";
 import Homepage from "../pages/HomePage/Homepage";
 import Books from "../pages/Books/Books";
-// import Home from "../pages/Home/home";
-// import Login from '../view/login/login'
-// import AreaChartOutlined from '../view/bigdata'
-// import Tabblepage from '../view/superform/Tabblepage'
-// import Tabble from '../view/superform/Tabble'
+import About from "../pages/About/About";
+import Desks from "../pages/Desks/Desks";
 
 const routes = [
   {
@@ -24,12 +21,20 @@ const routes = [
         path: "/books",
         element: <Books />,
       },
+      {
+        path: "/desks",
+        element: <Desks />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
     ],
   },
-  // {
-  //   path: "*",
-  //   element: <Navigate to="/404" />,
-  // },
+  {
+    path: "*",
+    element: <Navigate to="/404" />,
+  },
 ];
 const Router = () => {
   return useRoutes(routes);
