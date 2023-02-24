@@ -21,4 +21,5 @@
 .btn:hover {
     box-shadow: 3px 5px 5px #1d1d1d;
     color: #934b00;
+    border-radius: 1rem;
 }
