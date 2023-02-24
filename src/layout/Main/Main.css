@@ -1,0 +1,9 @@
+.body {
+  font-family: "Roboto", sans-serif;
+  line-height: 1.75;
+  max-width: 1000px;
+  min-width: 800px;
+  width: 60%;
+  margin: 0 auto;
+  font-size: 18px;
+}

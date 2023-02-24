@@ -1,10 +1,9 @@
-import "./home.css";
 import React, { useState } from "react";
-import Header from "../../components/header/header";
-import HomePage from "../HomePage/homepage";
-import Footer from "../../components/footer/footer";
+import Header from "./Header/Header";
+import Footer from "./Footer/Footer";
+import Main from "./Main/Main";
 
-const Home = () => {
+export default function Layouts() {
   const [navIndex, setNavIndex] = useState({
     isActiveIndex: 0,
   });
@@ -14,20 +13,15 @@ const Home = () => {
   });
 
   const handleNav = (index) => setNavIndex({ isActiveIndex: index });
-
   return (
-    <div className="Home">
+    <>
       <Header
         isActiveIndex={navIndex.isActiveIndex}
         navItems={navItem.navItems}
         onClick={(index) => handleNav(index)}
       />
-      <div className="body">
-        <HomePage />
-      </div>
+      <Main />
       <Footer />
-    </div>
+    </>
   );
-};
-
-export default Home;
+}

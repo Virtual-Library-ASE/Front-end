@@ -1,13 +1,12 @@
-import "./homepage.css";
-import { Header } from "semantic-ui-react";
+import "./Homepage.css";
 import BookList from "./BookList";
 import Reservation from "./Reservation";
 
-const HomePage = () => (
+const Homepage = () => (
   <div className="homepage">
     <Reservation></Reservation>
     <BookList></BookList>
   </div>
 );
 
-export default HomePage;
+export default Homepage;

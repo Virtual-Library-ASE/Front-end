@@ -1,4 +1,4 @@
-import "./search.css";
+import "./Search.css";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 import React, { Component } from "react";
