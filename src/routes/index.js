@@ -1,4 +1,4 @@
-import { Navigate, useRoutes } from "react-router-dom";
+import { useRoutes } from "react-router-dom";
 import PublicLayout from "../layout/index";
 import Homepage from "../pages/HomePage/Homepage";
 import Books from "../pages/Books/Books";

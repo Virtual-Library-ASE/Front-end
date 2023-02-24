@@ -26,7 +26,7 @@ function BasicHeader(props) {
                 props.onClick(index);
               }}
             >
-              {item}
+              {item.title}
             </li>
           ))}
         </ul>
