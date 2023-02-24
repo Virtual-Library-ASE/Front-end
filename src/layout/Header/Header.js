@@ -7,7 +7,7 @@ function BasicHeader(props) {
   const logo = require("../../resources/images/logo.png");
 
   return (
-    <header className="hd flex text-2xl font-bold mb-14 w-full p-4 sticky sticky--top">
+    <header className="hd flex text-2xl font-bold w-full p-4 sticky sticky--top">
       <div id="logo">
         <a href="/">
           <img src={logo} alt="logo" />
