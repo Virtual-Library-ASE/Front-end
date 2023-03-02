@@ -10,11 +10,8 @@ function BookCard(props) {
           alt="book-cover"
         />
         <div className="cover">
-          <figcaption className="">
-            <h3 className="title font-normal leading-none mt-0.5">
-              {" "}
-              {props.title}
-            </h3>
+          <figcaption className="text-sm">
+            <h3 className="title font-normal leading-none"> {props.title}</h3>
             <h3 className="hover">Read</h3>
           </figcaption>
         </div>

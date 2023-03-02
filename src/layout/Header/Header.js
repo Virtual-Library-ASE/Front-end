@@ -1,13 +1,13 @@
 import React from "react";
 import "./Header.css";
 import Search from "../../components/Search/Search";
-import { Icon } from "semantic-ui-react";
+import PersonIcon from "@mui/icons-material/Person";
 
 function BasicHeader(props) {
   const logo = require("../../resources/images/logo.png");
 
   return (
-    <header className="hd flex text-2xl font-bold w-full p-4 sticky sticky--top">
+    <header className="hd flex text-xl font-bold w-full p-4 sticky sticky--top">
       <div id="logo">
         <a href="/">
           <img src={logo} alt="logo" />
@@ -35,8 +35,8 @@ function BasicHeader(props) {
           <li className="item">
             <Search />
           </li>
-          <li className="item">
-            <Icon name="user" className="user-icon" />
+          <li className="item user-icon">
+            <PersonIcon fontSize="large" />
           </li>
         </ul>
       </nav>

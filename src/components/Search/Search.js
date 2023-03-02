@@ -2,7 +2,6 @@ import "./Search.css";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 import React, { Component } from "react";
-import { Search } from "semantic-ui-react";
 
 const source = _.times(5, () => ({
   title: faker.company.companyName(),
@@ -38,18 +37,6 @@ export default class SearchExampleStandard extends Component {
   render() {
     const { isLoading, value, results } = this.state;
 
-    return (
-      <Search
-        size="mini"
-        aligned="right"
-        loading={isLoading}
-        onResultSelect={this.handleResultSelect}
-        onSearchChange={_.debounce(this.handleSearchChange, 500, {
-          leading: true,
-        })}
-        results={results}
-        value={value}
-      />
-    );
+    return <></>;
   }
 }

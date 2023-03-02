@@ -1,4 +1,3 @@
-import { Header } from "semantic-ui-react";
 import BookCard from "../../components/BookCard/BookCard";
 
 function BookList() {
@@ -38,7 +37,7 @@ function BookList() {
   ];
   return (
     <div className="book-list mt-14">
-      <Header size="medium">Book Recommended</Header>
+      <h2 className="text-xl font-bold mb-2">Book Recommended</h2>
       <div className="flex flex-wrap">
         {bookList.map((item, index) => (
           <BookCard src={item.cover} title={item.title} key={index} />
