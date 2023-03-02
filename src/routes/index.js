@@ -8,25 +8,25 @@ import Desks from "../pages/Desks/Desks";
 const routes = [
   {
     path: "/",
-    element: <PublicLayout />,
+    element: <Navigate to="/home" replace />,
   },
   {
     element: <PublicLayout />,
     children: [
       {
-        path: "/home",
+        path: "home",
         element: <Homepage />,
       },
       {
-        path: "/books",
+        path: "books",
         element: <Books />,
       },
       {
-        path: "/desks",
+        path: "desks",
         element: <Desks />,
       },
       {
-        path: "/about",
+        path: "about",
         element: <About />,
       },
     ],
