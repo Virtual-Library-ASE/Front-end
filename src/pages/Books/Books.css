@@ -1,6 +1,10 @@
-.books {
+.container {
   max-width: 1000px;
   min-width: 800px;
   width: 60%;
   margin: 0 auto;
+}
+
+.category-container .card {
+  background-color: #f3ebf8;
 }
