@@ -46,7 +46,6 @@ export default function Layouts() {
 
   const handleNav = (index) => {
     setNavIndex({ isActiveIndex: index });
-    console.log(navList.navList[index]);
     navigate(navList.navList[index].path);
   };
   return (
