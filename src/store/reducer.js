@@ -3,6 +3,9 @@
 const initState = {
   isLogin: "",
   menuList: [],
+
+  isShowCarousel: true,
+  isShowFooter: true,
 };
 // reducer纯函数，用于操作中央仓库的数据
 export const reducer = (state = initState, action) => {
@@ -18,6 +21,16 @@ export const reducer = (state = initState, action) => {
       return {
         ...state,
         menuList: data,
+      };
+    case "SET_CAROUSEL_STATUS":
+      return {
+        ...state,
+        isShowCarousel: data,
+      };
+    case "SET_FOOTER_STATUS":
+      return {
+        ...state,
+        isShowFooter: data,
       };
     default:
       return initState;
