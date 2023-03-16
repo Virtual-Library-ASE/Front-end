@@ -38,7 +38,7 @@ function BookList() {
   return (
     <div className="book-list mt-14">
       <h2 className="text-xl font-bold mb-2">Book Recommended</h2>
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap justify-between">
         {bookList.map((item, index) => (
           <BookCard src={item.cover} title={item.title} key={index} />
         ))}
