@@ -1,7 +1,9 @@
 import "./Book.css";
-import { useParams } from "react-router-dom";
-import { setCarouselDisplay } from "../../../store/action";
+import { useNavigate, useParams } from "react-router-dom";
+import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
 import { useDispatch } from "react-redux";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import { useEffect } from "react";
 
 const MOCK_BOOK_DETAIL = {
   bookId: "123",
@@ -35,11 +37,21 @@ const MOCK_BOOK_DETAIL = {
 };
 const BookHeader = (params) => {
   const detail = params.details;
+  const navigate = useNavigate();
 
   return (
     <>
       <div className="header h-60 text-color-white">
         <div className="content h-60 relative">
+          <div className="return absolute p-3">
+            <div
+              className="iconBox cursor-pointer"
+              onClick={() => navigate(-1)}
+            >
+              <KeyboardReturnIcon fontSize="large" />
+            </div>
+          </div>
+
           <div className="info absolute bottom-4">
             <div className="author">{detail.author}</div>
             <div className="title text-3xl">{detail.title}</div>
@@ -137,13 +149,6 @@ const comments = [
     comment_date: "2022-10-12",
     update_time: "2022-10-12 08:45:00",
   },
-  {
-    id: 3,
-    name: "Bob Johnson",
-    content: "Thanks for this insightful article. Looking forward to more!",
-    comment_date: "2022-10-13",
-    update_time: "2022-10-13 11:15:00",
-  },
   // Add more comments here
 ];
 
@@ -169,10 +174,14 @@ const Comment = () => {
 };
 
 const Book = () => {
-  // Hide Carousel
+  // Show Carousel
   const dispatch = useDispatch();
-  setCarouselDisplay(false);
-  dispatch(setCarouselDisplay(false));
+
+  useEffect(() => {
+    // Show Carousel
+    dispatch(setCarouselDisplay(false));
+    dispatch(setFooterDisplay(false));
+  }, [dispatch]);
 
   // Get route parameters
   const routerParams = useParams();
@@ -182,7 +191,7 @@ const Book = () => {
 
   return (
     <>
-      <div className="book">
+      <div className="book" style={{ marginTop: "-30px" }}>
         <BookHeader details={bookDetail} />
         <BookBody details={bookDetail} />
       </div>
