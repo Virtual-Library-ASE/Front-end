@@ -1,5 +1,12 @@
 import "./About.css";
+import { useDispatch } from "react-redux";
+import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 const About = () => {
+  // Show Carousel
+  const dispatch = useDispatch();
+  dispatch(setCarouselDisplay(false));
+  dispatch(setFooterDisplay(false));
+
   return (
     <>
       <div className="frontFace">

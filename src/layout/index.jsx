@@ -1,24 +1,17 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
 import Main from "./Main/Main";
 import BasicCarousel from "../components/Carousel/Carousel";
-import { useSelector, useDispatch } from "react-redux";
-import { setCarouselDisplay, setFooterDisplay } from "../store/action";
+import { useSelector } from "react-redux";
 
 export default function Layouts() {
   const navigate = useNavigate();
-  const location = useLocation();
-  let currRouter = location.pathname.split("/")[1];
 
   const [navIndex, setNavIndex] = useState({
     isActiveIndex: 0,
   });
-
-  const dispatch = useDispatch();
-  dispatch(setCarouselDisplay(currRouter !== "about"));
-  dispatch(setFooterDisplay(currRouter !== "about"));
 
   const isShowCarousel = useSelector((state) => state.isShowCarousel);
   const isShowFooter = useSelector((state) => state.isShowFooter);

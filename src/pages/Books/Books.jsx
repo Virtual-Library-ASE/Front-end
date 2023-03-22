@@ -5,6 +5,8 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import MedicationLiquidIcon from "@mui/icons-material/MedicationLiquid";
 import BookIcon from "@mui/icons-material/Book";
 import BookList from "./BookList";
+import { useDispatch } from "react-redux";
+import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 
 const Category = (params) => {
   const categoryList = params.categoryList;
@@ -216,6 +218,11 @@ let categoryList = [
 ];
 
 const Books = () => {
+  // Show Carousel
+  const dispatch = useDispatch();
+  dispatch(setCarouselDisplay(true));
+  dispatch(setFooterDisplay(true));
+
   const activateCategory = (item) => {
     console.log(item);
   };

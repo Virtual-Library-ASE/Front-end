@@ -2,6 +2,7 @@ import { Navigate, useRoutes } from "react-router-dom";
 import PublicLayout from "../layout/index";
 import Homepage from "../pages/HomePage/Homepage";
 import Books from "../pages/Books/Books";
+import Book from "../pages/Books/Book/Book";
 import About from "../pages/About/About";
 import Desks from "../pages/Desks/Desks";
 
@@ -28,6 +29,10 @@ const routes = [
       {
         path: "about",
         element: <About />,
+      },
+      {
+        path: "book/:id",
+        element: <Book />,
       },
     ],
   },
