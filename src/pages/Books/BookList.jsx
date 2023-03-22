@@ -7,7 +7,7 @@ const BookCard = (params) => {
   return (
     <>
       <div
-        className="book rounded bg-color-white w-1/6 m-2 shadow"
+        className="book rounded bg-color-white w-1/6 m-2 shadow cursor-pointer"
         onClick={() => navigate("/book/" + bookInfo.bookId)}
       >
         <img src={bookInfo.cover} alt={bookInfo.title} className="rounded" />
