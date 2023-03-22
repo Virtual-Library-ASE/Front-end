@@ -3,6 +3,7 @@ import PublicLayout from "../layout/index";
 import Homepage from "../pages/HomePage/Homepage";
 import Books from "../pages/Books/Books";
 import Book from "../pages/Books/Book/Book";
+import BookList from "../pages/Books/BookList";
 import About from "../pages/About/About";
 import Desks from "../pages/Desks/Desks";
 
@@ -33,6 +34,10 @@ const routes = [
       {
         path: "book/:id",
         element: <Book />,
+      },
+      {
+        path: "books/:category",
+        element: <BookList />,
       },
     ],
   },

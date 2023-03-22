@@ -1,6 +1,6 @@
 import BookCard from "../../components/BookCard/BookCard";
 
-function BookList() {
+function BookList(params) {
   const bookList = [
     {
       cover: require("../../resources/images/book/10002.jpg"),

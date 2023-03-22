@@ -7,9 +7,13 @@ import BookIcon from "@mui/icons-material/Book";
 import BookList from "./BookList";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Category = (params) => {
   const categoryList = params.categoryList;
+  const navigate = useNavigate();
+
   return (
     <>
       <h2 className="text-xl font-bold mb-4">Categories</h2>
@@ -24,9 +28,9 @@ const Category = (params) => {
             <div className="icon">{item.icon}</div>
             <div className="title font-bold my-2 text-sm">{item.title}</div>
             <div
-              className="link text-xs"
+              className="link text-xs cursor-pointer"
               style={{ color: "#f65d4f" }}
-              onClick={() => params.activateCategory(item)}
+              onClick={() => navigate("/books/" + item.title)}
             >
               Read More >
             </div>
@@ -41,7 +45,7 @@ const TotalBookList = (params) => {
   const bookList = params.bookList;
   return (
     <>
-      <BookList bookList={bookList}></BookList>
+      <BookList bookList={bookList} title="Book Recommended"></BookList>
     </>
   );
 };
@@ -239,20 +243,18 @@ let categoryList = [
 const Books = () => {
   // Show Carousel
   const dispatch = useDispatch();
-  dispatch(setCarouselDisplay(true));
-  dispatch(setFooterDisplay(true));
 
-  const activateCategory = (item) => {
-    console.log(item);
-  };
+  useEffect(() => {
+    // Show Carousel
+    dispatch(setCarouselDisplay(true));
+    dispatch(setFooterDisplay(true));
+  }, [dispatch]);
+
   return (
     <>
       <div className="books">
         <div className="container">
-          <Category
-            categoryList={categoryList}
-            activateCategory={activateCategory}
-          ></Category>
+          <Category categoryList={categoryList}></Category>
           <TotalBookList bookList={bookList}></TotalBookList>
         </div>
       </div>

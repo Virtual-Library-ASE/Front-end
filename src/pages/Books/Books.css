@@ -8,10 +8,10 @@
 .category-container .card {
   background-color: #f3ebf8;
 }
-.book {
+.bookCard {
   transition: 0.2s box-shadow;
 }
-.book:hover {
+.bookCard:hover {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
   transition: 0.2s box-shadow;
 }
