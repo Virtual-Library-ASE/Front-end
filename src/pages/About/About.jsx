@@ -1,11 +1,14 @@
 import "./About.css";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
+import { useEffect } from "react";
 const About = () => {
-  // Show Carousel
   const dispatch = useDispatch();
-  dispatch(setCarouselDisplay(false));
-  dispatch(setFooterDisplay(false));
+  useEffect(() => {
+    // Show Carousel
+    dispatch(setCarouselDisplay(false));
+    dispatch(setFooterDisplay(false));
+  }, []);
 
   return (
     <>

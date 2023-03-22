@@ -3,12 +3,17 @@ import BookList from "./BookList";
 import Reservation from "./Reservation";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
+import { useEffect } from "react";
 
 const Homepage = () => {
   // Show Carousel
   const dispatch = useDispatch();
-  dispatch(setCarouselDisplay(true));
-  dispatch(setFooterDisplay(true));
+
+  useEffect(() => {
+    // Show Carousel
+    dispatch(setCarouselDisplay(true));
+    dispatch(setFooterDisplay(true));
+  }, []);
 
   return (
     <div className="homepage">
