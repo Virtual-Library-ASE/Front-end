@@ -5,6 +5,7 @@ import Footer from "./Footer/Footer";
 import Main from "./Main/Main";
 import BasicCarousel from "../components/Carousel/Carousel";
 import { useSelector } from "react-redux";
+import "./index.css";
 
 export default function Layouts() {
   const navigate = useNavigate();
@@ -43,14 +44,16 @@ export default function Layouts() {
   };
   return (
     <>
-      <Header
-        isActiveIndex={navIndex.isActiveIndex}
-        navItems={navList.navList}
-        onClick={(index) => handleNav(index)}
-      />
-      {isShowCarousel ? <BasicCarousel /> : ""}
-      <Main />
-      {isShowFooter ? <Footer /> : ""}
+      <div className="app">
+        <Header
+          isActiveIndex={navIndex.isActiveIndex}
+          navItems={navList.navList}
+          onClick={(index) => handleNav(index)}
+        />
+        {isShowCarousel ? <BasicCarousel /> : ""}
+        <Main />
+        {isShowFooter ? <Footer /> : ""}
+      </div>
     </>
   );
 }

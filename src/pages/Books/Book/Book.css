@@ -1,0 +1,71 @@
+.book {
+  margin-top: -30px;
+}
+
+.header {
+  background-color: #bdb29b;
+}
+
+.content {
+  min-width: 800px;
+  max-width: 1200px;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.left {
+  width: 70%;
+}
+
+.right {
+  width: 30%;
+}
+
+.right-bd {
+  top: -30%;
+}
+
+.thumbnail {
+  height: calc(1.333 * 60vw * 0.3);
+  min-height: calc(1.333 * 800px * 0.3);
+  max-height: calc(1.333 * 1200px * 0.3);
+  width: calc(1 * 60vw * 0.3);
+  min-width: calc(1 * 800px * 0.3);
+  max-width: calc(1 * 1200px * 0.3);
+
+  border-radius: 1.5% 4% 2% 3%;
+  background-color: hsl(0deg 0% 0%);
+  background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0.2)
+    ),
+    linear-gradient(to bottom left, rgba(0, 0, 0, 0.3) 20%, #000 80%);
+}
+
+.thumbnail .img-container {
+  width: 97.75%;
+  height: 98.3125%;
+  transition: opacity 1s, transform 160ms;
+  position: relative;
+}
+
+.thumbnail .img-container img {
+  position: absolute;
+  top: -0.006em;
+  right: -0.006em;
+  bottom: -0.006em;
+  left: -0.006em;
+  clip-path: inset(0.006em);
+  width: calc(100% + 0.012em);
+  height: calc(100% + 0.016em);
+  border-radius: 0.03em 0.03em 0.03em 0.025em;
+}
+
+.comment {
+  border-bottom: 1px solid #1d1d1d;
+}
+
+.comment-post-time {
+  color: #999;
+}
