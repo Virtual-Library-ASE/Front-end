@@ -1,10 +1,12 @@
 import "./Desks.css";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 import * as React from "react";
+import { Button, DatePicker, Form, TimePicker, Modal, Select } from "antd";
+const { Option } = Select;
 
 const MOCK_ROOM_LIST = _.times(5, () => ({
   id: faker.database.mongodbObjectId(),
@@ -14,7 +16,39 @@ const MOCK_ROOM_LIST = _.times(5, () => ({
   readAmount: faker.finance.amount(0, 30, 0),
 }));
 
-const RoomList = () => {
+const formItemLayout = {
+  labelCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 8,
+    },
+  },
+  wrapperCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 16,
+    },
+  },
+};
+const onFinish = (fieldsValue) => {
+  // Should format date value before submit.
+  const rangeTimeValue = fieldsValue["range-time-picker"];
+  const values = {
+    ...fieldsValue,
+    "date-picker": fieldsValue["date-picker"].format("YYYY-MM-DD"),
+    "range-time-picker": [
+      rangeTimeValue[0].format("YYYY-MM-DD HH:mm:ss"),
+      rangeTimeValue[1].format("YYYY-MM-DD HH:mm:ss"),
+    ],
+  };
+  console.log("Received values of form: ", values);
+};
+
+const RoomList = (props) => {
   const roomList = MOCK_ROOM_LIST;
   return (
     <>
@@ -36,7 +70,10 @@ const RoomList = () => {
               </div>
             </div>
             <div className="right mx-2">
-              <button className="reserve-btn rounded-3xl px-2 py-1 cursor-pointer">
+              <button
+                className="reserve-btn rounded-3xl px-2 py-1 cursor-pointer"
+                onClick={() => props.handleReserveModal(true)}
+              >
                 Reserve
               </button>
             </div>
@@ -47,13 +84,84 @@ const RoomList = () => {
   );
 };
 
-const ReserveModal = () => {
-  return <div></div>;
+const ReserveModal = (props) => {
+  const handleClose = () => {
+    props.handleReserveModal(false);
+  };
+  return (
+    <>
+      <Modal
+        title="Reserve"
+        centered
+        open={props.isShow}
+        width={500}
+        footer={null}
+        onCancel={handleClose}
+      >
+        <Form
+          name="time_related_controls"
+          {...formItemLayout}
+          onFinish={onFinish}
+        >
+          <Form.Item
+            name="room"
+            label="Room"
+            rules={[{ required: true, message: "Please select room!" }]}
+          >
+            <Select placeholder="select room">
+              <Option value="0">Room 1</Option>
+              <Option value="1">Room 2</Option>
+              <Option value="2">Room 3</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="date-picker"
+            label="DatePicker"
+            rules={[{ required: true, message: "Please pick your date!" }]}
+          >
+            <DatePicker />
+          </Form.Item>
+          <Form.Item
+            name="range-time-picker"
+            label="Time Range"
+            rules={[
+              { required: true, message: "Please pick your time range!" },
+            ]}
+          >
+            <TimePicker.RangePicker />
+          </Form.Item>
+
+          <Form.Item
+            wrapperCol={{
+              xs: {
+                span: 24,
+                offset: 0,
+              },
+              sm: {
+                span: 16,
+                offset: 8,
+              },
+            }}
+          >
+            <Button type="primary" htmlType="submit">
+              Reserve
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  );
 };
 
 const Desks = () => {
   // Show Carousel
   const dispatch = useDispatch();
+  const [isReserve, setReserveModal] = useState(false);
+  const handleReserveModal = (bool) => {
+    console.log(bool);
+    setReserveModal(bool);
+  };
 
   useEffect(() => {
     // Show Carousel
@@ -64,8 +172,11 @@ const Desks = () => {
   return (
     <>
       <div className="Rooms">
-        <RoomList></RoomList>
-        <ReserveModal></ReserveModal>
+        <RoomList handleReserveModal={handleReserveModal}></RoomList>
+        <ReserveModal
+          isShow={isReserve}
+          handleReserveModal={handleReserveModal}
+        ></ReserveModal>
       </div>
     </>
   );
