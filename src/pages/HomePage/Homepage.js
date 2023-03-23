@@ -1,5 +1,5 @@
 import "./Homepage.css";
-import BookList from "./BookList";
+import HomeBookList from "./HomeBookList";
 import Reservation from "./Reservation";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
@@ -18,7 +18,7 @@ const Homepage = () => {
   return (
     <div className="homepage">
       <Reservation></Reservation>
-      <BookList></BookList>
+      <HomeBookList></HomeBookList>
     </div>
   );
 };
