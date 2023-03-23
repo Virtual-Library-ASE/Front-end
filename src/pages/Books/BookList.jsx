@@ -1,9 +1,8 @@
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
-import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import { LeftOutlined, LikeOutlined } from "@ant-design/icons";
 
 const BookCard = (params) => {
   let bookInfo = params.bookInfo;
@@ -20,8 +19,8 @@ const BookCard = (params) => {
             <div className="title text-sm">{bookInfo.title}</div>
             <div className="author">{bookInfo.author}</div>
           </div>
-          <div className="right recommended-amount text-sm leading-10">
-            <ThumbUpIcon sx={{ fontSize: 14, color: "#f37970" }} />
+          <div className="right recommended-amount text-sm leading-10 flex items-center">
+            <LikeOutlined style={{ fontSize: 14, color: "#f37970" }} />
             <span className="ml-0.5">{bookInfo.recommended_amount}</span>
           </div>
         </div>
@@ -228,7 +227,7 @@ const BookList = (params) => {
               className="iconBox cursor-pointer"
               onClick={() => navigate(-1)}
             >
-              <KeyboardReturnIcon fontSize="large" />
+              <LeftOutlined className="text-2xl" />
             </div>
           </div>
         ) : (

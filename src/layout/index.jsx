@@ -5,7 +5,6 @@ import Footer from "./Footer/Footer";
 import Main from "./Main/Main";
 import BasicCarousel from "../components/Carousel/Carousel";
 import { useSelector } from "react-redux";
-import "./index.css";
 
 export default function Layouts() {
   const navigate = useNavigate();

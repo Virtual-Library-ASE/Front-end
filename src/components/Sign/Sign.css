@@ -1,8 +1,18 @@
-.modal {
-  display: block;
-  background-color: #fff;
+.login-form {
+  margin-top: 2rem !important;
 }
-.modal-content {
-  transform: translate(-50%, -50%);
-  width: 400px;
+.remember-pwd,
+.password {
+  margin: 0.5rem 0 !important;
+}
+
+.login-form-forgot,
+.login-form-button,
+.login-form-register {
+  color: #934b00 !important;
+}
+
+.login-form-forgot:hover,
+.login-form-register:hover {
+  text-decoration: underline !important;
 }

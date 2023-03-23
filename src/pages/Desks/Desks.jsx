@@ -4,12 +4,7 @@ import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 import { useEffect } from "react";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
 import * as React from "react";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const MOCK_ROOM_LIST = _.times(5, () => ({
   id: faker.database.mongodbObjectId(),
@@ -53,38 +48,7 @@ const RoomList = () => {
 };
 
 const ReserveModal = () => {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  return (
-    <div>
-      <Button onClick={handleOpen}>Open modal</Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <div className="model-style absolute top-1/2 left-1/2 rounded p-4">
-          <h2 className="text-xl mb-4">Reserve a Desk</h2>
-          <div className="date">
-            Date:
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Helper text example"
-                slotProps={{
-                  textField: {
-                    helperText: "MM / DD / YYYY",
-                  },
-                }}
-              />
-            </LocalizationProvider>
-          </div>
-        </div>
-      </Modal>
-    </div>
-  );
+  return <div></div>;
 };
 
 const Desks = () => {

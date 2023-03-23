@@ -1,8 +1,8 @@
 import React from "react";
 import "./Header.css";
 import Search from "../../components/Search/Search";
-import PersonIcon from "@mui/icons-material/Person";
 import Sign from "../../components/Sign/Sign";
+import { UserOutlined } from "@ant-design/icons";
 
 function BasicHeader(props) {
   const logo = require("../../resources/images/logo.png");
@@ -43,7 +43,7 @@ function BasicHeader(props) {
               <Search />
             </li>
             <li className="item user-icon" onClick={() => handleLogin(true)}>
-              <PersonIcon fontSize="large" />
+              <UserOutlined className="text-2xl" />
             </li>
           </ul>
         </nav>

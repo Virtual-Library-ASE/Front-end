@@ -1,9 +1,12 @@
 import "./Books.css";
-import ImageIcon from "@mui/icons-material/Image";
-import FastfoodIcon from "@mui/icons-material/Fastfood";
-import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
-import MedicationLiquidIcon from "@mui/icons-material/MedicationLiquid";
-import BookIcon from "@mui/icons-material/Book";
+import {
+  FileImageOutlined,
+  CoffeeOutlined,
+  HeartOutlined,
+  ScissorOutlined,
+  BookOutlined,
+} from "@ant-design/icons";
+
 import BookList from "./BookList";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
@@ -214,27 +217,27 @@ const bookList = [
 
 let categoryList = [
   {
-    icon: <ImageIcon style={{ color: "#ba52fe" }} />,
+    icon: <FileImageOutlined style={{ color: "#ba52fe" }} />,
     title: "Photography",
     bgColor: "#f3ebf8",
   },
   {
-    icon: <FastfoodIcon style={{ color: "#faa432" }} />,
+    icon: <CoffeeOutlined style={{ color: "#faa432" }} />,
     title: "Food & Drink",
     bgColor: "#f8f3ed",
   },
   {
-    icon: <VolunteerActivismIcon style={{ color: "#f37970" }} />,
+    icon: <HeartOutlined style={{ color: "#f37970" }} />,
     title: "Romance",
     bgColor: "#f7f1f1",
   },
   {
-    icon: <MedicationLiquidIcon style={{ color: "#f37970" }} />,
+    icon: <ScissorOutlined style={{ color: "#35d2f6" }} />,
     title: "Health",
     bgColor: "#edf5f8",
   },
   {
-    icon: <BookIcon style={{ color: "#f37970" }} />,
+    icon: <BookOutlined style={{ color: "#fa5748" }} />,
     title: "Biography",
     bgColor: "#f8f0ee",
   },

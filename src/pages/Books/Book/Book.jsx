@@ -2,7 +2,7 @@ import "./Book.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
 import { useDispatch } from "react-redux";
-import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+// import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import { useEffect } from "react";
 
 const MOCK_BOOK_DETAIL = {
@@ -48,7 +48,7 @@ const BookHeader = (params) => {
               className="iconBox cursor-pointer"
               onClick={() => navigate(-1)}
             >
-              <KeyboardReturnIcon fontSize="large" />
+              {/*<KeyboardReturnIcon fontSize="large" />*/}
             </div>
           </div>
 
