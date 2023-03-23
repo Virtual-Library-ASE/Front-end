@@ -4,3 +4,29 @@
   width: 60%;
   margin: 0 auto;
 }
+
+.room-card {
+  border: 1px solid rgb(231, 235, 240);
+}
+
+.reserve-btn {
+  background-color: #d9c5b6;
+  color: #934b00;
+}
+
+.room-card:hover,
+.reserve-btn:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+}
+
+.room-card .middle {
+  width: calc(100% - 16rem);
+}
+
+.model-style {
+  transform: translate(-50%, -50%);
+  width: 50%;
+  max-width: 500px;
+  height: 40%;
+  background-color: #fff;
+}

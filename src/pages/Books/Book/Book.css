@@ -9,11 +9,11 @@
   margin: 0 auto;
 }
 
-.left {
+.header .left {
   width: 70%;
 }
 
-.right {
+.header .right {
   width: 30%;
 }
 
