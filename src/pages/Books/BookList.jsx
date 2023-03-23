@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 
 const BookCard = (params) => {
   let bookInfo = params.bookInfo;
@@ -194,22 +195,24 @@ const MocCategoryBookList = [
 const BookList = (params) => {
   let bookList = params.bookList;
   let title = "All Books";
+  const navigate = useNavigate();
 
   // Get route parameters
   const routerParams = useParams();
   console.log(routerParams); // {id: "2",name:"zora"}
+  const isCategory = JSON.stringify(routerParams) !== "{}";
 
   // Show Carousel
   const dispatch = useDispatch();
   useEffect(() => {
-    if (JSON.stringify(routerParams) !== "{}") {
+    if (isCategory) {
       // Show Carousel
       dispatch(setCarouselDisplay(true));
       dispatch(setFooterDisplay(true));
     }
   }, [dispatch]);
 
-  if (JSON.stringify(routerParams) !== "{}") {
+  if (isCategory) {
     // Classified book list data
     bookList = MocCategoryBookList;
     title = routerParams.category;
@@ -218,7 +221,20 @@ const BookList = (params) => {
 
   return (
     <>
-      <div className="content">
+      <div className="book-list">
+        {isCategory ? (
+          <div className="return p-3">
+            <div
+              className="iconBox cursor-pointer"
+              onClick={() => navigate(-1)}
+            >
+              <KeyboardReturnIcon fontSize="large" />
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+
         <h2 className="text-xl font-bold my-4">{title}</h2>
         <div className="total-book-list flex flex-wrap justify-between">
           {bookList.map((item, index) => (
