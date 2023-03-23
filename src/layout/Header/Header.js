@@ -1,15 +1,20 @@
 import React from "react";
 import "./Header.css";
 import Search from "../../components/Search/Search";
-import Sign from "../../components/Sign/Sign";
+import SignIn from "../../components/SignIn/SignIn";
+import Register from "../../components/Register/Register";
 import { UserOutlined } from "@ant-design/icons";
 
 function BasicHeader(props) {
   const logo = require("../../resources/images/logo.png");
 
   const [isLogin, setLogin] = React.useState(false);
+  const [isRegister, setRegister] = React.useState(false);
   const handleLogin = (bool) => {
     setLogin(bool);
+  };
+  const handleRegister = (bool) => {
+    setRegister(bool);
   };
 
   return (
@@ -49,7 +54,16 @@ function BasicHeader(props) {
         </nav>
       </header>
 
-      <Sign isLogin={isLogin} handleLogin={handleLogin} />
+      <SignIn
+        isLogin={isLogin}
+        handleLogin={handleLogin}
+        handleRegister={handleRegister}
+      />
+      <Register
+        isRegister={isRegister}
+        handleLogin={handleLogin}
+        handleRegister={handleRegister}
+      />
     </>
   );
 }

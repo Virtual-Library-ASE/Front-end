@@ -1,14 +1,19 @@
-import "./Sign.css";
+import "./SignIn.css";
 import React from "react";
 import { Button, Form, Input, Checkbox, Modal } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 
-export default function Sign(props) {
+export default function SignIn(props) {
   const handleClose = () => {
     props.handleLogin(false);
   };
   const onFinish = (values) => {
     console.log(values);
+  };
+
+  const toRegister = () => {
+    props.handleLogin(false);
+    props.handleRegister(true);
   };
 
   return (
@@ -66,9 +71,12 @@ export default function Sign(props) {
               Log in
             </Button>
             Or{" "}
-            <a href="" className="login-form-register">
+            <span
+              className="login-form-register cursor-pointer"
+              onClick={toRegister}
+            >
               register now!
-            </a>
+            </span>
           </Form.Item>
         </Form>
       </Modal>

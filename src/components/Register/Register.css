@@ -1,0 +1,18 @@
+.login-form {
+  margin-top: 2rem !important;
+}
+.agreement-container,
+.intro {
+  margin: 0.5rem 0 !important;
+}
+
+.agreement,
+.register-form-login,
+.register-form-button {
+  color: #934b00 !important;
+}
+
+.agreement:hover,
+.register-form-login:hover {
+  text-decoration: underline !important;
+}
