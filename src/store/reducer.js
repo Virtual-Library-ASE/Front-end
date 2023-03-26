@@ -1,7 +1,7 @@
 /* jshint esversion: 6 */
 // store初始化仓库数据
 const initState = {
-  isLogin: "",
+  isLogin: false,
   menuList: [],
 
   isShowCarousel: true,
@@ -11,7 +11,7 @@ const initState = {
 export const reducer = (state = initState, action) => {
   const { type, data } = action;
   switch (type) {
-    case "SET_LOGIN_STATUS":
+    case "SET_LOGIN":
       // 在不改变原有的state基础上，返回一个新的state
       return {
         ...state,

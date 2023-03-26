@@ -1,14 +1,22 @@
-import "./SignIn.css";
+import "./Login.css";
 import React from "react";
-import { Button, Form, Input, Checkbox, Modal } from "antd";
+import { useDispatch } from "react-redux";
+import { Button, Form, Input, Checkbox, Modal, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { setLogin, setFooterDisplay } from "../../store/action";
 
-export default function SignIn(props) {
+export default function Login(props) {
+  const dispatch = useDispatch();
+
   const handleClose = () => {
     props.handleLogin(false);
   };
   const onFinish = (values) => {
     console.log(values);
+
+    dispatch(setLogin(true));
+    message.success("Successfully logged in");
+    handleClose();
   };
 
   const toRegister = () => {

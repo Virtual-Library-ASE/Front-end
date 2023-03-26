@@ -7,7 +7,9 @@
   padding: 0;
 }
 
-ul, ol, li {
+ul,
+ol,
+li {
   list-style: none;
 }
 
@@ -33,7 +35,7 @@ ul, ol, li {
 .hd::after {
   bottom: 0;
   box-shadow: 0 0.0625em 0.5em rgba(0, 0, 0, 0.3);
-  content: '';
+  content: "";
   left: 0;
   opacity: 0;
   position: absolute;
@@ -47,7 +49,7 @@ ul, ol, li {
   opacity: 1;
 }
 
-.user-icon:hover {
+.item:hover {
   color: #934b00;
 }
 

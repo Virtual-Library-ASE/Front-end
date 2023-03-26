@@ -1,24 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Header.css";
 import Search from "../../components/Search/Search";
-import SignIn from "../../components/SignIn/SignIn";
+import Login from "../../components/Login/Login";
 import Register from "../../components/Register/Register";
-import { UserOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { UserOutlined, LoginOutlined, LogoutOutlined } from "@ant-design/icons";
+import { message, Modal } from "antd";
+import { setLogin } from "../../store/action";
 
 function BasicHeader(props) {
+  const dispatch = useDispatch();
+  const [messageApi, contextHolder] = message.useMessage();
+
   const logo = require("../../resources/images/logo.png");
 
-  const [isLogin, setLogin] = React.useState(false);
-  const [isRegister, setRegister] = React.useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const [isLogOut, setLogOut] = useState(false);
+  const [isRegister, setRegister] = useState(false);
+
   const handleLogin = (bool) => {
-    setLogin(bool);
+    setIsLogin(bool);
+  };
+
+  const confirmLogOut = () => {
+    dispatch(setLogin(false));
+
+    handleLogOut(false);
+
+    message.success("Successfully logged out");
   };
   const handleRegister = (bool) => {
     setRegister(bool);
   };
+  const handleLogOut = (bool) => {
+    setLogOut(bool);
+  };
+
+  const isCurrLogin = useSelector((state) => state.isLogin);
 
   return (
     <>
+      {contextHolder}
+
       <header className="hd flex text-xl font-bold w-full p-4 sticky sticky--top">
         <div id="logo">
           <a href="/">
@@ -47,14 +70,21 @@ function BasicHeader(props) {
             <li className="item">
               <Search />
             </li>
-            <li className="item user-icon" onClick={() => handleLogin(true)}>
+            <li className="item user-icon mr-4">
               <UserOutlined className="text-2xl" />
+            </li>
+            <li className="item">
+              {isCurrLogin ? (
+                <LogoutOutlined onClick={() => handleLogOut(true)} />
+              ) : (
+                <LoginOutlined onClick={() => handleLogin(true)} />
+              )}
             </li>
           </ul>
         </nav>
       </header>
 
-      <SignIn
+      <Login
         isLogin={isLogin}
         handleLogin={handleLogin}
         handleRegister={handleRegister}
@@ -64,6 +94,15 @@ function BasicHeader(props) {
         handleLogin={handleLogin}
         handleRegister={handleRegister}
       />
+
+      <Modal
+        title="Log Out"
+        open={isLogOut}
+        onOk={confirmLogOut}
+        onCancel={() => handleLogOut(false)}
+      >
+        <p>Are you sure you want to log out?</p>
+      </Modal>
     </>
   );
 }
