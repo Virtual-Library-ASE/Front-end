@@ -10,7 +10,6 @@ import { setLogin } from "../../store/action";
 
 function BasicHeader(props) {
   const dispatch = useDispatch();
-  const [messageApi, contextHolder] = message.useMessage();
 
   const logo = require("../../resources/images/logo.png");
 
@@ -22,12 +21,10 @@ function BasicHeader(props) {
     setIsLogin(bool);
   };
 
-  const confirmLogOut = () => {
-    dispatch(setLogin(false));
-
-    handleLogOut(false);
-
+  let confirmLogOut = () => {
     message.success("Successfully logged out");
+    dispatch(setLogin(false));
+    handleLogOut(false);
   };
   const handleRegister = (bool) => {
     setRegister(bool);
@@ -40,8 +37,6 @@ function BasicHeader(props) {
 
   return (
     <>
-      {contextHolder}
-
       <header className="hd flex text-xl font-bold w-full p-4 sticky sticky--top">
         <div id="logo">
           <a href="/">

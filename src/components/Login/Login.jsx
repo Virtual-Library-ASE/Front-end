@@ -3,7 +3,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { Button, Form, Input, Checkbox, Modal, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { setLogin, setFooterDisplay } from "../../store/action";
+import { setLogin } from "../../store/action";
 
 export default function Login(props) {
   const dispatch = useDispatch();
@@ -11,11 +11,10 @@ export default function Login(props) {
   const handleClose = () => {
     props.handleLogin(false);
   };
-  const onFinish = (values) => {
+  let onFinish = (values) => {
     console.log(values);
-
-    dispatch(setLogin(true));
     message.success("Successfully logged in");
+    dispatch(setLogin(true));
     handleClose();
   };
 
@@ -64,10 +63,6 @@ export default function Login(props) {
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>Remember me</Checkbox>
             </Form.Item>
-
-            <a className="login-form-forgot" href="">
-              Forgot password
-            </a>
           </Form.Item>
 
           <Form.Item>
