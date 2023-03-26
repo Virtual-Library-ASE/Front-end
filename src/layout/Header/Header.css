@@ -17,6 +17,7 @@ li {
 .sticky {
   position: sticky;
   will-change: transform;
+  z-index: 99;
 }
 
 .sticky--top {

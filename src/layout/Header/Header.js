@@ -7,9 +7,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { UserOutlined, LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 import { message, Modal } from "antd";
 import { setLogin } from "../../store/action";
+import { useNavigate } from "react-router-dom";
 
 function BasicHeader(props) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const logo = require("../../resources/images/logo.png");
 
@@ -66,7 +68,10 @@ function BasicHeader(props) {
               <Search />
             </li>
             <li className="item user-icon mr-4">
-              <UserOutlined className="text-2xl" />
+              <UserOutlined
+                className="text-2xl"
+                onClick={() => navigate("./user")}
+              />
             </li>
             <li className="item">
               {isCurrLogin ? (

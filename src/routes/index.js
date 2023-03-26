@@ -6,6 +6,7 @@ import Book from "../pages/Books/Book/Book";
 import BookList from "../pages/Books/BookList";
 import About from "../pages/About/About";
 import Desks from "../pages/Desks/Desks";
+import User from "../pages/User/User";
 
 const routes = [
   {
@@ -38,6 +39,10 @@ const routes = [
       {
         path: "books/:category",
         element: <BookList />,
+      },
+      {
+        path: "user",
+        element: <User />,
       },
     ],
   },
