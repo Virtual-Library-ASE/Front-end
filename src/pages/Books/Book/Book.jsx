@@ -2,7 +2,7 @@ import "./Book.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
 import { useDispatch } from "react-redux";
-// import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import BubblyBtn from "../../../components/BubblyBtn/BubblyBtn";
 import { useEffect } from "react";
 
 const MOCK_BOOK_DETAIL = {
@@ -96,6 +96,10 @@ const BookBody = (params) => {
     },
   ];
 
+  const rentBook = () => {
+    console.log("123123");
+  };
+
   return (
     <>
       <div className="body">
@@ -113,8 +117,8 @@ const BookBody = (params) => {
                 ))}
               </div>
             </div>
-            <div className="right relative">
-              <div className="right-bd absolute">
+            <div className="right">
+              <div className="right-bd relative">
                 <div className="thumbnail">
                   <div className="img-container">
                     <img
@@ -122,6 +126,10 @@ const BookBody = (params) => {
                       alt={detail.title}
                     />
                   </div>
+                </div>
+
+                <div className="btn-group mt-4">
+                  <BubblyBtn text="Rent this book" handleEvent={rentBook} />
                 </div>
               </div>
             </div>
