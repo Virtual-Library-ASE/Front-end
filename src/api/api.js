@@ -32,7 +32,43 @@ function getBook(id) {
   });
 }
 
-getBook("10001");
+// getBook("10001");
+
+function addBook(book) {
+  const ref = firebaseConfig.firestore().collection("book");
+  console.log(book);
+
+  book["recommendedAmount"] = book["recommendedAmount"] + book["like"];
+
+  ref
+    .doc()
+    .set(book)
+    .then(() => {
+      console.log("Book added successfully!");
+      return {
+        status: 200,
+        msg: "ok",
+      };
+    })
+    .catch((error) => {
+      console.error("Error adding book: ", error);
+      return {
+        status: 300,
+        msg: "Error adding book: " + error,
+      };
+    });
+}
+
+let book = {
+  user_id: "0000123",
+  book_id: "121223",
+  start_time: "2023-3-30",
+  end_time: "2023-3-30",
+  like: 1,
+  recommendedAmount: 10,
+};
+
+addBook(book);
 
 /**
  *
