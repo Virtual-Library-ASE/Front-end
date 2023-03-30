@@ -4,7 +4,7 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { ConfigProvider } from "antd";
-import './api/api'
+import "./api/api";
 import App from "./App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
