@@ -223,4 +223,45 @@ async function signupApi(info) {  //completed
     });
 }
 
-export { getBookByIdApi, getBookRecommendListApi, signupApi };
+/**
+ * ========================================== RENT ==========================================
+ */
+const seatReservationRef = firebaseConfig.firestore().collection("seat_reservation");
+/**
+ * Rent seat
+ * @param id: desk_id, room_id, user_id
+ * @return: successful/error message
+ * @usage: book desk
+ */
+async function bookDeskApi(info) {
+  return await new Promise((resolve, reject) => {  
+    seatReservationRef
+      .add(info)
+      .then((docRef) => {
+        console.log(docRef)
+        // Update the document with its ID
+        info.start_time = docRef.start_time;
+        info.start_time = docRef.start_time;
+        info.is_delete = false;
+        docRef.update(info);
+
+        resolve({
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error: add user failed: " + info + " Error msg: " + error
+        });
+      });
+    });
+}
+bookDeskApi({
+  desk_id: '101',
+  room_id: '101',
+  user_id: '101',
+})
+
+export { getBookByIdApi, getBookRecommendListApi, signupApi, bookDeskApi };
