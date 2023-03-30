@@ -1,6 +1,16 @@
 import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
+// import {Date} from Date
+
+var DateTime = require('datetime-js')
+var dateObj = new Date()
+let tomorrow =  new Date()
+tomorrow.setDate(dateObj.getDate() + 1)
+ 
+DateTime(dateObj, 'The date is %m-%d-%Y');
+ 
+DateTime(dateObj, 'Time Now: %h:%i %AMPM');
 
 /**
  * ========================================== BOOK ==========================================
@@ -273,4 +283,56 @@ async function signupApi(info) {  //completed
     });
 }
 
-export { getBookByIdApi, getBookRecommendListApi,getCategories,getAllBook, signupApi };
+
+/**
+ * ========================================== Desk Booking ==========================================
+ */
+
+const seatReservationRef = firebaseConfig.firestore().collection("Seat_reservation");
+
+/**
+ * Desk Booking
+ * @param info:  "room_id", "seat_id", "user_id"
+ * @return: { status: 200, msg: "ok" }
+ * @usage: signup(infoObj)
+ */
+async function deskBookingApi(info) {  //completed
+  return await new Promise((resolve, reject) => {  
+    seatReservationRef
+      .add(info)
+      .then((docRef) => {
+        // Update the document with its ID
+        info.reservation_id = docRef.id;
+        info.is_delete = false;
+        docRef.update(info);
+        info.create_time = DateTime(dateObj, '%m-%d-%Y %h:%i %AMPM')
+        info.end_time = DateTime(tomorrow, '%m-%d-%Y %h:%i %AMPM')
+
+        resolve({
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error: add user failed: " + info + " Error msg: " + error
+        });
+      });
+    });
+}
+
+let info = { 
+  "room_id": "63283",
+  "seat_id": "79879",
+  "user_id": "12112",
+  "create_time": DateTime(dateObj, '%m-%d-%Y %h:%i %AMPM'),
+  "end_time":  DateTime(tomorrow, '%m-%d-%Y %h:%i %AMPM')
+}
+deskBookingApi(info).then(res=>{
+  console.log(res);
+}).catch(err=>{
+  console.log(err);
+})
+
+export { getBookByIdApi, getBookRecommendListApi,getCategories,getAllBook, signupApi, deskBookingApi };
