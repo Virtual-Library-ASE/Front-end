@@ -2,28 +2,39 @@ import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 
-function getBookApi(id) {
-  const ref = firebaseConfig.firestore().collection("book");
-  ref.onSnapshot((querySnapshot) => {
-    const items = [];
-    querySnapshot.forEach((doc) => {
-      items.push(doc.data());
-    });
+/**
+ * ========================================== BOOK ==========================================
+ */
+/**
+ * Get Book by id
+ * @param id: book id
+ */
+async function getBookApi(id) {
+  return await new Promise((resolve, reject) => {
+    firebaseConfig
+      .firestore()
+      .collection("Book")
+      .onSnapshot((querySnapshot) => {
+        const items = [];
+        querySnapshot.forEach((doc) => {
+          items.push(doc.data());
+        });
 
-    // Traverse all the data,
-    // find the data whose book_id is the same as the id passed in
-    const res = [];
-    for (let i = 0; i < items.length; i++) {
-      if (items[i]["book_id"] === id) {
-        res.push(items[i]);
-      }
-    }
+        // Traverse all the data,
+        // find the data whose book_id is the same as the id passed in
+        const res = [];
+        for (let i = 0; i < items.length; i++) {
+          if (items[i]["book_id"] === id) {
+            res.push(items[i]);
+          }
+        }
 
-    return {
-      status: 200,
-      msg: "ok",
-      data: res,
-    };
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: res,
+        });
+      });
   });
 }
 
@@ -99,6 +110,10 @@ function addBook(book) {
       };
     });
 }
+
+/**
+ * ========================================== User ==========================================
+ */
 
 const userRef = firebaseConfig.firestore().collection("user");
 
