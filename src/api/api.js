@@ -9,7 +9,7 @@ import { faker } from "@faker-js/faker";
  * Get Book by id
  * @param id: book id
  */
-async function getBookApi(id) {
+async function getBookByIdApi(id) {
   return await new Promise((resolve, reject) => {
     firebaseConfig
       .firestore()
@@ -22,18 +22,26 @@ async function getBookApi(id) {
 
         // Traverse all the data,
         // find the data whose book_id is the same as the id passed in
-        const res = [];
+        let res = {};
         for (let i = 0; i < items.length; i++) {
           if (items[i]["book_id"] === id) {
-            res.push(items[i]);
+            res = items[i];
           }
         }
 
+        // if success
         resolve({
           status: 200,
           msg: "ok",
           data: res,
         });
+
+        if(JSON.stringify(res) === "{}") {
+          reject({
+            status: 300,
+            msg: "Get book failed " + id
+          })
+        }
       });
   });
 }
@@ -44,38 +52,48 @@ async function getBookApi(id) {
  * @return: a list of recommend book details
  * @usage: getBookRecommendListApi(2)
  */
-function getBookRecommendListApi(amount) {   //completed
-  const ref = firebaseConfig.firestore().collection("book");
-  ref.onSnapshot((querySnapshot) => {
-    const items = [];
-    querySnapshot.forEach((doc) => {
-      items.push(doc.data());
+async function getBookRecommendListApi(amount) {   //completed
+  return await new Promise((resolve, reject) => {
+    firebaseConfig.firestore().collection("book").onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      // 1. Sort => by recommend
+      items.sort(function (a, b) {
+        return b["recommend"] - a["recommend"];
+      });
+
+      // 2. Return the corresponding quantity according to amount
+      let recommend_list = items.slice(0, amount);
+
+      // 3. Select the corresponding attribute
+      let res = recommend_list.map(function (item) {
+        return {
+          book_id: item.book_id,
+          book_name: item.book_name,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+        };
+      });
+
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      })
+
+
+      if(!res) {
+        reject({
+          status: 300,
+          msg: "Get recommend list failed"
+        });
+      }
+
     });
-
-    // 1. Sort => by recommend
-    items.sort(function (a, b) {
-      return b["recommend"] - a["recommend"];
-    });
-
-    // 2. Return the corresponding quantity according to amount
-    let recommend_list = items.slice(0, amount);
-
-    // 3. Select the corresponding attribute
-    let res = recommend_list.map(function (item) {
-      return {
-        book_id: item.book_id,
-        book_name: item.book_name,
-        book_url: item.book_url,
-        thumbnail: item.thumbnail,
-      };
-    });
-
-    return {
-      status: 200,
-      msg: "ok",
-      data: res,
-    };
-  });
+  })
 }
 
 /**
@@ -84,47 +102,56 @@ function getBookRecommendListApi(amount) {   //completed
  * @return: a list of books based on category
  * @usage: getCategories("Fiction")
  */
-function getCategories(category){  //completed
-  const ref = firebaseConfig.firestore().collection("Book");
-  // Traverse all the data
-  ref.onSnapshot((querySnapshot) => {
-    const items = [];
-    querySnapshot.forEach((doc) => {
-      items.push(doc.data());
-    });
+async function getCategories(category){
+  return await new Promise((resolve, reject) => {  //completed
+    const ref = firebaseConfig.firestore().collection("Book");
+    // Traverse all the data
+    ref.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
 
-    //get the category
-    const res = [];
-    for (let i = 0; i < items.length; i++) {
-      if (items[i]["category"] === category) {
-        res.push(items[i]);
+      //get the category
+      const category_list = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i]["category"] === category) {
+          category_list.push(items[i]);
+        }
       }
-    }
 
-    //get data based on category
-    let category_list = res.map(function (item) {
-      return {
-        category:item.category,
-        book_id:item.book_id,
-        book_name:item.book_name,
-        author:item.author,
-        book_url:item.book_url,
-        thumbnail:item.thumbnail,
-        recommended_amount:item.recommended_amount
-      };
+      //get data based on category
+      let res = category_list.map(function (item) {
+        return {
+          category:item.category,
+          book_id:item.book_id,
+          book_name:item.book_name,
+          author:item.author,
+          book_url:item.book_url,
+          thumbnail:item.thumbnail,
+          recommended_amount:item.recommended_amount
+        };
+      });
+      // if success
+      resolve({
+        status:200,
+        msg:"ok",
+        data:res
+      });
+
+      if(!res)
+        reject({
+          status: 300,
+          msg: "get category " + category
+        });
     });
-
-    return{
-      status:200,
-      msg:"ok",
-      data:category_list
-    }
   });
 }
 
 
-
-
+// getCategories("Fiction").then(res=>{
+//   console.log(res);
+// })
 
 
 /**
@@ -172,25 +199,27 @@ const userRef = firebaseConfig.firestore().collection("user");
  * @return: { status: 200, msg: "ok" }
  * @usage: signup(infoObj)
  */
-function signupApi(info) {  //completed
-  userRef
-    .add(info)
-    .then((docRef) => {
-      // Update the document with its ID
-      info.user_id = docRef.id;
-      info.is_delete = false;
-      docRef.update(info);
+async function signupApi(info) {  //completed
+  return await new Promise((resolve, reject) => {  
+    userRef
+      .add(info)
+      .then((docRef) => {
+        // Update the document with its ID
+        info.user_id = docRef.id;
+        info.is_delete = false;
+        docRef.update(info);
 
-      return {
-        status: 200,
-        msg: "ok",
-      };
-    })
-    .catch((error) => {
-      return {
-        status: 300,
-        msg: "Error adding user: " + error,
-      };
+        resolve({
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error: add user failed: " + info + " Error msg: " + error
+        });
+      });
     });
 }
 
