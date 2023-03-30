@@ -12,6 +12,16 @@ DateTime(dateObj, 'The date is %m-%d-%Y');
  
 DateTime(dateObj, 'Time Now: %h:%i %AMPM');
 
+const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
+const bookRef = firebaseConfig.firestore().collection("Book");
+const userRef = firebaseConfig.firestore().collection("User");
+const commentListRef = firebaseConfig.firestore().collection("Comment_list");
+const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
+const seatRef = firebaseConfig.firestore().collection("Seat");
+const userEnvironmentConfigRef = firebaseConfig.firestore().collection("User_Environment_Config");
+const messageRef = firebaseConfig.firestore().collection("Message");
+const modelRef = firebaseConfig.firestore().collection("Model");
+
 /**
  * ========================================== BOOK ==========================================
  */
@@ -39,19 +49,19 @@ async function getBookByIdApi(id) {
           }
         }
 
-        // if success
-        resolve({
-          status: 200,
-          msg: "ok",
-          data: res,
-        });
-
         if(JSON.stringify(res) === "{}") {
           reject({
             status: 300,
             msg: "Get book failed " + id
           })
         }
+
+        // if success
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: res,
+        });
       });
   });
 }
@@ -64,7 +74,7 @@ async function getBookByIdApi(id) {
  */
 async function getBookRecommendListApi(amount) {   //completed
   return await new Promise((resolve, reject) => {
-    firebaseConfig.firestore().collection("book").onSnapshot((querySnapshot) => {
+    bookRef.onSnapshot((querySnapshot) => {
       const items = [];
       querySnapshot.forEach((doc) => {
         items.push(doc.data());
@@ -88,19 +98,18 @@ async function getBookRecommendListApi(amount) {   //completed
         };
       });
 
-      resolve({
-        status: 200,
-        msg: "ok",
-        data: res,
-      })
-
-
       if(!res) {
         reject({
           status: 300,
           msg: "Get recommend list failed"
         });
       }
+
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      })
 
     });
   })
@@ -112,11 +121,10 @@ async function getBookRecommendListApi(amount) {   //completed
  * @return: a list of books based on category
  * @usage: getCategories("Fiction")
  */
-async function getCategories(category){
+async function getCategoriesApi(category){
   return await new Promise((resolve, reject) => {  //completed
-    const ref = firebaseConfig.firestore().collection("Book");
     // Traverse all the data
-    ref.onSnapshot((querySnapshot) => {
+    bookRef.onSnapshot((querySnapshot) => {
       const items = [];
       querySnapshot.forEach((doc) => {
         items.push(doc.data());
@@ -142,18 +150,19 @@ async function getCategories(category){
           recommended_amount:item.recommended_amount
         };
       });
+
+      if(!res)
+      reject({
+        status: 300,
+        msg: "get category " + category
+      });
+
       // if success
       resolve({
         status:200,
         msg:"ok",
         data:res
       });
-
-      if(!res)
-        reject({
-          status: 300,
-          msg: "get category " + category
-        });
     });
   });
 }
@@ -170,11 +179,10 @@ async function getCategories(category){
  * 
  * @returns: all the list of book 
  */
-async function getAllBook(){   // completed
+async function getAllBookApi(){   // completed
   return await new Promise((resolve, reject) => {
-    const ref = firebaseConfig.firestore().collection("Book");
     // Traverse all the data
-    ref.onSnapshot((querySnapshot) => {
+    bookRef.onSnapshot((querySnapshot) => {
       const items = [];
       querySnapshot.forEach((doc) => {
         items.push(doc.data());
@@ -192,18 +200,21 @@ async function getAllBook(){   // completed
           recommended_amount:item.recommended_amount
         };
       });
+
+      //if failed
+      if(!res)
+      reject({
+        status: 300,
+        msg: "get all the book failed "
+      });
+
       // if success
       resolve({
         status:200,
         msg:"ok",
         data:res
       });
-      //if failed
-      if(!res)
-        reject({
-          status: 300,
-          msg: "get all the book failed "
-        });
+
     });
   });
 }
@@ -213,6 +224,15 @@ async function getAllBook(){   // completed
 // })
 
 
+
+async function rentBookAddApi(info){
+  return await new Promise((resolve, reject) => {
+    // input info
+    //return message
+
+
+  });
+}
 
 /**
  * Add a book to firebase
@@ -250,8 +270,6 @@ async function getAllBook(){   // completed
 /**
  * ========================================== User ==========================================
  */
-
-const userRef = firebaseConfig.firestore().collection("user");
 
 /**
  * User signup
