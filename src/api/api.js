@@ -154,6 +154,56 @@ async function getCategories(category){
 // })
 
 
+
+
+/**
+ * 
+ * @returns: all the list of book 
+ */
+async function getAllBook(){   // completed
+  return await new Promise((resolve, reject) => {
+    const ref = firebaseConfig.firestore().collection("Book");
+    // Traverse all the data
+    ref.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get all the book
+      let res = items.map(function (item) {
+        return {
+          book_id:item.book_id,
+          category:item.category,
+          book_name:item.book_name,
+          author:item.author,
+          book_url:item.book_url,
+          thumbnail:item.thumbnail,
+          recommended_amount:item.recommended_amount
+        };
+      });
+      // if success
+      resolve({
+        status:200,
+        msg:"ok",
+        data:res
+      });
+      //if failed
+      if(!res)
+        reject({
+          status: 300,
+          msg: "get all the book failed "
+        });
+    });
+  });
+}
+  
+// getAllBook().then(res=>{
+//     console.log(res);
+// })
+
+
+
 /**
  * Add a book to firebase
  * @param book: book detail object
@@ -223,4 +273,4 @@ async function signupApi(info) {  //completed
     });
 }
 
-export { getBookByIdApi, getBookRecommendListApi, signupApi };
+export { getBookByIdApi, getBookRecommendListApi,getCategories,getAllBook, signupApi };
