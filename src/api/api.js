@@ -29,19 +29,19 @@ async function getBookByIdApi(id) {
           }
         }
 
+        if (JSON.stringify(res) === "{}") {
+          reject({
+            status: 300,
+            msg: "Get book failed " + id,
+          });
+        }
+
         // if success
         resolve({
           status: 200,
           msg: "ok",
           data: res,
         });
-
-        if(JSON.stringify(res) === "{}") {
-          reject({
-            status: 300,
-            msg: "Get book failed " + id
-          })
-        }
       });
   });
 }
@@ -52,48 +52,50 @@ async function getBookByIdApi(id) {
  * @return: a list of recommend book details
  * @usage: getBookRecommendListApi(2)
  */
-async function getBookRecommendListApi(amount) {   //completed
+async function getBookRecommendListApi(amount) {
+  //completed
   return await new Promise((resolve, reject) => {
-    firebaseConfig.firestore().collection("book").onSnapshot((querySnapshot) => {
-      const items = [];
-      querySnapshot.forEach((doc) => {
-        items.push(doc.data());
-      });
-
-      // 1. Sort => by recommend
-      items.sort(function (a, b) {
-        return b["recommend"] - a["recommend"];
-      });
-
-      // 2. Return the corresponding quantity according to amount
-      let recommend_list = items.slice(0, amount);
-
-      // 3. Select the corresponding attribute
-      let res = recommend_list.map(function (item) {
-        return {
-          book_id: item.book_id,
-          book_name: item.book_name,
-          book_url: item.book_url,
-          thumbnail: item.thumbnail,
-        };
-      });
-
-      resolve({
-        status: 200,
-        msg: "ok",
-        data: res,
-      })
-
-
-      if(!res) {
-        reject({
-          status: 300,
-          msg: "Get recommend list failed"
+    firebaseConfig
+      .firestore()
+      .collection("book")
+      .onSnapshot((querySnapshot) => {
+        const items = [];
+        querySnapshot.forEach((doc) => {
+          items.push(doc.data());
         });
-      }
 
-    });
-  })
+        // 1. Sort => by recommend
+        items.sort(function (a, b) {
+          return b["recommend"] - a["recommend"];
+        });
+
+        // 2. Return the corresponding quantity according to amount
+        let recommend_list = items.slice(0, amount);
+
+        // 3. Select the corresponding attribute
+        let res = recommend_list.map(function (item) {
+          return {
+            book_id: item.book_id,
+            book_name: item.book_name,
+            book_url: item.book_url,
+            thumbnail: item.thumbnail,
+          };
+        });
+
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: res,
+        });
+
+        if (!res) {
+          reject({
+            status: 300,
+            msg: "Get recommend list failed",
+          });
+        }
+      });
+  });
 }
 
 /**
@@ -102,8 +104,9 @@ async function getBookRecommendListApi(amount) {   //completed
  * @return: a list of books based on category
  * @usage: getCategories("Fiction")
  */
-async function getCategories(category){
-  return await new Promise((resolve, reject) => {  //completed
+async function getCategories(category) {
+  return await new Promise((resolve, reject) => {
+    //completed
     const ref = firebaseConfig.firestore().collection("Book");
     // Traverse all the data
     ref.onSnapshot((querySnapshot) => {
@@ -123,44 +126,41 @@ async function getCategories(category){
       //get data based on category
       let res = category_list.map(function (item) {
         return {
-          category:item.category,
-          book_id:item.book_id,
-          book_name:item.book_name,
-          author:item.author,
-          book_url:item.book_url,
-          thumbnail:item.thumbnail,
-          recommended_amount:item.recommended_amount
+          category: item.category,
+          book_id: item.book_id,
+          book_name: item.book_name,
+          author: item.author,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+          recommended_amount: item.recommended_amount,
         };
       });
       // if success
       resolve({
-        status:200,
-        msg:"ok",
-        data:res
+        status: 200,
+        msg: "ok",
+        data: res,
       });
 
-      if(!res)
+      if (!res)
         reject({
           status: 300,
-          msg: "get category " + category
+          msg: "get category " + category,
         });
     });
   });
 }
 
-
 // getCategories("Fiction").then(res=>{
 //   console.log(res);
 // })
 
-
-
-
 /**
- * 
- * @returns: all the list of book 
+ *
+ * @returns: all the list of book
  */
-async function getAllBook(){   // completed
+async function getAllBook() {
+  // completed
   return await new Promise((resolve, reject) => {
     const ref = firebaseConfig.firestore().collection("Book");
     // Traverse all the data
@@ -173,36 +173,34 @@ async function getAllBook(){   // completed
       //get all the book
       let res = items.map(function (item) {
         return {
-          book_id:item.book_id,
-          category:item.category,
-          book_name:item.book_name,
-          author:item.author,
-          book_url:item.book_url,
-          thumbnail:item.thumbnail,
-          recommended_amount:item.recommended_amount
+          book_id: item.book_id,
+          category: item.category,
+          book_name: item.book_name,
+          author: item.author,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+          recommended_amount: item.recommended_amount,
         };
       });
       // if success
       resolve({
-        status:200,
-        msg:"ok",
-        data:res
+        status: 200,
+        msg: "ok",
+        data: res,
       });
       //if failed
-      if(!res)
+      if (!res)
         reject({
           status: 300,
-          msg: "get all the book failed "
+          msg: "get all the book failed ",
         });
     });
   });
 }
-  
+
 // getAllBook().then(res=>{
 //     console.log(res);
 // })
-
-
 
 /**
  * Add a book to firebase
@@ -249,8 +247,9 @@ const userRef = firebaseConfig.firestore().collection("user");
  * @return: { status: 200, msg: "ok" }
  * @usage: signup(infoObj)
  */
-async function signupApi(info) {  //completed
-  return await new Promise((resolve, reject) => {  
+async function signupApi(info) {
+  //completed
+  return await new Promise((resolve, reject) => {
     userRef
       .add(info)
       .then((docRef) => {
@@ -267,10 +266,16 @@ async function signupApi(info) {  //completed
       .catch((error) => {
         reject({
           status: 300,
-          msg: "Error: add user failed: " + info + " Error msg: " + error
+          msg: "Error: add user failed: " + info + " Error msg: " + error,
         });
       });
-    });
+  });
 }
 
-export { getBookByIdApi, getBookRecommendListApi,getCategories,getAllBook, signupApi };
+export {
+  getBookByIdApi,
+  getBookRecommendListApi,
+  getCategories,
+  getAllBook,
+  signupApi,
+};
