@@ -53,7 +53,6 @@ async function getBookByIdApi(id) {
  * @usage: getBookRecommendListApi(2)
  */
 async function getBookRecommendListApi(amount) {
-  //completed
   return await new Promise((resolve, reject) => {
     firebaseConfig
       .firestore()
@@ -104,9 +103,8 @@ async function getBookRecommendListApi(amount) {
  * @return: a list of books based on category
  * @usage: getCategories("Fiction")
  */
-async function getCategories(category) {
+async function getCategoriesApi(category) {
   return await new Promise((resolve, reject) => {
-    //completed
     const ref = firebaseConfig.firestore().collection("Book");
     // Traverse all the data
     ref.onSnapshot((querySnapshot) => {
@@ -159,8 +157,7 @@ async function getCategories(category) {
  *
  * @returns: all the list of book
  */
-async function getAllBook() {
-  // completed
+async function getAllBookApi() {
   return await new Promise((resolve, reject) => {
     const ref = firebaseConfig.firestore().collection("Book");
     // Traverse all the data
@@ -248,7 +245,6 @@ const userRef = firebaseConfig.firestore().collection("user");
  * @usage: signup(infoObj)
  */
 async function signupApi(info) {
-  //completed
   return await new Promise((resolve, reject) => {
     userRef
       .add(info)
@@ -275,7 +271,7 @@ async function signupApi(info) {
 export {
   getBookByIdApi,
   getBookRecommendListApi,
-  getCategories,
-  getAllBook,
+  getCategoriesApi,
+  getAllBookApi,
   signupApi,
 };

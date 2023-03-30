@@ -3,38 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
 import { useDispatch } from "react-redux";
 import BubblyBtn from "../../../components/BubblyBtn/BubblyBtn";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getBookByIdApi } from "../../../api/api";
+import { underscoreToCamelCaseKeys } from "../../../resources/js/common";
 
-const MOCK_BOOK_DETAIL = {
-  bookId: "123",
-  title: "The Girls",
-  url: "https://libbyapp.com/library/dlrcoco/curated-1239658/page-1/2823006",
-  thumbnail:
-    "https://ic.od-cdn.com/resize?type=auto&width=536&quality=80&force=true&height=715&url=%2FImageType-400%2F0211-1%2F%257B1C9D2597-FFA9-4C2E-91AE-86187ED06AA5%257DIMG400.JPG",
-  author: "Emma Cline",
-  category: "Novel",
-  fontAmount: 230000,
-  desc:
-    "A gripping and dark fictionalised account of life inside the Manson family from one of the most exciting young voices in fiction.\n" +
-    "\n" +
-    "If you’re lost, they’ll find you…\n" +
-    "\n" +
-    "Evie Boyd is fourteen and desperate to be noticed.\n" +
-    "\n" +
-    "It’s the summer of 1969 and restless, empty days stretch ahead of her. Until she sees them. The girls. Hair long and uncombed, jewelry catching the sun. And at their centre, Suzanne, black-haired and beautiful.\n" +
-    "\n" +
-    "If not for Suzanne, she might not have gone. But, intoxicated by her and the life she promises, Evie follows the girls back to the decaying ranch where they live.\n" +
-    "\n" +
-    "Was there a warning? A sign of what was coming? Or did Evie know already that there was no way back?\n" +
-    "\n" +
-    "‘Taut, beautiful and savage, Cline’s novel demands your attention’ Guardian",
-  ISBN: "1213132121231",
-  language: "English",
-  status: "Available",
-  uploadTime: "2023.02.01",
-  readAmount: 3270,
-  recommendedAmount: 2312,
-};
 const BookHeader = (params) => {
   const detail = params.details;
   const navigate = useNavigate();
@@ -47,9 +19,7 @@ const BookHeader = (params) => {
             <div
               className="iconBox cursor-pointer"
               onClick={() => navigate(-1)}
-            >
-              {/*<KeyboardReturnIcon fontSize="large" />*/}
-            </div>
+            ></div>
           </div>
 
           <div className="info absolute bottom-4">
@@ -184,18 +154,36 @@ const Comment = () => {
 const Book = () => {
   // Show Carousel
   const dispatch = useDispatch();
+  const [bookDetail, setBookDetail] = useState({});
+
+  // Get route parameters
+  const routerParams = useParams();
+
+  useEffect(() => {
+    getBookByIdApi(routerParams.id)
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200 && JSON.stringify(res.data) === "{}") {
+          let resData = underscoreToCamelCaseKeys(res.data);
+          setBookDetail({
+            ...resData,
+            title: resData["book_name"],
+            url: resData["book_url"],
+          });
+        } else {
+          console.log("Error: res.msg");
+        }
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+      });
+  }, []);
 
   useEffect(() => {
     // Show Carousel
     dispatch(setCarouselDisplay(false));
     dispatch(setFooterDisplay(false));
   }, [dispatch]);
-
-  // Get route parameters
-  const routerParams = useParams();
-  console.log(routerParams.id); // {id: "2",name:"zora"}
-
-  const bookDetail = MOCK_BOOK_DETAIL;
 
   return (
     <>

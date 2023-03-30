@@ -198,7 +198,6 @@ const BookList = (params) => {
 
   // Get route parameters
   const routerParams = useParams();
-  console.log(routerParams); // {id: "2",name:"zora"}
   const isCategory = JSON.stringify(routerParams) !== "{}";
 
   // Show Carousel
@@ -215,7 +214,6 @@ const BookList = (params) => {
     // Classified book list data
     bookList = MocCategoryBookList;
     title = routerParams.category;
-    console.log("Classified book list data", routerParams.category);
   }
 
   return (

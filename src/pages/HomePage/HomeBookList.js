@@ -1,4 +1,5 @@
 import BookCard from "../../components/BookCard/BookCard";
+import { getBookRecommendListApi } from "../../api/api";
 
 function HomeBookList(params) {
   const bookList = [
