@@ -14,8 +14,8 @@ function Reservation() {
   const desk = require("../../resources/images/reservation/desk.jpg");
   return (
     <div className="reservation">
-      <h2 className="text-xl font-bold mb-2">Start Reading</h2>
-      <div className="flex px-2">
+      <h2 className="text-xl font-bold mb-2 mt-4">Start Reading</h2>
+      <div className="flex px-2 justify-between">
         <ImageCard url={book} text="Book a desk"></ImageCard>
         <ImageCard url={desk} text="Rent a book"></ImageCard>
       </div>

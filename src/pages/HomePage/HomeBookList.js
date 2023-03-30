@@ -45,7 +45,7 @@ function HomeBookList(params) {
   ];
   return (
     <div className="book-list mt-14">
-      <h2 className="text-xl font-bold mb-2">Book Recommended</h2>
+      <h2 className="text-xl font-bold mb-2 mt-4">Book Recommended</h2>
       <div className="flex flex-wrap justify-between">
         {bookList.map((item, index) => (
           <BookCard detail={item} key={index} />

@@ -6,18 +6,14 @@ function BookCard(props) {
   const navigate = useNavigate();
 
   return (
-    <div className="card cursor-pointer w-1/5 mx-2">
-      <figure className="figure">
-        <img
-          src={detail.cover}
-          className="max-w-full align-top"
-          alt="book-cover"
-        />
-        <div className="cover">
-          <figcaption className="text-sm">
-            <h3 className="title font-normal leading-none"> {detail.title}</h3>
+    <div className="book-card cursor-pointer my-2">
+      <figure className="figure inline-block relative text-center w-full overflow-hidden bg-color-white">
+        <img src={detail.cover} className="cover" alt={detail.name} />
+        <div className="cover w-full absolute top-1/2">
+          <figcaption className="text-sm py-2 px-1 absolute left-1/2 overflow-hidden w-10/12 h-8">
+            <h3 className="title font-bold overflow-hidden">{detail.title}</h3>
             <h3
-              className="hover"
+              className="hover font-bold"
               onClick={() => navigate("/book/" + detail.bookId)}
             >
               Read
