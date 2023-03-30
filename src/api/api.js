@@ -2,8 +2,9 @@ import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 
-function getBookApi(id) {
-  const ref = firebaseConfig.firestore().collection("book");
+
+function getBookByIdApi(id) {    //completed
+  const ref = firebaseConfig.firestore().collection("Book");
   ref.onSnapshot((querySnapshot) => {
     const items = [];
     querySnapshot.forEach((doc) => {
@@ -12,10 +13,10 @@ function getBookApi(id) {
 
     // Traverse all the data,
     // find the data whose book_id is the same as the id passed in
-    const res = [];
+    let res = {};
     for (let i = 0; i < items.length; i++) {
       if (items[i]["book_id"] === id) {
-        res.push(items[i]);
+        res = items[i]
       }
     }
 
@@ -33,7 +34,7 @@ function getBookApi(id) {
  * @return: a list of recommend book details
  * @usage: getBookRecommendListApi(2)
  */
-function getBookRecommendListApi(amount) {
+function getBookRecommendListApi(amount) {   //completed
   const ref = firebaseConfig.firestore().collection("book");
   ref.onSnapshot((querySnapshot) => {
     const items = [];
@@ -68,37 +69,86 @@ function getBookRecommendListApi(amount) {
 }
 
 /**
+ * Get book info by category
+ * @param category: book category
+ * @return: a list of books based on category
+ * @usage: getCategories("Fiction")
+ */
+function getCategories(category){  //completed
+  const ref = firebaseConfig.firestore().collection("Book");
+  // Traverse all the data
+  ref.onSnapshot((querySnapshot) => {
+    const items = [];
+    querySnapshot.forEach((doc) => {
+      items.push(doc.data());
+    });
+    
+    //get the category
+    const res = [];
+    for (let i = 0; i < items.length; i++) {
+      if (items[i]["category"] === category) {
+        res.push(items[i]);
+      }
+    }
+    
+    //get data based on category
+    let category_list = res.map(function (item) {
+      return {
+        category:item.category,
+        book_id:item.book_id,
+        book_name:item.book_name,
+        author:item.author,
+        book_url:item.book_url,
+        thumbnail:item.thumbnail,
+        recommended_amount:item.recommended_amount
+      };
+    });
+
+    return{
+      status:200,
+      msg:"ok",
+      data:category_list
+    }
+  });
+}
+
+
+
+
+
+
+/**
  * Add a book to firebase
  * @param book: book detail object
  * @return: { status: 200, msg: "ok" }
  * @usage: addBook(bookObj)
  */
-function addBook(book) {
-  const ref = firebaseConfig.firestore().collection("book");
-  console.log(book);
+// function addBook(book) {   //only used if the developer need it
+//   const ref = firebaseConfig.firestore().collection("book");
+//   console.log(book);
 
-  book["recommendedAmount"] = book["recommendedAmount"] + book["like"];
+//   book["recommendedAmount"] = book["recommendedAmount"] + book["like"];
 
-  ref
-    .add(book)
-    .then((docRef) => {
-      console.log(docRef);
-      // Update the document with its ID
-      book.booK_id = docRef.id;
-      docRef.update(book);
-      return {
-        status: 200,
-        msg: "ok",
-      };
-    })
-    .catch((error) => {
-      console.error("Error adding book: ", error);
-      return {
-        status: 300,
-        msg: "Error adding book: " + error,
-      };
-    });
-}
+//   ref
+//     .add(book)
+//     .then((docRef) => {
+//       console.log(docRef);
+//       // Update the document with its ID
+//       book.booK_id = docRef.id;
+//       docRef.update(book);
+//       return {
+//         status: 200,
+//         msg: "ok",
+//       };
+//     })
+//     .catch((error) => {
+//       console.error("Error adding book: ", error);
+//       return {
+//         status: 300,
+//         msg: "Error adding book: " + error,
+//       };
+//     });
+// }
 
 const userRef = firebaseConfig.firestore().collection("user");
 
@@ -108,7 +158,7 @@ const userRef = firebaseConfig.firestore().collection("user");
  * @return: { status: 200, msg: "ok" }
  * @usage: signup(infoObj)
  */
-function signupApi(info) {
+function signupApi(info) {  //completed
   userRef
     .add(info)
     .then((docRef) => {
@@ -130,4 +180,4 @@ function signupApi(info) {
     });
 }
 
-export { getBookApi, getBookRecommendListApi, signupApi };
+export { getBookByIdApi, getBookRecommendListApi, signupApi };
