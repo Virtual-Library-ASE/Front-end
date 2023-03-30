@@ -180,11 +180,10 @@ function signup(info) {
   });
 }
   
-console.log (signup(info))
 
 
 
-// addBook(book);
+
 
 /**
  *
