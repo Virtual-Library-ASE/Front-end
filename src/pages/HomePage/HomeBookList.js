@@ -1,49 +1,26 @@
 import BookCard from "../../components/BookCard/BookCard";
 import { getBookRecommendListApi } from "../../api/api";
+import { useEffect, useState } from "react";
+import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
 
 function HomeBookList(params) {
-  const bookList = [
-    {
-      cover: require("../../resources/images/book/10002.jpg"),
-      title: "Skintown",
-      bookId: 23,
-    },
-    {
-      cover: require("../../resources/images/book/10003.jpg"),
-      title: "Leonard",
-      bookId: 24,
-    },
-    {
-      cover: require("../../resources/images/book/10004.jpg"),
-      title: "Snow",
-      bookId: 25,
-    },
-    {
-      cover: require("../../resources/images/book/10005.jpg"),
-      title: "The Essex",
-      bookId: 26,
-    },
-    {
-      cover: require("../../resources/images/book/10006.jpg"),
-      title: "Skintown",
-      bookId: 27,
-    },
-    {
-      cover: require("../../resources/images/book/10007.jpg"),
-      title: "Leonard",
-      bookId: 28,
-    },
-    {
-      cover: require("../../resources/images/book/10008.jpg"),
-      title: "Snow",
-      bookId: 29,
-    },
-    {
-      cover: require("../../resources/images/book/10009.jpg"),
-      title: "The Essex",
-      bookId: 30,
-    },
-  ];
+  const [bookList, setBookList] = useState([]);
+
+  useEffect(() => {
+    getBookRecommendListApi(8)
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          setBookList(underscoreToCamelCaseKeysInArray(res.data));
+        } else {
+          console.log("Error: res.msg");
+        }
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+      });
+  }, []);
+
   return (
     <div className="book-list mt-14">
       <h2 className="text-xl font-bold mb-2 mt-4">Book Recommended</h2>

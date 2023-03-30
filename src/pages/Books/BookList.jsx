@@ -13,15 +13,19 @@ const BookCard = (params) => {
         className="bookCard rounded bg-color-white w-1/6 m-2 shadow cursor-pointer"
         onClick={() => navigate("/book/" + bookInfo.bookId)}
       >
-        <img src={bookInfo.cover} alt={bookInfo.title} className="rounded" />
+        <img
+          src={bookInfo.thumbnail}
+          alt={bookInfo.bookName}
+          className="rounded"
+        />
         <div className="info p-2 flex justify-between">
           <div className="left text-xs">
-            <div className="title text-sm">{bookInfo.title}</div>
+            <div className="title text-sm">{bookInfo.bookName}</div>
             <div className="author">{bookInfo.author}</div>
           </div>
           <div className="right recommended-amount text-sm leading-10 flex items-center">
             <LikeOutlined style={{ fontSize: 14, color: "#f37970" }} />
-            <span className="ml-0.5">{bookInfo.recommended_amount}</span>
+            <span className="ml-0.5">{bookInfo.recommendedAmount}</span>
           </div>
         </div>
       </div>

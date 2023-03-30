@@ -56,7 +56,7 @@ async function getBookRecommendListApi(amount) {
   return await new Promise((resolve, reject) => {
     firebaseConfig
       .firestore()
-      .collection("book")
+      .collection("Book")
       .onSnapshot((querySnapshot) => {
         const items = [];
         querySnapshot.forEach((doc) => {

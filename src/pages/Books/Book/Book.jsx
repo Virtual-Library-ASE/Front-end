@@ -91,10 +91,7 @@ const BookBody = (params) => {
               <div className="right-bd relative">
                 <div className="thumbnail">
                   <div className="img-container">
-                    <img
-                      src="https://ic.od-cdn.com/resize?type=auto&width=536&quality=80&force=true&height=715&url=%2FImageType-400%2F0211-1%2F%257B1C9D2597-FFA9-4C2E-91AE-86187ED06AA5%257DIMG400.JPG"
-                      alt={detail.title}
-                    />
+                    <img src={detail.thumbnail} alt={detail.title} />
                   </div>
                 </div>
 
@@ -163,7 +160,7 @@ const Book = () => {
     getBookByIdApi(routerParams.id)
       .then((res) => {
         console.log(res);
-        if (res.status === 200 && JSON.stringify(res.data) === "{}") {
+        if (res.status === 200 && JSON.stringify(res.data) !== "{}") {
           let resData = underscoreToCamelCaseKeys(res.data);
           setBookDetail({
             ...resData,

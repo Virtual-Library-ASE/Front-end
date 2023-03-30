@@ -11,7 +11,9 @@ import BookList from "./BookList";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getAllBookApi } from "../../api/api";
+import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
 
 const Category = (params) => {
   const categoryList = params.categoryList;
@@ -246,6 +248,23 @@ let categoryList = [
 const Books = () => {
   // Show Carousel
   const dispatch = useDispatch();
+
+  const [bookList, setBookList] = useState([]);
+
+  useEffect(() => {
+    getAllBookApi()
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          setBookList(underscoreToCamelCaseKeysInArray(res.data));
+        } else {
+          console.log("Error: res.msg");
+        }
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+      });
+  }, []);
 
   useEffect(() => {
     // Show Carousel

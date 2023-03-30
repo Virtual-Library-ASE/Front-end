@@ -13,3 +13,11 @@ export function underscoreToCamelCaseKeys(obj) {
   }
   return newObj;
 }
+
+export function underscoreToCamelCaseKeysInArray(arr) {
+  let newArr = [];
+  for (let i = 0; i < arr.length; i++) {
+    newArr.push(underscoreToCamelCaseKeys(arr[i]));
+  }
+  return newArr;
+}
