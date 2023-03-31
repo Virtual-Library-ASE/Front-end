@@ -4,12 +4,9 @@ import { faker } from "@faker-js/faker";
 //import  DateTime from DateTime
 
 // var DateTime = require('datetime-js')
-let dateObj = new Date()
-let tomorrow =  new Date()
-tomorrow.setDate(dateObj.getDate() + 1)
- 
-
-
+let dateObj = new Date();
+let tomorrow = new Date();
+tomorrow.setDate(dateObj.getDate() + 1);
 
 const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
@@ -17,10 +14,14 @@ const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
 const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
-const userEnvironmentConfigRef = firebaseConfig.firestore().collection("User_Environment_Config");
+const userEnvironmentConfigRef = firebaseConfig
+  .firestore()
+  .collection("User_Environment_Config");
 const messageRef = firebaseConfig.firestore().collection("Message");
 const modelRef = firebaseConfig.firestore().collection("Model");
-const seatReservationRef = firebaseConfig.firestore().collection("Seat_reservation");
+const seatReservationRef = firebaseConfig
+  .firestore()
+  .collection("Seat_reservation");
 /**
  * ========================================== BOOK ==========================================
  */
@@ -48,11 +49,11 @@ async function getBookByIdApi(id) {
           }
         }
 
-        if(JSON.stringify(res) === "{}") {
+        if (JSON.stringify(res) === "{}") {
           reject({
             status: 300,
-            msg: "Get book failed " + id
-          })
+            msg: "Get book failed " + id,
+          });
         }
 
         // if success
@@ -97,10 +98,10 @@ async function getBookRecommendListApi(amount) {
         };
       });
 
-      if(!res) {
+      if (!res) {
         reject({
           status: 300,
-          msg: "Get recommend list failed"
+          msg: "Get recommend list failed",
         });
       }
 
@@ -108,10 +109,9 @@ async function getBookRecommendListApi(amount) {
         status: 200,
         msg: "ok",
         data: res,
-      })
-
+      });
     });
-  })
+  });
 }
 
 /**
@@ -120,7 +120,7 @@ async function getBookRecommendListApi(amount) {
  * @return: a list of books based on category
  * @usage: getCategories("Fiction")
  */
-async function getCategoriesApi(category){
+async function getCategoriesApi(category) {
   return await new Promise((resolve, reject) => {
     // Traverse all the data
     bookRef.onSnapshot((querySnapshot) => {
@@ -140,45 +140,41 @@ async function getCategoriesApi(category){
       //get data based on category
       let res = category_list.map(function (item) {
         return {
-          category:item.category,
-          book_id:item.book_id,
-          book_name:item.book_name,
-          author:item.author,
-          book_url:item.book_url,
-          thumbnail:item.thumbnail,
-          recommended_amount:item.recommended_amount
+          category: item.category,
+          book_id: item.book_id,
+          book_name: item.book_name,
+          author: item.author,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+          recommended_amount: item.recommended_amount,
         };
       });
 
-      if(!res)
-      reject({
-        status: 300,
-        msg: "get category " + category
-      });
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get category " + category,
+        });
 
       // if success
       resolve({
-        status:200,
-        msg:"ok",
-        data:res
+        status: 200,
+        msg: "ok",
+        data: res,
       });
     });
   });
 }
 
-
 // getCategories("Fiction").then(res=>{
 //   console.log(res);
 // })
 
-
-
-
 /**
- * get all the book 
- * @returns: all the list of book 
+ * get all the book
+ * @returns: all the list of book
  */
-async function getAllBookApi(){
+async function getAllBookApi() {
   return await new Promise((resolve, reject) => {
     // Traverse all the data
     bookRef.onSnapshot((querySnapshot) => {
@@ -190,34 +186,32 @@ async function getAllBookApi(){
       //get all the book
       let res = items.map(function (item) {
         return {
-          book_id:item.book_id,
-          category:item.category,
-          book_name:item.book_name,
-          author:item.author,
-          book_url:item.book_url,
-          thumbnail:item.thumbnail,
-          recommended_amount:item.recommended_amount
+          book_id: item.book_id,
+          category: item.category,
+          book_name: item.book_name,
+          author: item.author,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+          recommended_amount: item.recommended_amount,
         };
       });
 
       //if failed
-      if(!res)
-      reject({
-        status: 300,
-        msg: "get all the book failed "
-      });
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get all the book failed ",
+        });
 
       // if success
       resolve({
-        status:200,
-        msg:"ok",
-        data:res
+        status: 200,
+        msg: "ok",
+        data: res,
       });
-
     });
   });
 }
-  
 
 /**
  * change the book status
@@ -225,39 +219,38 @@ async function getAllBookApi(){
  * @returns statue:200,msg:"ok"
  */
 
-async function renewBookStatus(info){
-  return await new Promise ((resolve,reject)=>{
-    bookRef.where("book_id","==",info.book_id)
-    .get()
-    .then((querySnapshot)=>{
-      querySnapshot.forEach((doc)=>{
-        let item = doc.data()
+async function renewBookStatus(info) {
+  return await new Promise((resolve, reject) => {
+    bookRef
+      .where("book_id", "==", info.book_id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
 
+          item["status"] = info["status"];
+          console.log(item);
+          // renew the fielf value below if the info contains it
 
-        item["status"]=info["status"]
-        console.log(item)
-        // renew the fielf value below if the info contains it
-
-        bookRef.doc(info.bookid).update(item).then(()=>{
-          resolve({
-            statue:200,
-            msg:"ok"
-          })
-        })
-        .catch((error)=>{
-          reject({
-            statue:300,
-            msg:"Error update book status! "+ error
-          })
-        })
+          bookRef
+            .doc(info.bookid)
+            .update(item)
+            .then(() => {
+              resolve({
+                statue: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                statue: 300,
+                msg: "Error update book status! " + error,
+              });
+            });
+        });
       });
-    })
-  })
+  });
 }
-
-
-
-
 
 /**
  *  insert book reservation info to database
@@ -266,45 +259,45 @@ async function renewBookStatus(info){
  * usage: rentBookAddApi(infoobj)
  */
 
-async function rentBookAddApi(info){
+async function rentBookAddApi(info) {
   return await new Promise((resolve, reject) => {
     //get time and calcualte time +7days
     let timestamp = new Date().getTime();
     let date = new Date(timestamp);
-    date.setDate(date.getDate()+7);
-    let newTimestamp = date.getTime()
-    
-    bookReserRef.add(info).then((docRef) => {
-      //update the document with extra info
-      info.reservation_id = docRef.id;
-      info.create_time = timestamp;
-      info.return_time = newTimestamp
-      info.is_delete = false;
-      docRef.update(info);
-      
-      //renew the status in book
-      renewBookStatus({
-        book_id: info.book_id,
-        status: false
+    date.setDate(date.getDate() + 7);
+    let newTimestamp = date.getTime();
+
+    bookReserRef
+      .add(info)
+      .then((docRef) => {
+        //update the document with extra info
+        info.reservation_id = docRef.id;
+        info.create_time = timestamp;
+        info.return_time = newTimestamp;
+        info.is_delete = false;
+        docRef.update(info);
+
+        //renew the status in book
+        renewBookStatus({
+          book_id: info.book_id,
+          status: false,
+        });
+
+        resolve({
+          status: 200,
+          msg: "ok",
+          reservation_id: info.reservation_id,
+        });
       })
-      
-      
-      resolve({
-        status: 200,
-        msg:"ok",
-        reservation_id: info.reservation_id
+
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error add book renting" + error,
+        });
       });
-    })
-  
-    .catch((error)=>{
-      reject({
-        status:300,
-        msg:"Error add book renting" + error
-      });
-    });
   });
 }
-
 
 /**
  * Get book info by name
@@ -312,7 +305,7 @@ async function rentBookAddApi(info){
  * @return: a list of books based on name
  * @usage: getBookName("Harry Potter")
  */
-async function getBookNameApi(name){
+async function getBookNameApi(name) {
   return await new Promise((resolve, reject) => {
     // Traverse all the data
     bookRef.onSnapshot((querySnapshot) => {
@@ -332,93 +325,95 @@ async function getBookNameApi(name){
       //get data based on category
       let res = category_list.map(function (item) {
         return {
-          category:item.category,
-          book_id:item.book_id,
-          book_name:item.book_name,
-          author:item.author,
-          book_url:item.book_url,
-          thumbnail:item.thumbnail,
-          recommended_amount:item.recommended_amount
+          category: item.category,
+          book_id: item.book_id,
+          book_name: item.book_name,
+          author: item.author,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+          recommended_amount: item.recommended_amount,
         };
       });
 
-      if(!res)
-      reject({
-        status: 300,
-        msg: "get book name " + name
-      });
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get book name " + name,
+        });
 
       // if success
       resolve({
-        status:200,
-        msg:"ok",
-        data:res
+        status: 200,
+        msg: "ok",
+        data: res,
       });
     });
   });
 }
 
-
 // getBookNameApi("Normal People").then(res=>{
 //   console.log(res);
 // })
-
-
-
-
 
 /**
  * update booking renting info
  * @param info: renting book status info
  * @returns status:200, msg:"ok"
  */
-async function rentBookUpdateApi(info){
-  return await new Promise((resolve,reject)=>{
+async function rentBookUpdateApi(info) {
+  return await new Promise((resolve, reject) => {
     // check the content of info in database based on reservation_id
-    bookReserRef.where("reservation_id","==",info.reservation_id)
-    .get()
-    .then((querySnapshot)=>{
-      querySnapshot.forEach((doc)=>{
-        let item = doc.data()
+    bookReserRef
+      .where("reservation_id", "==", info.reservation_id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
 
-        // renew the fielf value below if the info contains it
-        item["user_id"] = info["user_id"] ? info["user_id"] : item["user_id"];
-        item["is_delete"] = info["is_delete"] ? info["is_delete"] : item["is_delete"];
-        item["book_id"] = info["book_id"] ? info["book_id"] : item["book_id"];
-        item["start_time"] = info["start_time"] ? info["start_time"] : item["start_time"];
-        item["end_time"] = info["end_time"] ? info["end_time"] : item["end_time"];
-        
-        //renew the status in book
-        renewBookStatus({
-          book_id: info.book_id,
-          status: info.is_delete
-        })
-        //update info based on reservation_id
-        bookReserRef.doc(info.reservation_id).update(item).then(()=>{
-          resolve({
-            status:200,
-            msg:"ok"
-          })
-        })
-        .catch((error)=>{
-          reject({
-            status:300,
-            msg:"Error update renting status! "+ error
-          })
-        })
-      });
-    })
-    .catch((error)=>{
-      reject({
-        status:300,
-        msg:"Error update renting status! "+ error
+          // renew the fielf value below if the info contains it
+          item["user_id"] = info["user_id"] ? info["user_id"] : item["user_id"];
+          item["is_delete"] = info["is_delete"]
+            ? info["is_delete"]
+            : item["is_delete"];
+          item["book_id"] = info["book_id"] ? info["book_id"] : item["book_id"];
+          item["start_time"] = info["start_time"]
+            ? info["start_time"]
+            : item["start_time"];
+          item["end_time"] = info["end_time"]
+            ? info["end_time"]
+            : item["end_time"];
+
+          //renew the status in book
+          renewBookStatus({
+            book_id: info.book_id,
+            status: info.is_delete,
+          });
+          //update info based on reservation_id
+          bookReserRef
+            .doc(info.reservation_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                status: 300,
+                msg: "Error update renting status! " + error,
+              });
+            });
+        });
       })
-    })
-  })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error update renting status! " + error,
+        });
+      });
+  });
 }
-
-
-
 
 /**
  * ========================================== User ==========================================
@@ -430,42 +425,42 @@ async function rentBookUpdateApi(info){
  * @return: { status: 200, msg: "ok" }
  * @usage: signup(infoObj)
  */
-async function signupApi(info) { 
-  return await new Promise((resolve, reject) => {  
+async function signupApi(info) {
+  return await new Promise((resolve, reject) => {
     //
-    userRef.where("email","==",info.email).get()
-    .then((queryRes)=>{
-      if(queryRes) {
-        reject({
-          status:300,
-          msg:"Error: email already exists"
-        })
-      } else {
-
-        userRef
-        .add(info)
-        .then((docRef) => {
-          // Update the document with its ID
-          info.user_id = docRef.id;
-          info.is_delete = false;
-          docRef.update(info);
-  
-          resolve({
-            status: 200,
-            msg: "ok",
-          });
-        })
-        .catch((error) => {
+    userRef
+      .where("email", "==", info.email)
+      .get()
+      .then((queryRes) => {
+        if (queryRes) {
           reject({
             status: 300,
-            msg: "Error: add user failed: " + info + " Error msg: " + error
+            msg: "Error: email already exists",
           });
-       });
-      }
-    })
+        } else {
+          userRef
+            .add(info)
+            .then((docRef) => {
+              // Update the document with its ID
+              info.user_id = docRef.id;
+              info.is_delete = false;
+              docRef.update(info);
+
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                status: 300,
+                msg: "Error: add user failed: " + info + " Error msg: " + error,
+              });
+            });
+        }
+      });
   });
 }
-
 
 /**
  * ========================================== Desk Booking ==========================================
@@ -476,8 +471,9 @@ async function signupApi(info) {
  * @return: status: 200, msg: "ok"
  * @usage: signup(infoObj)
  */
-async function deskBookingApi(info) {  //completed
-  return await new Promise((resolve, reject) => {  
+async function deskBookingApi(info) {
+  //completed
+  return await new Promise((resolve, reject) => {
     seatReservationRef
       .add(info)
       .then((docRef) => {
@@ -485,8 +481,8 @@ async function deskBookingApi(info) {  //completed
         info.reservation_id = docRef.id;
         info.is_delete = false;
         docRef.update(info);
-        info.create_time = dateObj.getTime()
-        info.end_time = tomorrow.getTime()
+        info.create_time = dateObj.getTime();
+        info.end_time = tomorrow.getTime();
 
         resolve({
           status: 200,
@@ -496,10 +492,10 @@ async function deskBookingApi(info) {  //completed
       .catch((error) => {
         reject({
           status: 300,
-          msg: "Error: add user failed: " + info + " Error msg: " + error
+          msg: "Error: add user failed: " + info + " Error msg: " + error,
         });
       });
-    });
+  });
 }
 
 /**
@@ -508,7 +504,8 @@ async function deskBookingApi(info) {  //completed
  * @return: status: 200, msg: "ok"
  * @usage: signup(infoObj)
  */
-async function deskBookingUpdateApi(info) {  //completed
+async function deskBookingUpdateApi(info) {
+  //completed
   return await new Promise((resolve, reject) => {
     firebaseConfig
       .firestore()
@@ -524,19 +521,17 @@ async function deskBookingUpdateApi(info) {  //completed
         let res = {};
         for (let i = 0; i < items.length; i++) {
           if (items[i]["reservation_id"] === info.reservation_id) {
-            for(let j =0; j < info.length; j++){
-                
-                // items[i][j] 
+            for (let j = 0; j < info.length; j++) {
+              // items[i][j]
             }
-            
           }
         }
 
-        if(JSON.stringify(res) === "{}") {
+        if (JSON.stringify(res) === "{}") {
           reject({
             status: 300,
-            msg: "Desk Booking failed " 
-          })
+            msg: "Desk Booking failed ",
+          });
         }
 
         // if success
@@ -549,4 +544,13 @@ async function deskBookingUpdateApi(info) {  //completed
   });
 }
 
-export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi, deskBookingApi, deskBookingUpdateApi, getBookNameApi };
+export {
+  getBookByIdApi,
+  getBookRecommendListApi,
+  getCategoriesApi,
+  getAllBookApi,
+  signupApi,
+  deskBookingApi,
+  deskBookingUpdateApi,
+  getBookNameApi,
+};
