@@ -1,16 +1,13 @@
 import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
-// import {Date} from Date
+//import  DateTime from DateTime
 
-var DateTime = require('datetime-js')
-var dateObj = new Date()
+// var DateTime = require('datetime-js')
+let dateObj = new Date()
 let tomorrow =  new Date()
 tomorrow.setDate(dateObj.getDate() + 1)
  
-DateTime(dateObj, 'The date is %m-%d-%Y');
- 
-DateTime(dateObj, 'Time Now: %h:%i %AMPM');
 
 const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
@@ -323,8 +320,8 @@ async function deskBookingApi(info) {  //completed
         info.reservation_id = docRef.id;
         info.is_delete = false;
         docRef.update(info);
-        info.create_time = DateTime(dateObj, '%m-%d-%Y %h:%i %AMPM')
-        info.end_time = DateTime(tomorrow, '%m-%d-%Y %h:%i %AMPM')
+        info.create_time = dateObj.getTime()
+        info.end_time = tomorrow.getTime()
 
         resolve({
           status: 200,
@@ -340,17 +337,64 @@ async function deskBookingApi(info) {  //completed
     });
 }
 
-let info = { 
-  "room_id": "63283",
-  "seat_id": "79879",
-  "user_id": "12112",
-  "create_time": DateTime(dateObj, '%m-%d-%Y %h:%i %AMPM'),
-  "end_time":  DateTime(tomorrow, '%m-%d-%Y %h:%i %AMPM')
-}
-deskBookingApi(info).then(res=>{
-  console.log(res);
-}).catch(err=>{
-  console.log(err);
-})
+// let info = { 
+//   "seat_id": "79879",
+//   "user_id": "12112",
+//   "create_time": dateObj.getTime(),
+//   "end_time": tomorrow.getTime()
+// }
+// deskBookingApi(info).then(res=>{
+//   console.log(res);
+// }).catch(err=>{
+//   console.log(err);
+// })
 
-export { getBookByIdApi, getBookRecommendListApi,getCategories,getAllBook, signupApi, deskBookingApi };
+
+/**
+ * Desk Booking Update
+ * @param info:  "room_id", "seat_id", "user_id"
+ * @return: { status: 200, msg: "ok" }
+ * @usage: signup(infoObj)
+ */
+async function deskBookingUpdateApi(info) {  //completed
+  return await new Promise((resolve, reject) => {
+    firebaseConfig
+      .firestore()
+      .collection("Seat_reservation")
+      .onSnapshot((querySnapshot) => {
+        const items = [];
+        querySnapshot.forEach((doc) => {
+          items.push(doc.data());
+        });
+
+        // Traverse all the data,
+        // find the data whose book_id is the same as the id passed in
+        let res = {};
+        for (let i = 0; i < items.length; i++) {
+          if (items[i]["reservation_id"] === info.reservation_id) {
+            for(let j =0; j < info.length; j++){
+                
+                // items[i][j] 
+            }
+            
+          }
+        }
+
+        if(JSON.stringify(res) === "{}") {
+          reject({
+            status: 300,
+            msg: "Get book failed " + id
+          })
+        }
+
+        // if success
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: res,
+        });
+      });
+  });
+}
+
+export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi, deskBookingApi, deskBookingUpdateApi };
