@@ -463,6 +463,50 @@ async function signupApi(info) {
 }
 
 /**
+ * update user info
+ * @param info: user's information
+ * @return:  status: 200, msg: "ok"
+ * @usage: updateUserInfoApi(infoObj)
+ */
+async function updateUserInfoApi(info) {
+  return await new Promise((resolve, reject) => {
+    userRef
+      .where("user_id", "==", info.user_id)
+      .get()
+      .then((querySnapShot) => {
+        querySnapShot.forEach((doc) => {
+          let item = doc.data();
+          item = { ...info }; // update user info here
+
+          userRef
+            .doc(item.user_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+              reject({
+                status: 300,
+                msg:
+                  "Error: update user failed: " + info + " Error msg: " + err,
+              });
+            });
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error: update user failed: " + info + " Error msg: " + error,
+        });
+      });
+  });
+}
+
+/**
  * ========================================== Desk Booking ==========================================
  */
 /**
@@ -550,6 +594,7 @@ export {
   getCategoriesApi,
   getAllBookApi,
   signupApi,
+  updateUserInfoApi,
   deskBookingApi,
   deskBookingUpdateApi,
   getBookNameApi,
