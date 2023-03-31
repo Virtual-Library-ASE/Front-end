@@ -216,7 +216,7 @@ async function getAllBookApi() {
 /**
  *  insert book reservation info to database
  * @param {*} info : obj contain book reservation information
- * @returns {status:200, msg:"ok"}
+ * @returns status:200, msg:"ok"
  * usage: rentBookAddApi(infoobj)
  */
 

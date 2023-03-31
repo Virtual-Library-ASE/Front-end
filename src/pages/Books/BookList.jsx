@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { LeftOutlined, LikeOutlined } from "@ant-design/icons";
 import { getCategoriesApi } from "../../api/api";
 import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
+import { Popover } from "antd";
 
 const BookCard = (params) => {
   let bookInfo = params.bookInfo;
@@ -10,24 +11,35 @@ const BookCard = (params) => {
   return (
     <>
       <div
-        className="bookCard rounded bg-color-white w-1/6 m-2 shadow cursor-pointer"
+        className="bookCard rounded bg-color-white m-2 shadow cursor-pointer h-60"
         onClick={() => navigate("/book/" + bookInfo.bookId)}
       >
-        <img
-          src={bookInfo.thumbnail}
-          alt={bookInfo.bookName}
-          className="rounded"
-        />
-        <div className="info p-2 flex justify-between">
-          <div className="left text-xs">
-            <div className="title text-sm">{bookInfo.bookName}</div>
-            <div className="author">{bookInfo.author}</div>
+        <Popover
+          content={bookInfo.bookName + " by " + bookInfo.author}
+          trigger="hover"
+        >
+          <div className="card-thumbnail h-3/4">
+            <div
+              className="h-full"
+              style={{
+                backgroundImage: "url(" + bookInfo.thumbnail + ")",
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+              }}
+            ></div>
           </div>
-          <div className="right recommended-amount text-sm leading-10 flex items-center">
-            <LikeOutlined style={{ fontSize: 14, color: "#f37970" }} />
-            <span className="ml-0.5">{bookInfo.recommendedAmount}</span>
+          <div className="info p-2 flex w-full items-center h-1/4">
+            <div className="left text-xs w-4/6">
+              <div className="title text-sm ellipsis">{bookInfo.bookName}</div>
+              <div className="author ellipsis">{bookInfo.author}</div>
+            </div>
+            <div className="right recommended-amount text-sm leading-10 flex items-center">
+              <LikeOutlined style={{ fontSize: 14, color: "#f37970" }} />
+              <span className="ml-0.5">{bookInfo.recommendedAmount}</span>
+            </div>
           </div>
-        </div>
+        </Popover>
       </div>
     </>
   );
@@ -75,7 +87,7 @@ const BookList = (params) => {
         )}
 
         <h2 className="text-xl font-bold mb-2 mt-4">{bookListTitle}</h2>
-        <div className="total-book-list flex flex-wrap justify-between">
+        <div className="total-book-list flex flex-wrap">
           {bookList.map((item, index) => (
             <BookCard bookInfo={item} key={index} />
           ))}
