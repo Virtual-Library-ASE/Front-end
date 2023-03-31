@@ -21,3 +21,7 @@ export function underscoreToCamelCaseKeysInArray(arr) {
   }
   return newArr;
 }
+
+export function getRandomNumber(low = 1, high = 999) {
+  return Math.floor(Math.random() * high) + low;
+}
