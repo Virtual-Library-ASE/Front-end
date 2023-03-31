@@ -1,6 +1,7 @@
 import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
+import Password from "antd/es/input/Password";
 //import  DateTime from DateTime
 
 // var DateTime = require('datetime-js')
@@ -468,6 +469,39 @@ async function signupApi(info) {
 
 
 /**
+ * user login
+ * @param  info: email and password 
+ * @returns  user details, status:200, msg:"ok"
+ */
+
+async function logInApi(info) {
+  return await new Promise((resolve, reject)=>{
+    //judge if the input info is correct in database
+    userRef.where("email","==",info.email).where("password","==",info.password).get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        let item = doc.data()
+        delete item["is_delete"]
+
+        resolve({
+          data: item,
+          status:200,
+          msg:"ok"
+        })
+    })
+    })
+    .catch((error) => {
+      reject({
+        status: 300,
+        msg: "log in error " + info + " Error msg: " + error
+      });    
+    });
+  })
+}
+
+
+
+/**
  * ========================================== Desk Booking ==========================================
  */
 /**
@@ -549,4 +583,4 @@ async function deskBookingUpdateApi(info) {  //completed
   });
 }
 
-export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi, deskBookingApi, deskBookingUpdateApi, getBookNameApi };
+export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi, deskBookingApi, deskBookingUpdateApi, getBookNameApi,rentBookAddApi,logInApi };
