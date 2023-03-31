@@ -9,6 +9,8 @@ let tomorrow =  new Date()
 tomorrow.setDate(dateObj.getDate() + 1)
  
 
+
+
 const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
@@ -18,7 +20,7 @@ const seatRef = firebaseConfig.firestore().collection("Seat");
 const userEnvironmentConfigRef = firebaseConfig.firestore().collection("User_Environment_Config");
 const messageRef = firebaseConfig.firestore().collection("Message");
 const modelRef = firebaseConfig.firestore().collection("Model");
-
+const seatReservationRef = firebaseConfig.firestore().collection("Seat_reservation");
 /**
  * ========================================== BOOK ==========================================
  */
@@ -69,7 +71,7 @@ async function getBookByIdApi(id) {
  * @return: a list of recommend book details
  * @usage: getBookRecommendListApi(2)
  */
-async function getBookRecommendListApi(amount) {   //completed
+async function getBookRecommendListApi(amount) {
   return await new Promise((resolve, reject) => {
     bookRef.onSnapshot((querySnapshot) => {
       const items = [];
@@ -119,7 +121,7 @@ async function getBookRecommendListApi(amount) {   //completed
  * @usage: getCategories("Fiction")
  */
 async function getCategoriesApi(category){
-  return await new Promise((resolve, reject) => {  //completed
+  return await new Promise((resolve, reject) => {
     // Traverse all the data
     bookRef.onSnapshot((querySnapshot) => {
       const items = [];
@@ -173,10 +175,10 @@ async function getCategoriesApi(category){
 
 
 /**
- * 
+ * get all the book 
  * @returns: all the list of book 
  */
-async function getAllBookApi(){   // completed
+async function getAllBookApi(){
   return await new Promise((resolve, reject) => {
     // Traverse all the data
     bookRef.onSnapshot((querySnapshot) => {
@@ -216,53 +218,54 @@ async function getAllBookApi(){   // completed
   });
 }
   
-// getAllBook().then(res=>{
-//     console.log(res);
-// })
 
 
+
+/**
+ *  insert book reservation info to database
+ * @param {*} info : obj contain book reservation infomation
+ * @returns {status:200, msg:"ok"}
+ * usage: rentBookAddApi(infoobj)
+ */
 
 async function rentBookAddApi(info){
   return await new Promise((resolve, reject) => {
-    // input info
-    //return message
+    //get time and calcualte time +7days
+    let timestamp = new Date().getTime();
+    let date = new Date(timestamp);
+    date.setDate(date.getDate()+7);
+    let newTimestamp = date.getTime()
+    
 
 
+    bookReserRef.add(info).then((docRef) => {
+      //update the document with create time and
+      info.reservation_id = docRef.id;
+      info.create_time = timestamp;
+      info.return_time = newTimestamp
+      info.is_delete = false;
+      docRef.update(info);
+
+    console.log(info);
+
+      resolve({
+        status: 200,
+        msg:"ok",
+      });
+    })
+  
+    .catch((error)=>{
+      reject({
+        status:300,
+        msg:"Error add book renting" + info
+      });
+    });
   });
 }
 
-/**
- * Add a book to firebase
- * @param book: book detail object
- * @return: { status: 200, msg: "ok" }
- * @usage: addBook(bookObj)
- */
-// function addBook(book) {   //only used if the developer need it
-//   const ref = firebaseConfig.firestore().collection("book");
-//   console.log(book);
 
-//   book["recommendedAmount"] = book["recommendedAmount"] + book["like"];
 
-//   ref
-//     .add(book)
-//     .then((docRef) => {
-//       console.log(docRef);
-//       // Update the document with its ID
-//       book.booK_id = docRef.id;
-//       docRef.update(book);
-//       return {
-//         status: 200,
-//         msg: "ok",
-//       };
-//     })
-//     .catch((error) => {
-//       console.error("Error adding book: ", error);
-//       return {
-//         status: 300,
-//         msg: "Error adding book: " + error,
-//       };
-//     });
-// }
+
 
 /**
  * ========================================== User ==========================================
@@ -274,7 +277,7 @@ async function rentBookAddApi(info){
  * @return: { status: 200, msg: "ok" }
  * @usage: signup(infoObj)
  */
-async function signupApi(info) {  //completed
+async function signupApi(info) { 
   return await new Promise((resolve, reject) => {  
     userRef
       .add(info)
@@ -303,7 +306,7 @@ async function signupApi(info) {  //completed
  * ========================================== Desk Booking ==========================================
  */
 
-const seatReservationRef = firebaseConfig.firestore().collection("Seat_reservation");
+// const seatReservationRef = firebaseConfig.firestore().collection("Seat_reservation");
 
 /**
  * Desk Booking
