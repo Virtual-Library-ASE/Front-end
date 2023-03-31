@@ -3,11 +3,11 @@ import { getBookRecommendListApi } from "../../api/api";
 import { useEffect, useState } from "react";
 import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
 
-function HomeBookList(params) {
+function HomeBookList() {
   const [bookList, setBookList] = useState([]);
 
   useEffect(() => {
-    getBookRecommendListApi(8)
+    getBookRecommendListApi(20)
       .then((res) => {
         console.log(res);
         if (res.status === 200) {
