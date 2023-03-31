@@ -264,6 +264,65 @@ async function rentBookAddApi(info){
 }
 
 
+/**
+ * Get book info by name
+ * @param category: book name
+ * @return: a list of books based on name
+ * @usage: getBookName("Harry Potter")
+ */
+async function getBookNameApi(name){
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    bookRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get the category
+      const category_list = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i]["book_name"] === name) {
+          category_list.push(items[i]);
+        }
+      }
+
+      //get data based on category
+      let res = category_list.map(function (item) {
+        return {
+          category:item.category,
+          book_id:item.book_id,
+          book_name:item.book_name,
+          author:item.author,
+          book_url:item.book_url,
+          thumbnail:item.thumbnail,
+          recommended_amount:item.recommended_amount
+        };
+      });
+
+      if(!res)
+      reject({
+        status: 300,
+        msg: "get book name " + name
+      });
+
+      // if success
+      resolve({
+        status:200,
+        msg:"ok",
+        data:res
+      });
+    });
+  });
+}
+
+
+// getBookNameApi("Normal People").then(res=>{
+//   console.log(res);
+// })
+
+
+
 
 
 
@@ -386,7 +445,7 @@ async function deskBookingUpdateApi(info) {  //completed
         if(JSON.stringify(res) === "{}") {
           reject({
             status: 300,
-            msg: "Get book failed " + id
+            msg: "Desk Booking failed " 
           })
         }
 
@@ -400,4 +459,10 @@ async function deskBookingUpdateApi(info) {  //completed
   });
 }
 
-export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi, deskBookingApi, deskBookingUpdateApi };
+
+/**
+ * ========================================== Desk Booking ==========================================
+ */
+
+
+export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi, deskBookingApi, deskBookingUpdateApi, getBookNameApi };
