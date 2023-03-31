@@ -211,12 +211,50 @@ async function getAllBookApi(){
 }
   
 
+/**
+ * change the book status
+ * @param {*} info : book id and status
+ * @returns statue:200,msg:"ok"
+ */
+
+async function renewBookStatus(info){
+  return await new Promise ((resolve,reject)=>{
+    bookRef.where("book_id","==",info.book_id)
+    .get()
+    .then((querySnapshot)=>{
+      querySnapshot.forEach((doc)=>{
+        let item = doc.data()
+
+
+        item["status"]=info["status"]
+        console.log(item)
+        // renew the fielf value below if the info contains it
+
+        bookRef.doc(info.bookid).update(item).then(()=>{
+          resolve({
+            statue:200,
+            msg:"ok"
+          })
+        })
+        .catch((error)=>{
+          reject({
+            statue:300,
+            msg:"Error update book status! "+ error
+          })
+        })
+      });
+    })
+  })
+}
+
+
+
 
 
 /**
  *  insert book reservation info to database
- * @param {*} info : obj contain book reservation infomation
- * @returns {status:200, msg:"ok"}
+ * @param  info : obj contain book reservation infomation
+ * @returns status:200, msg:"ok"
  * usage: rentBookAddApi(infoobj)
  */
 
@@ -228,33 +266,89 @@ async function rentBookAddApi(info){
     date.setDate(date.getDate()+7);
     let newTimestamp = date.getTime()
     
-
-
     bookReserRef.add(info).then((docRef) => {
-      //update the document with create time and
+      //update the document with extra info
       info.reservation_id = docRef.id;
       info.create_time = timestamp;
       info.return_time = newTimestamp
       info.is_delete = false;
       docRef.update(info);
-
-    console.log(info);
-
+      
+      //renew the status in book
+      renewBookStatus({
+        book_id: info.book_id,
+        status: false
+      })
+      
+      
       resolve({
         status: 200,
         msg:"ok",
+        reservation_id: info.reservation_id
       });
     })
   
     .catch((error)=>{
       reject({
         status:300,
-        msg:"Error add book renting" + info
+        msg:"Error add book renting" + error
       });
     });
   });
 }
 
+
+
+
+/**
+ * update booking renting info
+ * @param info: renting book status info
+ * @returns status:200, msg:"ok"
+ */
+async function rentBookUpdateApi(info){
+  return await new Promise((resolve,reject)=>{
+    // check the content of info in database based on reservation_id
+    bookReserRef.where("reservation_id","==",info.reservation_id)
+    .get()
+    .then((querySnapshot)=>{
+      querySnapshot.forEach((doc)=>{
+        let item = doc.data()
+
+        // renew the fielf value below if the info contains it
+        item["user_id"] = info["user_id"] ? info["user_id"] : item["user_id"];
+        item["is_delete"] = info["is_delete"] ? info["is_delete"] : item["is_delete"];
+        item["book_id"] = info["book_id"] ? info["book_id"] : item["book_id"];
+        item["start_time"] = info["start_time"] ? info["start_time"] : item["start_time"];
+        item["end_time"] = info["end_time"] ? info["end_time"] : item["end_time"];
+        
+        //renew the status in book
+        renewBookStatus({
+          book_id: info.book_id,
+          status: info.is_delete
+        })
+        //update info based on reservation_id
+        bookReserRef.doc(info.reservation_id).update(item).then(()=>{
+          resolve({
+            status:200,
+            msg:"ok"
+          })
+        })
+        .catch((error)=>{
+          reject({
+            status:300,
+            msg:"Error update renting status! "+ error
+          })
+        })
+      });
+    })
+    .catch((error)=>{
+      reject({
+        status:300,
+        msg:"Error update renting status! "+ error
+      })
+    })
+  })
+}
 
 
 
@@ -271,26 +365,38 @@ async function rentBookAddApi(info){
  */
 async function signupApi(info) { 
   return await new Promise((resolve, reject) => {  
-    userRef
-      .add(info)
-      .then((docRef) => {
-        // Update the document with its ID
-        info.user_id = docRef.id;
-        info.is_delete = false;
-        docRef.update(info);
-
-        resolve({
-          status: 200,
-          msg: "ok",
-        });
-      })
-      .catch((error) => {
+    //
+    userRef.where("email","==",info.email).get()
+    .then((queryRes)=>{
+      if(queryRes) {
         reject({
-          status: 300,
-          msg: "Error: add user failed: " + info + " Error msg: " + error
-        });
-      });
-    });
+          status:300,
+          msg:"Error: email already exists"
+        })
+      } else {
+
+        userRef
+        .add(info)
+        .then((docRef) => {
+          // Update the document with its ID
+          info.user_id = docRef.id;
+          info.is_delete = false;
+          docRef.update(info);
+  
+          resolve({
+            status: 200,
+            msg: "ok",
+          });
+        })
+        .catch((error) => {
+          reject({
+            status: 300,
+            msg: "Error: add user failed: " + info + " Error msg: " + error
+          });
+       });
+      }
+    })
+  });
 }
 
 
@@ -298,4 +404,4 @@ async function signupApi(info) {
  * ========================================== Desk Booking ==========================================
  */
 
-export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi,rentBookAddApi };
+export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi,rentBookAddApi,rentBookUpdateApi };
