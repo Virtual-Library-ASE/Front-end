@@ -215,14 +215,14 @@ async function getAllBookApi() {
 
 /**
  *  insert book reservation info to database
- * @param {*} info : obj contain book reservation infomation
+ * @param {*} info : obj contain book reservation information
  * @returns {status:200, msg:"ok"}
  * usage: rentBookAddApi(infoobj)
  */
 
 async function rentBookAddApi(info) {
   return await new Promise((resolve, reject) => {
-    //get time and calcualte time +7days
+    //get time and calculate time +7days
     let timestamp = new Date().getTime();
     let date = new Date(timestamp);
     date.setDate(date.getDate() + 7);
@@ -238,8 +238,6 @@ async function rentBookAddApi(info) {
         info.is_delete = false;
         docRef.update(info);
 
-        console.log(info);
-
         resolve({
           status: 200,
           msg: "ok",
@@ -249,7 +247,7 @@ async function rentBookAddApi(info) {
       .catch((error) => {
         reject({
           status: 300,
-          msg: "Error add book renting" + info,
+          msg: "Error add book renting " + info,
         });
       });
   });
