@@ -2,6 +2,17 @@ import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 
+
+const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
+const bookRef = firebaseConfig.firestore().collection("Book");
+const userRef = firebaseConfig.firestore().collection("User");
+const commentListRef = firebaseConfig.firestore().collection("Comment_list");
+const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
+const seatRef = firebaseConfig.firestore().collection("Seat");
+const userEnvironmentConfigRef = firebaseConfig.firestore().collection("User_Environment_Config");
+const messageRef = firebaseConfig.firestore().collection("Message");
+const modelRef = firebaseConfig.firestore().collection("Model");
+const seatReservationRef = firebaseConfig.firestore().collection("Seat_reservation");
 /**
  * ========================================== BOOK ==========================================
  */
@@ -29,11 +40,11 @@ async function getBookByIdApi(id) {
           }
         }
 
-        if (JSON.stringify(res) === "{}") {
+        if(JSON.stringify(res) === "{}") {
           reject({
             status: 300,
-            msg: "Get book failed " + id,
-          });
+            msg: "Get book failed " + id
+          })
         }
 
         // if success
@@ -54,47 +65,45 @@ async function getBookByIdApi(id) {
  */
 async function getBookRecommendListApi(amount) {
   return await new Promise((resolve, reject) => {
-    firebaseConfig
-      .firestore()
-      .collection("Book")
-      .onSnapshot((querySnapshot) => {
-        const items = [];
-        querySnapshot.forEach((doc) => {
-          items.push(doc.data());
-        });
-
-        // 1. Sort => by recommend
-        items.sort(function (a, b) {
-          return b["recommend"] - a["recommend"];
-        });
-
-        // 2. Return the corresponding quantity according to amount
-        let recommend_list = items.slice(0, amount);
-
-        // 3. Select the corresponding attribute
-        let res = recommend_list.map(function (item) {
-          return {
-            book_id: item.book_id,
-            book_name: item.book_name,
-            book_url: item.book_url,
-            thumbnail: item.thumbnail,
-          };
-        });
-
-        resolve({
-          status: 200,
-          msg: "ok",
-          data: res,
-        });
-
-        if (!res) {
-          reject({
-            status: 300,
-            msg: "Get recommend list failed",
-          });
-        }
+    bookRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
       });
-  });
+
+      // 1. Sort => by recommend
+      items.sort(function (a, b) {
+        return b["recommend"] - a["recommend"];
+      });
+
+      // 2. Return the corresponding quantity according to amount
+      let recommend_list = items.slice(0, amount);
+
+      // 3. Select the corresponding attribute
+      let res = recommend_list.map(function (item) {
+        return {
+          book_id: item.book_id,
+          book_name: item.book_name,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+        };
+      });
+
+      if(!res) {
+        reject({
+          status: 300,
+          msg: "Get recommend list failed"
+        });
+      }
+
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      })
+
+    });
+  })
 }
 
 /**
@@ -103,11 +112,10 @@ async function getBookRecommendListApi(amount) {
  * @return: a list of books based on category
  * @usage: getCategories("Fiction")
  */
-async function getCategoriesApi(category) {
+async function getCategoriesApi(category){
   return await new Promise((resolve, reject) => {
-    const ref = firebaseConfig.firestore().collection("Book");
     // Traverse all the data
-    ref.onSnapshot((querySnapshot) => {
+    bookRef.onSnapshot((querySnapshot) => {
       const items = [];
       querySnapshot.forEach((doc) => {
         items.push(doc.data());
@@ -133,6 +141,13 @@ async function getCategoriesApi(category) {
           recommended_amount: item.recommended_amount,
         };
       });
+
+      if(!res)
+      reject({
+        status: 300,
+        msg: "get category " + category
+      });
+
       // if success
       resolve({
         status: 200,
@@ -149,19 +164,19 @@ async function getCategoriesApi(category) {
   });
 }
 
+
 // getCategories("Fiction").then(res=>{
 //   console.log(res);
 // })
 
 /**
- *
+ * get all the book
  * @returns: all the list of book
  */
 async function getAllBookApi() {
   return await new Promise((resolve, reject) => {
-    const ref = firebaseConfig.firestore().collection("Book");
     // Traverse all the data
-    ref.onSnapshot((querySnapshot) => {
+    bookRef.onSnapshot((querySnapshot) => {
       const items = [];
       querySnapshot.forEach((doc) => {
         items.push(doc.data());
@@ -179,64 +194,77 @@ async function getAllBookApi() {
           recommended_amount: item.recommended_amount,
         };
       });
+
+      //if failed
+      if(!res)
+      reject({
+        status: 300,
+        msg: "get all the book failed "
+      });
+
       // if success
       resolve({
         status: 200,
         msg: "ok",
         data: res,
       });
-      //if failed
-      if (!res)
-        reject({
-          status: 300,
-          msg: "get all the book failed ",
-        });
+
     });
   });
 }
 
-// getAllBook().then(res=>{
-//     console.log(res);
-// })
+
+
 
 /**
- * Add a book to firebase
- * @param book: book detail object
- * @return: { status: 200, msg: "ok" }
- * @usage: addBook(bookObj)
+ *  insert book reservation info to database
+ * @param {*} info : obj contain book reservation infomation
+ * @returns {status:200, msg:"ok"}
+ * usage: rentBookAddApi(infoobj)
  */
-// function addBook(book) {   //only used if the developer need it
-//   const ref = firebaseConfig.firestore().collection("book");
-//   console.log(book);
 
-//   book["recommendedAmount"] = book["recommendedAmount"] + book["like"];
+async function rentBookAddApi(info){
+  return await new Promise((resolve, reject) => {
+    //get time and calcualte time +7days
+    let timestamp = new Date().getTime();
+    let date = new Date(timestamp);
+    date.setDate(date.getDate()+7);
+    let newTimestamp = date.getTime()
 
-//   ref
-//     .add(book)
-//     .then((docRef) => {
-//       console.log(docRef);
-//       // Update the document with its ID
-//       book.booK_id = docRef.id;
-//       docRef.update(book);
-//       return {
-//         status: 200,
-//         msg: "ok",
-//       };
-//     })
-//     .catch((error) => {
-//       console.error("Error adding book: ", error);
-//       return {
-//         status: 300,
-//         msg: "Error adding book: " + error,
-//       };
-//     });
-// }
+
+
+    bookReserRef.add(info).then((docRef) => {
+      //update the document with create time and
+      info.reservation_id = docRef.id;
+      info.create_time = timestamp;
+      info.return_time = newTimestamp
+      info.is_delete = false;
+      docRef.update(info);
+
+    console.log(info);
+
+      resolve({
+        status: 200,
+        msg:"ok",
+      });
+    })
+
+    .catch((error)=>{
+      reject({
+        status:300,
+        msg:"Error add book renting" + info
+      });
+    });
+  });
+}
+
+
+
+
 
 /**
  * ========================================== User ==========================================
  */
-
-const userRef = firebaseConfig.firestore().collection("user");
 
 /**
  * User signup
@@ -262,16 +290,15 @@ async function signupApi(info) {
       .catch((error) => {
         reject({
           status: 300,
-          msg: "Error: add user failed: " + info + " Error msg: " + error,
+          msg: "Error: add user failed: " + info + " Error msg: " + error
         });
       });
-  });
+    });
 }
 
-export {
-  getBookByIdApi,
-  getBookRecommendListApi,
-  getCategoriesApi,
-  getAllBookApi,
-  signupApi,
-};
+
+/**
+ * ========================================== Desk Booking ==========================================
+ */
+
+export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi,rentBookAddApi };
