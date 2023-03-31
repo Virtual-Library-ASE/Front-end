@@ -24,7 +24,7 @@ const BookHeader = (params) => {
 
           <div className="info absolute bottom-4">
             <div className="author">{detail.author}</div>
-            <div className="title text-3xl">{detail.title}</div>
+            <div className="title text-3xl">{detail.bookName}</div>
           </div>
         </div>
       </div>

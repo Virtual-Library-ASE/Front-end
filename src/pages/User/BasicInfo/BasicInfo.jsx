@@ -10,7 +10,7 @@ const getBasicInfoArr = (infoData) => {
     },
     {
       label: "Password",
-      value: infoData.password,
+      value: infoData.password.replace(/./g, "*"),
     },
     {
       label: "Email",
@@ -52,8 +52,17 @@ const BasicModal = (props) => {
 
   let onFinish = (values) => {
     console.log(values);
-    message.success("Successfully logged in");
+    message.success("Updated Successfully");
     setModalOpen(false);
+  };
+
+  let handleClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleDisabledIpt = (label) => {
+    const disabledArr = ["Email"];
+    return disabledArr.indexOf(label) >= 0;
   };
 
   return (
@@ -63,6 +72,7 @@ const BasicModal = (props) => {
         centered
         open={modalOpen}
         footer={null}
+        onCancel={handleClose}
       >
         <Form
           name="normal_login"
@@ -86,12 +96,17 @@ const BasicModal = (props) => {
                 },
               ]}
             >
-              <Input />
+              <Input
+                type={item.label === "Password" ? "password" : "text"}
+                disabled={handleDisabledIpt(item.label)}
+              />
             </Form.Item>
           ))}
 
           <div className="w-full text-right">
-            <Button className="login-form-button mr-2">Cancel</Button>
+            <Button className="login-form-button mr-2" onClick={handleClose}>
+              Cancel
+            </Button>
             <Button
               type="primary"
               htmlType="submit"
