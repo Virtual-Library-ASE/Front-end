@@ -2,17 +2,20 @@ import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 
-
 const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
 const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
-const userEnvironmentConfigRef = firebaseConfig.firestore().collection("User_Environment_Config");
+const userEnvironmentConfigRef = firebaseConfig
+  .firestore()
+  .collection("User_Environment_Config");
 const messageRef = firebaseConfig.firestore().collection("Message");
 const modelRef = firebaseConfig.firestore().collection("Model");
-const seatReservationRef = firebaseConfig.firestore().collection("Seat_reservation");
+const seatReservationRef = firebaseConfig
+  .firestore()
+  .collection("Seat_reservation");
 /**
  * ========================================== BOOK ==========================================
  */
@@ -40,11 +43,11 @@ async function getBookByIdApi(id) {
           }
         }
 
-        if(JSON.stringify(res) === "{}") {
+        if (JSON.stringify(res) === "{}") {
           reject({
             status: 300,
-            msg: "Get book failed " + id
-          })
+            msg: "Get book failed " + id,
+          });
         }
 
         // if success
@@ -89,10 +92,10 @@ async function getBookRecommendListApi(amount) {
         };
       });
 
-      if(!res) {
+      if (!res) {
         reject({
           status: 300,
-          msg: "Get recommend list failed"
+          msg: "Get recommend list failed",
         });
       }
 
@@ -100,10 +103,9 @@ async function getBookRecommendListApi(amount) {
         status: 200,
         msg: "ok",
         data: res,
-      })
-
+      });
     });
-  })
+  });
 }
 
 /**
@@ -112,7 +114,7 @@ async function getBookRecommendListApi(amount) {
  * @return: a list of books based on category
  * @usage: getCategories("Fiction")
  */
-async function getCategoriesApi(category){
+async function getCategoriesApi(category) {
   return await new Promise((resolve, reject) => {
     // Traverse all the data
     bookRef.onSnapshot((querySnapshot) => {
@@ -142,11 +144,11 @@ async function getCategoriesApi(category){
         };
       });
 
-      if(!res)
-      reject({
-        status: 300,
-        msg: "get category " + category
-      });
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get category " + category,
+        });
 
       // if success
       resolve({
@@ -163,7 +165,6 @@ async function getCategoriesApi(category){
     });
   });
 }
-
 
 // getCategories("Fiction").then(res=>{
 //   console.log(res);
@@ -196,11 +197,11 @@ async function getAllBookApi() {
       });
 
       //if failed
-      if(!res)
-      reject({
-        status: 300,
-        msg: "get all the book failed "
-      });
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get all the book failed ",
+        });
 
       // if success
       resolve({
@@ -208,13 +209,9 @@ async function getAllBookApi() {
         msg: "ok",
         data: res,
       });
-
     });
   });
 }
-
-
-
 
 /**
  *  insert book reservation info to database
@@ -223,44 +220,40 @@ async function getAllBookApi() {
  * usage: rentBookAddApi(infoobj)
  */
 
-async function rentBookAddApi(info){
+async function rentBookAddApi(info) {
   return await new Promise((resolve, reject) => {
     //get time and calcualte time +7days
     let timestamp = new Date().getTime();
     let date = new Date(timestamp);
-    date.setDate(date.getDate()+7);
-    let newTimestamp = date.getTime()
+    date.setDate(date.getDate() + 7);
+    let newTimestamp = date.getTime();
 
+    bookReserRef
+      .add(info)
+      .then((docRef) => {
+        //update the document with create time and
+        info.reservation_id = docRef.id;
+        info.create_time = timestamp;
+        info.return_time = newTimestamp;
+        info.is_delete = false;
+        docRef.update(info);
 
+        console.log(info);
 
-    bookReserRef.add(info).then((docRef) => {
-      //update the document with create time and
-      info.reservation_id = docRef.id;
-      info.create_time = timestamp;
-      info.return_time = newTimestamp
-      info.is_delete = false;
-      docRef.update(info);
+        resolve({
+          status: 200,
+          msg: "ok",
+        });
+      })
 
-    console.log(info);
-
-      resolve({
-        status: 200,
-        msg:"ok",
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error add book renting" + info,
+        });
       });
-    })
-
-    .catch((error)=>{
-      reject({
-        status:300,
-        msg:"Error add book renting" + info
-      });
-    });
   });
 }
-
-
-
-
 
 /**
  * ========================================== User ==========================================
@@ -290,15 +283,21 @@ async function signupApi(info) {
       .catch((error) => {
         reject({
           status: 300,
-          msg: "Error: add user failed: " + info + " Error msg: " + error
+          msg: "Error: add user failed: " + info + " Error msg: " + error,
         });
       });
-    });
+  });
 }
-
 
 /**
  * ========================================== Desk Booking ==========================================
  */
 
-export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi,rentBookAddApi };
+export {
+  getBookByIdApi,
+  getBookRecommendListApi,
+  getCategoriesApi,
+  getAllBookApi,
+  signupApi,
+  rentBookAddApi,
+};
