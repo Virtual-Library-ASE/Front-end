@@ -1,6 +1,14 @@
 import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
+//import  DateTime from DateTime
+
+// var DateTime = require('datetime-js')
+let dateObj = new Date()
+let tomorrow =  new Date()
+tomorrow.setDate(dateObj.getDate() + 1)
+ 
+
 
 
 const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
@@ -298,6 +306,65 @@ async function rentBookAddApi(info){
 }
 
 
+/**
+ * Get book info by name
+ * @param category: book name
+ * @return: a list of books based on name
+ * @usage: getBookName("Harry Potter")
+ */
+async function getBookNameApi(name){
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    bookRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get the category
+      const category_list = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i]["book_name"] === name) {
+          category_list.push(items[i]);
+        }
+      }
+
+      //get data based on category
+      let res = category_list.map(function (item) {
+        return {
+          category:item.category,
+          book_id:item.book_id,
+          book_name:item.book_name,
+          author:item.author,
+          book_url:item.book_url,
+          thumbnail:item.thumbnail,
+          recommended_amount:item.recommended_amount
+        };
+      });
+
+      if(!res)
+      reject({
+        status: 300,
+        msg: "get book name " + name
+      });
+
+      // if success
+      resolve({
+        status:200,
+        msg:"ok",
+        data:res
+      });
+    });
+  });
+}
+
+
+// getBookNameApi("Normal People").then(res=>{
+//   console.log(res);
+// })
+
+
+
 
 
 /**
@@ -403,5 +470,83 @@ async function signupApi(info) {
 /**
  * ========================================== Desk Booking ==========================================
  */
+/**
+ * Desk Booking
+ * @param info:  "room_id", "seat_id", "user_id"
+ * @return: status: 200, msg: "ok"
+ * @usage: signup(infoObj)
+ */
+async function deskBookingApi(info) {  //completed
+  return await new Promise((resolve, reject) => {  
+    seatReservationRef
+      .add(info)
+      .then((docRef) => {
+        // Update the document with its ID
+        info.reservation_id = docRef.id;
+        info.is_delete = false;
+        docRef.update(info);
+        info.create_time = dateObj.getTime()
+        info.end_time = tomorrow.getTime()
 
-export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi,rentBookAddApi,rentBookUpdateApi };
+        resolve({
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error: add user failed: " + info + " Error msg: " + error
+        });
+      });
+    });
+}
+
+/**
+ * Desk Booking Update
+ * @param info:  "room_id", "seat_id", "user_id"
+ * @return: status: 200, msg: "ok"
+ * @usage: signup(infoObj)
+ */
+async function deskBookingUpdateApi(info) {  //completed
+  return await new Promise((resolve, reject) => {
+    firebaseConfig
+      .firestore()
+      .collection("Seat_reservation")
+      .onSnapshot((querySnapshot) => {
+        const items = [];
+        querySnapshot.forEach((doc) => {
+          items.push(doc.data());
+        });
+
+        // Traverse all the data,
+        // find the data whose book_id is the same as the id passed in
+        let res = {};
+        for (let i = 0; i < items.length; i++) {
+          if (items[i]["reservation_id"] === info.reservation_id) {
+            for(let j =0; j < info.length; j++){
+                
+                // items[i][j] 
+            }
+            
+          }
+        }
+
+        if(JSON.stringify(res) === "{}") {
+          reject({
+            status: 300,
+            msg: "Desk Booking failed " 
+          })
+        }
+
+        // if success
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: res,
+        });
+      });
+  });
+}
+
+export { getBookByIdApi, getBookRecommendListApi,getCategoriesApi,getAllBookApi, signupApi, deskBookingApi, deskBookingUpdateApi, getBookNameApi };
