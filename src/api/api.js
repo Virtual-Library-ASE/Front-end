@@ -1,12 +1,7 @@
 import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
-//import  DateTime from DateTime
 
-// var DateTime = require('datetime-js')
-let dateObj = new Date();
-let tomorrow = new Date();
-tomorrow.setDate(dateObj.getDate() + 1);
 
 const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
@@ -216,7 +211,7 @@ async function getAllBookApi() {
 /**
  * change the book status
  * @param {*} info : book id and status
- * @returns statue:200,msg:"ok"
+ * @returns status:200,msg:"ok"
  */
 
 async function renewBookStatus(info) {
@@ -237,13 +232,13 @@ async function renewBookStatus(info) {
             .update(item)
             .then(() => {
               resolve({
-                statue: 200,
+                status: 200,
                 msg: "ok",
               });
             })
             .catch((error) => {
               reject({
-                statue: 300,
+                status: 300,
                 msg: "Error update book status! " + error,
               });
             });
@@ -572,7 +567,7 @@ async function getAllReadingRoomApi() {
       if (!res)
         reject({
           status: 300,
-          msg: "get all the raeding room failed ",
+          msg: "get all the reading room failed ",
         });
 
       // if success
@@ -689,6 +684,78 @@ async function getAllModelApi() {
 /**
  * ========================================== Desk Booking ==========================================
  */
+
+async function renewDeskStatus(info) {
+  return await new Promise((resolve, reject) => {
+    seatRef
+      .where("seat_id", "==", info.seat_id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+
+          item["is_available"] = info["is_available"];
+          console.log(item);
+          // renew the field value below if the info contains it
+
+          seatRef
+            .doc(info.seat_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                status: 300,
+                msg: "Error update book status! " + error,
+              });
+            });
+        });
+      });
+  });
+}
+
+async function renewReadingRoomStatus(info) {
+  return await new Promise((resolve, reject) => {
+    readingRoomRef
+      .where("room_id", "==", info.room_id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+
+          item["room_capacity"] = item["room_capacity"] -1;
+          console.log(item);
+          // renew the field value below if the info contains it
+
+          readingRoomRef
+            .doc(info.seat_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                status: 300,
+                msg: "Error update book status! " + error,
+              });
+            });
+        });
+      });
+  });
+}
+
+
+
+
+
+
 /**
  * Desk Booking
  * @param info:  "room_id", "seat_id", "user_id"
@@ -697,30 +764,66 @@ async function getAllModelApi() {
  */
 async function deskBookingApi(info) {
   //completed
-  return await new Promise((resolve, reject) => {
-    seatReservationRef
-      .add(info)
-      .then((docRef) => {
-        // Update the document with its ID
-        info.reservation_id = docRef.id;
-        info.is_delete = false;
-        docRef.update(info);
-        info.create_time = dateObj.getTime();
-        info.end_time = tomorrow.getTime();
+    return await new Promise((resolve, reject) => {
+      //get time and calcualte time +24hrs
+      let timestamp = new Date().getTime();
+      let date = new Date(timestamp);
+      date.setDate(date.getDate() + 1);
+      let newTimestamp = date.getTime();
+  
+      seatReservationRef
+        .add(info)
+        .then((docRef) => {
+          //update the document with extra info
+          info.reservation_id = docRef.id;
+          info.start_time = timestamp;
+          info.end_time = newTimestamp;
+          info.is_delete = false;
+          docRef.update(info);
+  
+          //renew the status in seat database
+          renewDeskStatus({
+            seat_id: info.seat_id,
+            is_available: false,
+          });
 
-        resolve({
-          status: 200,
-          msg: "ok",
+          //renew the status in reading room database
+          renewReadingRoomStatus({
+            room_id: info.room_id,
+          });
+  
+          resolve({
+            status: 200,
+            msg: "ok",
+            reservation_id: info.reservation_id,
+          });
+        })
+  
+        .catch((error) => {
+          reject({
+            status: 300,
+            msg: "Error desk booking" + error,
+          });
         });
-      })
-      .catch((error) => {
-        reject({
-          status: 300,
-          msg: "Error: add user failed: " + info + " Error msg: " + error,
-        });
-      });
-  });
-}
+    });
+  }
+  
+
+
+  // let info = { 
+  //   "room_id": "63283",
+  //   "seat_id": "79879",
+  //   "user_id": "12112",
+  // }
+  // deskBookingApi(info).then(res=>{
+  //   console.log(res);
+  // }).catch(err=>{
+  //   console.log(err);
+  // })
+
+  // deskBookingApi("104").then(res=>{
+//   console.log(res);
+// })
 
 /**
  * Desk Booking Update
@@ -729,44 +832,68 @@ async function deskBookingApi(info) {
  * @usage: signup(infoObj)
  */
 async function deskBookingUpdateApi(info) {
-  //completed
   return await new Promise((resolve, reject) => {
-    firebaseConfig
-      .firestore()
-      .collection("Seat_reservation")
-      .onSnapshot((querySnapshot) => {
-        const items = [];
+    // check the content of info in database based on reservation_id
+    seatReservationRef
+      .where("reservation_id", "==", info.reservation_id)
+      .get()
+      .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          items.push(doc.data());
-        });
+          let item = doc.data();
+          console.log(item);
 
-        // Traverse all the data,
-        // find the data whose book_id is the same as the id passed in
-        let res = {};
-        for (let i = 0; i < items.length; i++) {
-          if (items[i]["reservation_id"] === info.reservation_id) {
-            for (let j = 0; j < info.length; j++) {
-              // items[i][j]
-            }
-          }
-        }
+          // renew the field value below if the info contains it
+          item["user_id"] = info["user_id"] ? info["user_id"] : item["user_id"];
+          item["is_delete"] = info["is_delete"]
+            ? info["is_delete"]
+            : item["is_delete"];
+          item["seat_id"] = info["seat_id"] ? info["seat_id"] : item["seat_id"];
+          item["start_time"] = info["start_time"]
+            ? info["start_time"]
+            : item["start_time"];
+          item["end_time"] = info["end_time"]
+            ? info["end_time"]
+            : item["end_time"];
 
-        if (JSON.stringify(res) === "{}") {
-          reject({
-            status: 300,
-            msg: "Desk Booking failed ",
+          //renew the status in seat database
+          renewDeskStatus({
+            seat_id: info.seat_id,
+            is_available: info.is_available,
           });
-        }
 
-        // if success
-        resolve({
-          status: 200,
-          msg: "ok",
-          data: res,
+          //renew the status in reading room database
+          renewReadingRoomStatus({
+            room_id: info.room_id,
+            room_capacity: info.room_capacity,
+          });
+          //update info based on reservation_id
+          seatReservationRef
+            .doc(info.reservation_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                status: 300,
+                msg: "Error update renting status! " + error,
+              });
+            });
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error update renting status! " + error,
         });
       });
   });
 }
+
+
 
 export {
   getBookByIdApi,
