@@ -12,7 +12,7 @@ const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
-const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
+const readingRoomRef = firebaseConfig.firestore().collection("Reading Room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
 const userEnvironmentConfigRef = firebaseConfig
   .firestore()
@@ -301,7 +301,7 @@ async function rentBookAddApi(info) {
 
 /**
  * Get book info by name
- * @param category: book name
+ * @param book_name: book name
  * @return: a list of books based on name
  * @usage: getBookByNameApi("Harry Potter")
  */
@@ -314,16 +314,16 @@ async function getBookByNameApi(name) {
         items.push(doc.data());
       });
 
-      //get the category
-      const category_list = [];
+      //get the book name
+      const name_list = [];
       for (let i = 0; i < items.length; i++) {
         if (items[i]["book_name"] === name) {
-          category_list.push(items[i]);
+          name_list.push(items[i]);
         }
       }
 
       //get data based on category
-      let res = category_list.map(function (item) {
+      let res = name_list.map(function (item) {
         return {
           category: item.category,
           book_id: item.book_id,
@@ -541,6 +541,152 @@ async function logInApi(info) {
 }
 
 /**
+ * ========================================== Reading Room ==========================================
+ */
+
+
+/**
+ * get all the room
+ * @returns: all the list of room
+ */
+async function getAllReadingRoomApi() {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    readingRoomRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get all the reading room
+      let res = items.map(function (item) {
+        return {
+          room_name: item.room_name,
+          room_capacity: item.room_capacity,
+          room_id: item.room_id,
+          reader_amount: item.reader_amount
+        };
+      });
+
+      //if failed
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get all the raeding room failed ",
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+// getAllReadingRoomApi().then(res=>{
+//   console.log(res);
+// })
+
+
+/**
+ * ========================================== Model ==========================================
+ */
+
+/**
+ * model by user
+ * @param info: user_id
+ * @return: model_link status: 200, msg: "ok"
+ * @usage: getUserModelApi(infoObj)
+ */
+async function getUserModelApi(id) {
+    return await new Promise((resolve, reject) => {
+      firebaseConfig
+        .firestore()
+        .collection("Model")
+        .onSnapshot((querySnapshot) => {
+          const items = [];
+          querySnapshot.forEach((doc) => {
+            items.push(doc.data());
+          });
+  
+          // Traverse all the data,
+          // find the data whose user_id is the same as the id passed in
+          let res = {};
+          for (let i = 0; i < items.length; i++) {
+            if (items[i]["model_id"] === id) {
+              res = items[i];
+            }
+          }
+  
+          if (JSON.stringify(res) === "{}") {
+            reject({
+              status: 300,
+              msg: "Get model failed " + id,
+            });
+          }
+  
+          // if success
+          resolve({
+            status: 200,
+            msg: "ok",
+            data: res,
+          });
+        });
+    });
+  }
+
+// getUserModelApi("104").then(res=>{
+//   console.log(res);
+// })
+
+
+/**
+ * get all the model
+ * @returns: all the list of model
+ */
+async function getAllModelApi() {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    modelRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get all the model
+      let res = items.map(function (item) {
+        return {
+          model_name: item.model_name,
+          model_url: item.model_url,
+          model_id: item.model_id
+        };
+      });
+
+      //if failed
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get all the model failed ",
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+
+// getAllModelApi().then(res=>{
+//   console.log(res);
+// })
+
+/**
  * ========================================== Desk Booking ==========================================
  */
 /**
@@ -632,7 +778,10 @@ export {
   rentBookUpdateApi,
   signupApi,
   updateUserInfoApi,
+  getUserModelApi,
   deskBookingApi,
   deskBookingUpdateApi,
   logInApi,
+  getAllModelApi,
+  getAllReadingRoomApi
 };
