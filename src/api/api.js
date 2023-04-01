@@ -115,58 +115,6 @@ async function getBookRecommendListApi(amount) {
 }
 
 /**
- * Get book info by name
- * @param category: book name
- * @return: a list of books based on name
- * @usage: getBookByNameApi("Harry Potter")
- */
-async function getBookByNameApi(name) {
-  return await new Promise((resolve, reject) => {
-    // Traverse all the data
-    bookRef.onSnapshot((querySnapshot) => {
-      const items = [];
-      querySnapshot.forEach((doc) => {
-        items.push(doc.data());
-      });
-
-      //get the category
-      const category_list = [];
-      for (let i = 0; i < items.length; i++) {
-        if (items[i]["book_name"] === name) {
-          category_list.push(items[i]);
-        }
-      }
-
-      //get data based on category
-      let res = category_list.map(function (item) {
-        return {
-          category: item.category,
-          book_id: item.book_id,
-          book_name: item.book_name,
-          author: item.author,
-          book_url: item.book_url,
-          thumbnail: item.thumbnail,
-          recommended_amount: item.recommended_amount,
-        };
-      });
-
-      if (!res)
-        reject({
-          status: 300,
-          msg: "get book name " + name,
-        });
-
-      // if success
-      resolve({
-        status: 200,
-        msg: "ok",
-        data: res,
-      });
-    });
-  });
-}
-
-/**
  * Get book info by category
  * @param category: book category
  * @return: a list of books based on category
@@ -253,6 +201,144 @@ async function getAllBookApi() {
         reject({
           status: 300,
           msg: "get all the book failed ",
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+/**
+ * change the book status
+ * @param {*} info : book id and status
+ * @returns statue:200,msg:"ok"
+ */
+
+async function renewBookStatus(info) {
+  return await new Promise((resolve, reject) => {
+    bookRef
+      .where("book_id", "==", info.book_id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+
+          item["status"] = info["status"];
+          console.log(item);
+          // renew the fielf value below if the info contains it
+
+          bookRef
+            .doc(info.bookid)
+            .update(item)
+            .then(() => {
+              resolve({
+                statue: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                statue: 300,
+                msg: "Error update book status! " + error,
+              });
+            });
+        });
+      });
+  });
+}
+
+/**
+ *  insert book reservation info to database
+ * @param  info : obj contain book reservation infomation
+ * @returns status:200, msg:"ok"
+ * usage: rentBookAddApi(infoobj)
+ */
+
+async function rentBookAddApi(info) {
+  return await new Promise((resolve, reject) => {
+    //get time and calcualte time +7days
+    let timestamp = new Date().getTime();
+    let date = new Date(timestamp);
+    date.setDate(date.getDate() + 7);
+    let newTimestamp = date.getTime();
+
+    bookReserRef
+      .add(info)
+      .then((docRef) => {
+        //update the document with extra info
+        info.reservation_id = docRef.id;
+        info.create_time = timestamp;
+        info.return_time = newTimestamp;
+        info.is_delete = false;
+        docRef.update(info);
+
+        //renew the status in book
+        renewBookStatus({
+          book_id: info.book_id,
+          status: false,
+        });
+
+        resolve({
+          status: 200,
+          msg: "ok",
+          reservation_id: info.reservation_id,
+        });
+      })
+
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error add book renting" + error,
+        });
+      });
+  });
+}
+
+/**
+ * Get book info by name
+ * @param category: book name
+ * @return: a list of books based on name
+ * @usage: getBookByNameApi("Harry Potter")
+ */
+async function getBookByNameApi(name) {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    bookRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get the category
+      const category_list = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i]["book_name"] === name) {
+          category_list.push(items[i]);
+        }
+      }
+
+      //get data based on category
+      let res = category_list.map(function (item) {
+        return {
+          category: item.category,
+          book_id: item.book_id,
+          book_name: item.book_name,
+          author: item.author,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+          recommended_amount: item.recommended_amount,
+        };
+      });
+
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get book name " + name,
         });
 
       // if success
@@ -421,97 +507,40 @@ async function updateUserInfoApi(info) {
 }
 
 /**
- * ========================================== Rent a Book ==========================================
+ * user login
+ * @param  info: email and password
+ * @returns  user details, status:200, msg:"ok"
  */
 
-/**
- * change the book status
- * @param {*} info : book id and status
- * @returns statue:200, msg:"ok"
- */
-
-async function renewBookStatus(info) {
-  return await new Promise((resolve, reject) => {
-    bookRef
-      .where("book_id", "==", info.book_id)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          let item = doc.data();
-
-          item["status"] = info["status"];
-          console.log(item);
-          // renew the fielf value below if the info contains it
-
-          bookRef
-            .doc(info.bookid)
-            .update(item)
-            .then(() => {
-              resolve({
-                statue: 200,
-                msg: "ok",
-              });
-            })
-            .catch((error) => {
-              reject({
-                statue: 300,
-                msg: "Error update book status! " + error,
-              });
-            });
-        });
-      });
-  });
-}
-
-/**
- *  insert book reservation info to database
- * @param  info : obj contain book reservation infomation
- * @returns status:200, msg:"ok"
- * usage: rentBookAddApi(infoobj)
- */
-
-async function rentBookAddApi(info) {
-  return await new Promise((resolve, reject) => {
-    //get time and calcualte time +7days
-    let timestamp = new Date().getTime();
-    let date = new Date(timestamp);
-    date.setDate(date.getDate() + 7);
-    let newTimestamp = date.getTime();
-
-    bookReserRef
-      .add(info)
-      .then((docRef) => {
-        //update the document with extra info
-        info.reservation_id = docRef.id;
-        info.create_time = timestamp;
-        info.return_time = newTimestamp;
-        info.is_delete = false;
-        docRef.update(info);
-
-        //renew the status in book
-        renewBookStatus({
-          book_id: info.book_id,
-          status: false,
-        });
+async function logInApi(info) {
+  return await new Promise((resolve, reject)=>{
+    //judge if the input info is correct in database
+    userRef.where("email","==",info.email).where("password","==",info.password).get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        let item = doc.data()
+        delete item["is_delete"]
 
         resolve({
-          status: 200,
-          msg: "ok",
-          reservation_id: info.reservation_id,
-        });
-      })
-
-      .catch((error) => {
-        reject({
-          status: 300,
-          msg: "Error add book renting" + error,
-        });
+          data: item,
+          status:200,
+          msg:"ok"
+        })
+    })
+    })
+    .catch((error) => {
+      reject({
+        status: 300,
+        msg: "log in error " + info + " Error msg: " + error
       });
-  });
+    });
+  })
 }
 
+
+
 /**
- * ========================================== Rent a Desk ==========================================
+ * ========================================== Desk Booking ==========================================
  */
 /**
  * Desk Booking
@@ -604,4 +633,6 @@ export {
   updateUserInfoApi,
   deskBookingApi,
   deskBookingUpdateApi,
+  getBookNameApi,
+  logInApi
 };
