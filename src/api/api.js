@@ -544,7 +544,6 @@ async function logInApi(info) {
  * ========================================== Reading Room ==========================================
  */
 
-
 /**
  * get all the room
  * @returns: all the list of room
@@ -564,7 +563,7 @@ async function getAllReadingRoomApi() {
           room_name: item.room_name,
           room_capacity: item.room_capacity,
           room_id: item.room_id,
-          reader_amount: item.reader_amount
+          reader_amount: item.reader_amount,
         };
       });
 
@@ -589,7 +588,6 @@ async function getAllReadingRoomApi() {
 //   console.log(res);
 // })
 
-
 /**
  * ========================================== Model ==========================================
  */
@@ -601,46 +599,45 @@ async function getAllReadingRoomApi() {
  * @usage: getUserModelApi(infoObj)
  */
 async function getUserModelApi(id) {
-    return await new Promise((resolve, reject) => {
-      firebaseConfig
-        .firestore()
-        .collection("Model")
-        .onSnapshot((querySnapshot) => {
-          const items = [];
-          querySnapshot.forEach((doc) => {
-            items.push(doc.data());
-          });
-  
-          // Traverse all the data,
-          // find the data whose user_id is the same as the id passed in
-          let res = {};
-          for (let i = 0; i < items.length; i++) {
-            if (items[i]["model_id"] === id) {
-              res = items[i];
-            }
-          }
-  
-          if (JSON.stringify(res) === "{}") {
-            reject({
-              status: 300,
-              msg: "Get model failed " + id,
-            });
-          }
-  
-          // if success
-          resolve({
-            status: 200,
-            msg: "ok",
-            data: res,
-          });
+  return await new Promise((resolve, reject) => {
+    firebaseConfig
+      .firestore()
+      .collection("Model")
+      .onSnapshot((querySnapshot) => {
+        const items = [];
+        querySnapshot.forEach((doc) => {
+          items.push(doc.data());
         });
-    });
-  }
+
+        // Traverse all the data,
+        // find the data whose user_id is the same as the id passed in
+        let res = {};
+        for (let i = 0; i < items.length; i++) {
+          if (items[i]["model_id"] === id) {
+            res = items[i];
+          }
+        }
+
+        if (JSON.stringify(res) === "{}") {
+          reject({
+            status: 300,
+            msg: "Get model failed " + id,
+          });
+        }
+
+        // if success
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: res,
+        });
+      });
+  });
+}
 
 // getUserModelApi("104").then(res=>{
 //   console.log(res);
 // })
-
 
 /**
  * get all the model
@@ -660,7 +657,7 @@ async function getAllModelApi() {
         return {
           model_name: item.model_name,
           model_url: item.model_url,
-          model_id: item.model_id
+          model_id: item.model_id,
         };
       });
 
@@ -680,7 +677,6 @@ async function getAllModelApi() {
     });
   });
 }
-
 
 // getAllModelApi().then(res=>{
 //   console.log(res);
@@ -783,5 +779,5 @@ export {
   deskBookingUpdateApi,
   logInApi,
   getAllModelApi,
-  getAllReadingRoomApi
+  getAllReadingRoomApi,
 };
