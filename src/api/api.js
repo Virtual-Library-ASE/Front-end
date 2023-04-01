@@ -513,31 +513,32 @@ async function updateUserInfoApi(info) {
  */
 
 async function logInApi(info) {
-  return await new Promise((resolve, reject)=>{
+  return await new Promise((resolve, reject) => {
     //judge if the input info is correct in database
-    userRef.where("email","==",info.email).where("password","==",info.password).get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        let item = doc.data()
-        delete item["is_delete"]
+    userRef
+      .where("email", "==", info.email)
+      .where("password", "==", info.password)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+          delete item["is_delete"];
 
-        resolve({
-          data: item,
-          status:200,
-          msg:"ok"
-        })
-    })
-    })
-    .catch((error) => {
-      reject({
-        status: 300,
-        msg: "log in error " + info + " Error msg: " + error
+          resolve({
+            data: item,
+            status: 200,
+            msg: "ok",
+          });
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "log in error " + info + " Error msg: " + error,
+        });
       });
-    });
-  })
+  });
 }
-
-
 
 /**
  * ========================================== Desk Booking ==========================================
@@ -633,6 +634,5 @@ export {
   updateUserInfoApi,
   deskBookingApi,
   deskBookingUpdateApi,
-  getBookNameApi,
-  logInApi
+  logInApi,
 };
