@@ -246,9 +246,6 @@ async function renewBookStatus(info) {
   });
 }
 
-
-
-
 /**
  *  insert book reservation info to database
  * @param  info : obj contain book reservation infomation
@@ -295,8 +292,6 @@ async function rentBookAddApi(info) {
       });
   });
 }
-
-
 
 /**
  * update booking renting info
@@ -358,10 +353,6 @@ async function rentBookUpdateApi(info) {
   });
 }
 
-
-
-
-
 /**
  * ========================================== User ==========================================
  */
@@ -374,12 +365,11 @@ async function rentBookUpdateApi(info) {
  */
 async function signupApi(info) {
   return await new Promise((resolve, reject) => {
-    //
     userRef
       .where("email", "==", info.email)
       .get()
       .then((queryRes) => {
-        if (queryRes) {
+        if (queryRes.size) {
           reject({
             status: 300,
             msg: "Error: email already exists",
@@ -450,9 +440,8 @@ async function updateUserInfoApi(info) {
           msg: "Error: update user failed: " + info + " Error msg: " + error,
         });
       });
-    });
+  });
 }
-
 
 /**
  * user login
@@ -468,16 +457,24 @@ async function logInApi(info) {
       .where("password", "==", info.password)
       .get()
       .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          let item = doc.data();
-          delete item["is_delete"];
-
-          resolve({
-            data: item,
-            status: 200,
-            msg: "ok",
+        // Judge the result of same email and password
+        if (querySnapshot.empty) {
+          reject({
+            status: 300,
+            msg: "The user does not exist or password is wrong!",
           });
-        });
+        } else {
+          querySnapshot.forEach((doc) => {
+            let item = doc.data();
+            delete item["is_delete"];
+
+            resolve({
+              data: item,
+              status: 200,
+              msg: "ok",
+            });
+          });
+        }
       })
       .catch((error) => {
         reject({
@@ -487,8 +484,6 @@ async function logInApi(info) {
       });
   });
 }
-
-
 
 export {
   getBookByIdApi,

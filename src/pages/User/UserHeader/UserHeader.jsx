@@ -1,22 +1,19 @@
 import { Avatar } from "antd";
 import "./UserHeader.css";
 
-export default function Header() {
+export default function Header(params) {
+  let infoData = params.infoData;
   return (
     <>
       <div className="header relative text-center text-color-white">
         <div className="inner-header flex justify-center items-center text-center h-72 w-full m-0 p-0">
           <div className="user-info">
             <div className="avatar">
-              <Avatar
-                className=""
-                size={128}
-                src="https://chenmo1212.cn/file/avatar/spring.png"
-              />
+              <Avatar className="" size={128} src={infoData.avatar} />
             </div>
             <div className="info">
-              <h2 className="text-xl mt-2">ChenMo1212</h2>
-              <p>Try my best!</p>
+              <h2 className="text-xl mt-2">{infoData.userName}</h2>
+              <p>{infoData.desc}</p>
             </div>
           </div>
         </div>

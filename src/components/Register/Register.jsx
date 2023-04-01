@@ -62,6 +62,7 @@ const Register = (props) => {
       phone: values.phone,
       gender: values.gender,
       birth_date: values.birthDate.unix(),
+      desc: values.desc,
     };
 
     signupApi(req)
@@ -69,6 +70,7 @@ const Register = (props) => {
         if (res.status === 200) {
           message.success("Successfully Register");
           handleClose();
+          toLogin();
         } else {
           console.log("Something wrong when user register");
         }
@@ -222,7 +224,7 @@ const Register = (props) => {
           </Form.Item>
 
           <Form.Item
-            name="intro"
+            name="desc"
             label="Intro"
             className="intro"
             rules={[{ required: true, message: "Please input Intro" }]}

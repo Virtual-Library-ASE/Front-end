@@ -3,24 +3,49 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { Button, Form, Input, Checkbox, Modal, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { setLogin } from "../../store/action";
+import { setLogin, setUserInfo } from "../../store/action";
+import { logInApi } from "../../api/api";
+import { underscoreToCamelCaseKeys } from "../../resources/js/common";
 
 export default function Login(props) {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
 
   const handleClose = () => {
     props.handleLogin(false);
   };
+
+  const handleClear = () => {
+    form.resetFields();
+  };
+
   let onFinish = (values) => {
-    console.log(values);
-    message.success("Successfully logged in");
-    dispatch(setLogin(true));
-    handleClose();
+    logInApi({
+      email: values.email,
+      password: values.password,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          message.success("Successfully Login!");
+
+          dispatch(setLogin(true));
+          dispatch(setUserInfo(underscoreToCamelCaseKeys(res.data)));
+
+          handleClear();
+          handleClose();
+        } else {
+          message.error(res.msg);
+        }
+      })
+      .catch((err) => {
+        message.error(err.msg);
+      });
   };
 
   const toRegister = () => {
     props.handleLogin(false);
     props.handleRegister(true);
+    handleClear();
   };
 
   return (
@@ -35,17 +60,18 @@ export default function Login(props) {
       >
         <Form
           name="normal_login"
+          form={form}
           className="login-form"
           initialValues={{ remember: true }}
           onFinish={onFinish}
         >
           <Form.Item
-            name="username"
-            rules={[{ required: true, message: "Please input your Username!" }]}
+            name="email"
+            rules={[{ required: true, message: "Please input your Email!" }]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Username"
+              placeholder="Email"
             />
           </Form.Item>
           <Form.Item

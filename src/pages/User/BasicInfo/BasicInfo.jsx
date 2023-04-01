@@ -2,11 +2,19 @@ import { Button, Form, Input, message, Modal } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import React, { useState, useImperativeHandle } from "react";
 
+const getBirthDateFormat = (timeStamp) => {
+  let date = new Date(timeStamp);
+  let DD = String(date.getDate()).padStart(2, "0");
+  let MM = String(date.getMonth() + 1).padStart(2, "0");
+  let yyyy = date.getFullYear();
+
+  return yyyy + "-" + MM + "-" + DD;
+};
 const getBasicInfoArr = (infoData) => {
   return [
     {
       label: "Name",
-      value: infoData.name,
+      value: infoData.userName,
     },
     {
       label: "Password",
@@ -26,7 +34,7 @@ const getBasicInfoArr = (infoData) => {
     },
     {
       label: "Birth Date",
-      value: infoData.birthDate,
+      value: getBirthDateFormat(infoData.birthDate),
     },
     {
       label: "Description",

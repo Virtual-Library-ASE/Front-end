@@ -1,5 +1,5 @@
 import "./User.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { setCarouselDisplay } from "../../store/action";
 import UserHeader from "./UserHeader/UserHeader";
@@ -24,16 +24,6 @@ const Body = (param) => {
   );
 };
 
-const infoData = {
-  name: "ChenMo",
-  password: "74567456",
-  email: "chenmo1212@qq.com",
-  phone: "+861234567891",
-  gender: "male",
-  birthDate: "2000-06-26",
-  desc: "Try my best!",
-};
-
 const User = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -42,10 +32,12 @@ const User = () => {
     // dispatch(setFooterDisplay(false));
   }, [dispatch]);
 
+  const infoData = useSelector((state) => state.userInfo);
+
   return (
     <>
       <div className="user">
-        <UserHeader />
+        <UserHeader infoData={infoData} />
 
         <Body infoData={infoData} />
       </div>
