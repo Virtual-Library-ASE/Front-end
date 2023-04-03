@@ -366,30 +366,28 @@ async function getAllCommentByBookIdApi(id) {
                   user_name: userDoc.data().user_name,
                   content: item.content,
                   comment_page: item.comment_page,
-                  create_time: item.create_time
-                }
+                  create_time: item.create_time,
+                };
                 resolve({
                   status: 200,
                   msg: "ok",
-                  data: res
+                  data: res,
                 });
-              })
+              });
             })
             .catch((err) => {
               reject({
                 status: 300,
-                msg:
-                  "Error: get book comment: " + err
+                msg: "Error: get book comment: " + err,
               });
             });
-        })
+        });
       })
       .catch((err) => {
         console.log(err);
         reject({
           status: 300,
-          msg:
-            "Error: get book comment: " + id
+          msg: "Error: get book comment: " + id,
         });
       });
   });
@@ -520,7 +518,6 @@ async function logInApi(info) {
   });
 }
 
-
 export {
   getBookByIdApi,
   getBookRecommendListApi,
@@ -531,5 +528,5 @@ export {
   signupApi,
   updateUserInfoApi,
   logInApi,
-  getAllCommentByBookIdApi
+  getAllCommentByBookIdApi,
 };
