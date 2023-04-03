@@ -1,11 +1,14 @@
-import "./Book.css";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
 import { useDispatch } from "react-redux";
-import BubblyBtn from "../../../components/BubblyBtn/BubblyBtn";
-import { useEffect, useState } from "react";
-import { getBookByIdApi } from "../../../api/api";
+
 import { underscoreToCamelCaseKeys } from "../../../resources/js/common";
+import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
+import { getBookByIdApi } from "../../../api/api";
+
+import BubblyBtn from "../../../components/BubblyBtn/BubblyBtn";
+import BookReserveModal from "./BookReserveModal";
+import "./Book.css";
 
 const BookHeader = (params) => {
   const detail = params.details;
@@ -49,8 +52,8 @@ const BookBody = (params) => {
       value: detail.language,
     },
     {
-      label: "Statue: ",
-      value: detail.status,
+      label: "State: ",
+      value: detail.status ? "Rent Available" : "Rent Unavailable",
     },
     {
       label: "ISBN: ",
@@ -65,10 +68,6 @@ const BookBody = (params) => {
       value: detail.uploadTime,
     },
   ];
-
-  const rentBook = () => {
-    console.log("123123");
-  };
 
   return (
     <>
@@ -96,7 +95,12 @@ const BookBody = (params) => {
                 </div>
 
                 <div className="btn-group mt-4">
-                  <BubblyBtn text="Rent this book" handleEvent={rentBook} />
+                  <BubblyBtn
+                    text="Rent this book"
+                    handleEvent={() => {
+                      params.handleReserveModal(true);
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -159,7 +163,6 @@ const Book = () => {
   useEffect(() => {
     getBookByIdApi(routerParams.id)
       .then((res) => {
-        console.log(res);
         if (res.status === 200 && JSON.stringify(res.data) !== "{}") {
           let resData = underscoreToCamelCaseKeys(res.data);
           setBookDetail({
@@ -179,14 +182,31 @@ const Book = () => {
   useEffect(() => {
     // Show Carousel
     dispatch(setCarouselDisplay(false));
-    dispatch(setFooterDisplay(false));
+    dispatch(setFooterDisplay(true));
   }, [dispatch]);
+
+  const [isReserve, setReserveModal] = useState(false);
+  const handleReserveModal = (bool) => {
+    setReserveModal(bool);
+  };
+
+  const updateBookState = (book) => {};
 
   return (
     <>
       <div className="book" style={{ marginTop: "-30px" }}>
         <BookHeader details={bookDetail} />
-        <BookBody details={bookDetail} />
+        <BookBody
+          details={bookDetail}
+          handleReserveModal={handleReserveModal}
+        />
+
+        <BookReserveModal
+          isShow={isReserve}
+          bookDetail={bookDetail}
+          updateBookState={updateBookState}
+          handleReserveModal={handleReserveModal}
+        ></BookReserveModal>
       </div>
     </>
   );

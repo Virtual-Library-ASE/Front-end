@@ -253,7 +253,7 @@ async function renewBookStatus(info) {
  * usage: rentBookAddApi(infoobj)
  */
 
-async function rentBookAddApi(info) {
+async function addBookRentApi(info) {
   return await new Promise((resolve, reject) => {
     //get time and calcualte time +7days
     let timestamp = new Date().getTime();
@@ -839,17 +839,11 @@ async function deskBookingUpdateApi(info) {
           console.log(item);
 
           // renew the field value below if the info contains it
-          item["user_id"] = info["user_id"] ? info["user_id"] : item["user_id"];
-          item["is_delete"] = info["is_delete"]
-            ? info["is_delete"]
-            : item["is_delete"];
-          item["seat_id"] = info["seat_id"] ? info["seat_id"] : item["seat_id"];
-          item["start_time"] = info["start_time"]
-            ? info["start_time"]
-            : item["start_time"];
-          item["end_time"] = info["end_time"]
-            ? info["end_time"]
-            : item["end_time"];
+          item["user_id"] = info["user_id"] || item["user_id"];
+          item["is_delete"] = info["is_delete"] || item["is_delete"];
+          item["seat_id"] = info["seat_id"] || item["seat_id"];
+          item["start_time"] = info["start_time"] || item["start_time"];
+          item["end_time"] = info["end_time"] || item["end_time"];
 
           //renew the status in seat database
           renewDeskStatus({
@@ -895,7 +889,7 @@ export {
   getBookByNameApi,
   getCategoriesApi,
   getAllBookApi,
-  rentBookAddApi,
+  addBookRentApi,
   rentBookUpdateApi,
   signupApi,
   updateUserInfoApi,

@@ -34,6 +34,9 @@ const formItemLayout = {
     },
   },
 };
+
+let readingRoomList = [];
+
 const onFinish = (fieldsValue) => {
   // Should format date value before submit.
   const rangeTimeValue = fieldsValue["range-time-picker"];
@@ -55,7 +58,9 @@ const RoomList = (props) => {
     getAllReadingRoomApi()
       .then((res) => {
         if (res.status === 200) {
-          setRoomList(underscoreToCamelCaseKeysInArray(res.data));
+          let roomData = underscoreToCamelCaseKeysInArray(res.data);
+          setRoomList(roomData);
+          readingRoomList = roomData;
         } else {
           console.log("Error: ", res.msg);
           message.error(res.msg);
@@ -70,7 +75,7 @@ const RoomList = (props) => {
   return (
     <>
       <div className="room-list container">
-        <h2 className="text-xl font-bold mb-2">Rooms</h2>
+        <h2 className="text-xl font-bold mb-2">Reading Rooms</h2>
         {roomList.map((item, index) => (
           <div
             className="room-card h-32 w-full rounded my-4 p-2 flex justify-between items-center"
@@ -126,9 +131,11 @@ const ReserveModal = (props) => {
             rules={[{ required: true, message: "Please select room!" }]}
           >
             <Select placeholder="select room">
-              <Option value="0">Room 1</Option>
-              <Option value="1">Room 2</Option>
-              <Option value="2">Room 3</Option>
+              {readingRoomList.map((item, index) => (
+                <Option value={index} key={index}>
+                  {item.roomName}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
 
@@ -176,7 +183,6 @@ const Desks = () => {
   const dispatch = useDispatch();
   const [isReserve, setReserveModal] = useState(false);
   const handleReserveModal = (bool) => {
-    console.log(bool);
     setReserveModal(bool);
   };
 
