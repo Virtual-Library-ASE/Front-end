@@ -4,11 +4,11 @@ const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
-const readingRoomRef = firebaseConfig.firestore().collection("Reading_Room");
+const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
 const userEnvironmentConfigRef = firebaseConfig
   .firestore()
-  .collection("User_Environment_Config");
+  .collection("User_environment_config");
 const messageRef = firebaseConfig.firestore().collection("Message");
 const modelRef = firebaseConfig.firestore().collection("Model");
 const seatReservationRef = firebaseConfig
@@ -204,22 +204,22 @@ async function getAllBookApi() {
 /**
  * change the book status
  * @param {*} info : book id and status
- * @returns status:200,msg:"ok"
+ * @returns status:200, msg:"ok"
  */
 
 async function renewBookStatus(info) {
   return await new Promise((resolve, reject) => {
     bookRef
-      .where("book_id", "==", info.book_id)
+      .where("book_id", "==", info["book_id"])
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           let item = doc.data();
           item["status"] = info["status"];
 
-          // renew the fielf value below if the info contains it
+          // renew the field value below if the info contains it
           bookRef
-            .doc(info.book_id)
+            .doc(info["book_id"])
             .update(item)
             .then(() => {
               resolve({
@@ -240,14 +240,14 @@ async function renewBookStatus(info) {
 
 /**
  *  insert book reservation info to database
- * @param  info : obj contain book reservation infomation
+ * @param  info : contain book reservation information
  * @returns status:200, msg:"ok"
- * usage: rentBookAddApi(infoobj)
+ * usage: rentBookAddApi(infoObj)
  */
 
 async function addRentBookApi(info) {
   return await new Promise((resolve, reject) => {
-    //get time and calcualte time +7days
+    // get time and calculate time +7days
     let timestamp = new Date().getTime();
     let date = new Date(timestamp);
     date.setDate(date.getDate() + 7);
@@ -257,21 +257,21 @@ async function addRentBookApi(info) {
       .add(info)
       .then((docRef) => {
         //update the document with extra info
-        info.reservation_id = docRef.id;
-        info.create_time = timestamp;
-        info.return_time = newTimestamp;
+        info["reservation_id"] = docRef.id;
+        info["create_time"] = timestamp;
+        info["return_time"] = newTimestamp;
         docRef.update(info);
 
         //renew the status in book
         renewBookStatus({
-          book_id: info.book_id,
+          book_id: info["book_id"],
           status: false,
         });
 
         resolve({
           status: 200,
           msg: "ok",
-          reservation_id: info.reservation_id,
+          reservation_id: info["reservation_id"],
         });
       })
 
@@ -299,7 +299,7 @@ async function updateRentBookApi(info) {
         querySnapshot.forEach((doc) => {
           let item = doc.data();
 
-          // renew the fielf value below if the info contains it
+          // renew the field value below if the info contains it
           item["user_id"] = info["user_id"] || item["user_id"];
           item["is_delete"] = info["is_delete"] || item["is_delete"];
           item["book_id"] = info["book_id"] || item["book_id"];
@@ -346,7 +346,7 @@ async function updateRentBookApi(info) {
  */
 async function getAllCommentByBookIdApi(id) {
   return await new Promise((resolve, reject) => {
-    // traverse all the data from commentlist
+    // traverse all the data from comment list
     commentListRef
       .where("book_id", "==", id)
       .get()
@@ -525,60 +525,6 @@ async function logInApi(info) {
   });
 }
 
-async function addBookRentApi() {
-  return await new Promise((resolve, reject) => {
-    resolve({
-      data: [
-        {
-          reader_amount: 2,
-          room_capacity: 4,
-          room_id: "102",
-          room_name: "Reading Room 1",
-          thumbnail:
-            "https://images.unsplash.com/photo-1496664444929-8c75efb9546f",
-        },
-        {
-          reader_amount: 2,
-          room_capacity: 4,
-          room_id: "101",
-          room_name: "Reading Room 2",
-          thumbnail:
-            "https://images.unsplash.com/photo-1501685532562-aa6846b14a0e",
-        },
-      ],
-      status: 200,
-      msg: "ok",
-    });
-  });
-}
-
-async function getAllReadingRoomApi() {
-  return await new Promise((resolve, reject) => {
-    resolve({
-      data: [
-        {
-          reader_amount: 2,
-          room_capacity: 4,
-          room_id: "102",
-          room_name: "Reading Room 1",
-          thumbnail:
-            "https://images.unsplash.com/photo-1496664444929-8c75efb9546f",
-        },
-        {
-          reader_amount: 2,
-          room_capacity: 4,
-          room_id: "101",
-          room_name: "Reading Room 2",
-          thumbnail:
-            "https://images.unsplash.com/photo-1501685532562-aa6846b14a0e",
-        },
-      ],
-      status: 200,
-      msg: "ok",
-    });
-  });
-}
-
 export {
   getBookByIdApi,
   getBookRecommendListApi,
@@ -590,6 +536,4 @@ export {
   updateUserInfoApi,
   logInApi,
   getAllCommentByBookIdApi,
-  addBookRentApi,
-  getAllReadingRoomApi,
 };
