@@ -289,6 +289,60 @@ async function logInApi(info) {
   });
 }
 
+async function addBookRentApi() {
+  return await new Promise((resolve, reject) => {
+    resolve({
+      data: [
+        {
+          reader_amount: 2,
+          room_capacity: 4,
+          room_id: "102",
+          room_name: "Reading Room 1",
+          thumbnail:
+            "https://images.unsplash.com/photo-1496664444929-8c75efb9546f",
+        },
+        {
+          reader_amount: 2,
+          room_capacity: 4,
+          room_id: "101",
+          room_name: "Reading Room 2",
+          thumbnail:
+            "https://images.unsplash.com/photo-1501685532562-aa6846b14a0e",
+        },
+      ],
+      status: 200,
+      msg: "ok",
+    });
+  });
+}
+
+async function getAllReadingRoomApi() {
+  return await new Promise((resolve, reject) => {
+    resolve({
+      data: [
+        {
+          reader_amount: 2,
+          room_capacity: 4,
+          room_id: "102",
+          room_name: "Reading Room 1",
+          thumbnail:
+            "https://images.unsplash.com/photo-1496664444929-8c75efb9546f",
+        },
+        {
+          reader_amount: 2,
+          room_capacity: 4,
+          room_id: "101",
+          room_name: "Reading Room 2",
+          thumbnail:
+            "https://images.unsplash.com/photo-1501685532562-aa6846b14a0e",
+        },
+      ],
+      status: 200,
+      msg: "ok",
+    });
+  });
+}
+
 export {
   getBookByIdApi,
   getBookRecommendListApi,
@@ -296,4 +350,6 @@ export {
   getAllBookApi,
   signupApi,
   logInApi,
+  addBookRentApi,
+  getAllReadingRoomApi,
 };
