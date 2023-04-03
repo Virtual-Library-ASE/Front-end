@@ -6,7 +6,7 @@ const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
-const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
+const readingRoomRef = firebaseConfig.firestore().collection("Reading Room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
 const userEnvironmentConfigRef = firebaseConfig
   .firestore()
@@ -210,7 +210,7 @@ async function getAllBookApi() {
 /**
  * change the book status
  * @param {*} info : book id and status
- * @returns statue:200,msg:"ok"
+ * @returns status:200,msg:"ok"
  */
 
 async function renewBookStatus(info) {
@@ -231,13 +231,13 @@ async function renewBookStatus(info) {
             .update(item)
             .then(() => {
               resolve({
-                statue: 200,
+                status: 200,
                 msg: "ok",
               });
             })
             .catch((error) => {
               reject({
-                statue: 300,
+                status: 300,
                 msg: "Error update book status! " + error,
               });
             });
@@ -292,6 +292,62 @@ async function rentBookAddApi(info) {
       });
   });
 }
+
+/**
+ * Get book info by name
+ * @param book_name: book name
+ * @return: a list of books based on name
+ * @usage: getBookByNameApi("Harry Potter")
+ */
+async function getBookByNameApi(name) {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    bookRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get the book name
+      const name_list = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i]["book_name"] === name) {
+          name_list.push(items[i]);
+        }
+      }
+
+      //get data based on category
+      let res = name_list.map(function (item) {
+        return {
+          category: item.category,
+          book_id: item.book_id,
+          book_name: item.book_name,
+          author: item.author,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+          recommended_amount: item.recommended_amount,
+        };
+      });
+
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get book name " + name,
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+// getBookNameApi("Normal People").then(res=>{
+//   console.log(res);
+// })
 
 /**
  * update booking renting info
@@ -485,14 +541,367 @@ async function logInApi(info) {
   });
 }
 
+/**
+ * ========================================== Reading Room ==========================================
+ */
+
+/**
+ * get all the room
+ * @returns: all the list of room
+ */
+async function getAllReadingRoomApi() {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    readingRoomRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get all the reading room
+      let res = items.map(function (item) {
+        return {
+          room_name: item.room_name,
+          room_capacity: item.room_capacity,
+          room_id: item.room_id,
+          reader_amount: item.reader_amount,
+        };
+      });
+
+      //if failed
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get all the reading room failed ",
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+// getAllReadingRoomApi().then(res=>{
+//   console.log(res);
+// })
+
+/**
+ * ========================================== Model ==========================================
+ */
+
+/**
+ * model by user
+ * @param info: user_id
+ * @return: model_link status: 200, msg: "ok"
+ * @usage: getUserModelApi(infoObj)
+ */
+async function getUserModelApi(id) {
+  return await new Promise((resolve, reject) => {
+    firebaseConfig
+      .firestore()
+      .collection("Model")
+      .onSnapshot((querySnapshot) => {
+        const items = [];
+        querySnapshot.forEach((doc) => {
+          items.push(doc.data());
+        });
+
+        // Traverse all the data,
+        // find the data whose user_id is the same as the id passed in
+        let res = {};
+        for (let i = 0; i < items.length; i++) {
+          if (items[i]["model_id"] === id) {
+            res = items[i];
+          }
+        }
+
+        if (JSON.stringify(res) === "{}") {
+          reject({
+            status: 300,
+            msg: "Get model failed " + id,
+          });
+        }
+
+        // if success
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: res,
+        });
+      });
+  });
+}
+
+// getUserModelApi("104").then(res=>{
+//   console.log(res);
+// })
+
+/**
+ * get all the model
+ * @returns: all the list of model
+ */
+async function getAllModelApi() {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    modelRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get all the model
+      let res = items.map(function (item) {
+        return {
+          model_name: item.model_name,
+          model_url: item.model_url,
+          model_id: item.model_id,
+        };
+      });
+
+      //if failed
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get all the model failed ",
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+// getAllModelApi().then(res=>{
+//   console.log(res);
+// })
+
+/**
+ * ========================================== Desk Booking ==========================================
+ */
+
+async function renewDeskStatus(info) {
+  return await new Promise((resolve, reject) => {
+    seatRef
+      .where("seat_id", "==", info.seat_id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+
+          item["is_available"] = info["is_available"];
+          console.log(item);
+          // renew the field value below if the info contains it
+
+          seatRef
+            .doc(info.seat_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                status: 300,
+                msg: "Error update book status! " + error,
+              });
+            });
+        });
+      });
+  });
+}
+
+async function renewReadingRoomStatus(info) {
+  return await new Promise((resolve, reject) => {
+    readingRoomRef
+      .where("room_id", "==", info.room_id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+
+          item["room_capacity"] = item["room_capacity"] - 1;
+          console.log(item);
+          // renew the field value below if the info contains it
+
+          readingRoomRef
+            .doc(info.seat_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                status: 300,
+                msg: "Error update book status! " + error,
+              });
+            });
+        });
+      });
+  });
+}
+
+/**
+ * Desk Booking
+ * @param info:  "room_id", "seat_id", "user_id"
+ * @return: status: 200, msg: "ok"
+ * @usage: signup(infoObj)
+ */
+async function deskBookingApi(info) {
+  //completed
+  return await new Promise((resolve, reject) => {
+    //get time and calcualte time +24hrs
+    let timestamp = new Date().getTime();
+    let date = new Date(timestamp);
+    date.setDate(date.getDate() + 1);
+    let newTimestamp = date.getTime();
+
+    seatReservationRef
+      .add(info)
+      .then((docRef) => {
+        //update the document with extra info
+        info.reservation_id = docRef.id;
+        info.start_time = timestamp;
+        info.end_time = newTimestamp;
+        info.is_delete = false;
+        docRef.update(info);
+
+        //renew the status in seat database
+        renewDeskStatus({
+          seat_id: info.seat_id,
+          is_available: false,
+        });
+
+        //renew the status in reading room database
+        renewReadingRoomStatus({
+          room_id: info.room_id,
+        });
+
+        resolve({
+          status: 200,
+          msg: "ok",
+          reservation_id: info.reservation_id,
+        });
+      })
+
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error desk booking" + error,
+        });
+      });
+  });
+}
+
+// let info = {
+//   "room_id": "63283",
+//   "seat_id": "79879",
+//   "user_id": "12112",
+// }
+// deskBookingApi(info).then(res=>{
+//   console.log(res);
+// }).catch(err=>{
+//   console.log(err);
+// })
+
+// deskBookingApi("104").then(res=>{
+//   console.log(res);
+// })
+
+/**
+ * Desk Booking Update
+ * @param info:  "room_id", "seat_id", "user_id"
+ * @return: status: 200, msg: "ok"
+ * @usage: signup(infoObj)
+ */
+async function deskBookingUpdateApi(info) {
+  return await new Promise((resolve, reject) => {
+    // check the content of info in database based on reservation_id
+    seatReservationRef
+      .where("reservation_id", "==", info.reservation_id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+          console.log(item);
+
+          // renew the field value below if the info contains it
+          item["user_id"] = info["user_id"] ? info["user_id"] : item["user_id"];
+          item["is_delete"] = info["is_delete"]
+            ? info["is_delete"]
+            : item["is_delete"];
+          item["seat_id"] = info["seat_id"] ? info["seat_id"] : item["seat_id"];
+          item["start_time"] = info["start_time"]
+            ? info["start_time"]
+            : item["start_time"];
+          item["end_time"] = info["end_time"]
+            ? info["end_time"]
+            : item["end_time"];
+
+          //renew the status in seat database
+          renewDeskStatus({
+            seat_id: info.seat_id,
+            is_available: info.is_available,
+          });
+
+          //renew the status in reading room database
+          renewReadingRoomStatus({
+            room_id: info.room_id,
+            room_capacity: info.room_capacity,
+          });
+          //update info based on reservation_id
+          seatReservationRef
+            .doc(info.reservation_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                status: 300,
+                msg: "Error update renting status! " + error,
+              });
+            });
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error update renting status! " + error,
+        });
+      });
+  });
+}
+
 export {
   getBookByIdApi,
   getBookRecommendListApi,
+  getBookByNameApi,
   getCategoriesApi,
   getAllBookApi,
   rentBookAddApi,
   rentBookUpdateApi,
   signupApi,
   updateUserInfoApi,
+  getUserModelApi,
+  deskBookingApi,
+  deskBookingUpdateApi,
   logInApi,
+  getAllModelApi,
+  getAllReadingRoomApi,
 };
