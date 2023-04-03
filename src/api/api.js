@@ -130,7 +130,7 @@ async function getCategoriesApi(category) {
       });
 
       //get the category
-      const category_list = [];
+      let category_list = [];
       for (let i = 0; i < items.length; i++) {
         if (items[i]["category"] === category) {
           category_list.push(items[i]);
@@ -165,10 +165,6 @@ async function getCategoriesApi(category) {
     });
   });
 }
-
-// getCategories("Fiction").then(res=>{
-//   console.log(res);
-// })
 
 /**
  * get all the book
@@ -227,13 +223,11 @@ async function renewBookStatus(info) {
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           let item = doc.data();
-
           item["status"] = info["status"];
-          console.log(item);
-          // renew the fielf value below if the info contains it
 
+          // renew the fielf value below if the info contains it
           bookRef
-            .doc(info.bookid)
+            .doc(info.book_id)
             .update(item)
             .then(() => {
               resolve({
@@ -259,7 +253,7 @@ async function renewBookStatus(info) {
  * usage: rentBookAddApi(infoobj)
  */
 
-async function rentBookAddApi(info) {
+async function addRentBookApi(info) {
   return await new Promise((resolve, reject) => {
     //get time and calcualte time +7days
     let timestamp = new Date().getTime();
@@ -274,7 +268,6 @@ async function rentBookAddApi(info) {
         info.reservation_id = docRef.id;
         info.create_time = timestamp;
         info.return_time = newTimestamp;
-        info.is_delete = false;
         docRef.update(info);
 
         //renew the status in book
@@ -299,14 +292,12 @@ async function rentBookAddApi(info) {
   });
 }
 
-
-
 /**
  * update booking renting info
  * @param info: renting book status info
  * @returns status:200, msg:"ok"
  */
-async function rentBookUpdateApi(info) {
+async function updateRentBookApi(info) {
   return await new Promise((resolve, reject) => {
     // check the content of info in database based on reservation_id
     bookReserRef
@@ -317,22 +308,16 @@ async function rentBookUpdateApi(info) {
           let item = doc.data();
 
           // renew the fielf value below if the info contains it
-          item["user_id"] = info["user_id"] ? info["user_id"] : item["user_id"];
-          item["is_delete"] = info["is_delete"]
-            ? info["is_delete"]
-            : item["is_delete"];
-          item["book_id"] = info["book_id"] ? info["book_id"] : item["book_id"];
-          item["start_time"] = info["start_time"]
-            ? info["start_time"]
-            : item["start_time"];
-          item["end_time"] = info["end_time"]
-            ? info["end_time"]
-            : item["end_time"];
+          item["user_id"] = info["user_id"] || item["user_id"];
+          item["is_delete"] = info["is_delete"] || item["is_delete"];
+          item["book_id"] = info["book_id"] || item["book_id"];
+          item["start_time"] = info["start_time"] || item["start_time"];
+          item["end_time"] = info["end_time"] || item["end_time"];
 
           //renew the status in book
           renewBookStatus({
             book_id: info.book_id,
-            status: info.is_delete,
+            status: true,
           });
           //update info based on reservation_id
           bookReserRef
@@ -360,6 +345,65 @@ async function rentBookUpdateApi(info) {
       });
   });
 }
+
+/**
+ * get all the comment in one book
+ * @param {*} id :book_id
+ * @returns :book_id,comment_id,user_id,user_name,content,comment_page,create_time
+ * Usage: getAllCommentByBookIdApi()
+ */
+async function getAllCommentByBookIdApi(id) {
+  return await new Promise((resolve, reject) => {
+    // traverse all the data from commentlist
+    commentListRef
+      .where("book_id", "==", id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+
+          userRef
+            .where("user_id", "==", item.user_id)
+            .get()
+            .then((querySnapShot) => {
+              querySnapShot.forEach((userDoc) => {
+                let res = {
+                  book_id: item.book_id,
+                  comment_id: item.comment_id,
+                  user_id: item.user_id,
+                  user_name: userDoc.data().user_name,
+                  content: item.content,
+                  comment_page: item.comment_page,
+                  create_time: item.create_time
+                }
+                resolve({
+                  status: 200,
+                  msg: "ok",
+                  data: res
+                });
+              })
+            })
+            .catch((err) => {
+              reject({
+                status: 300,
+                msg:
+                  "Error: get book comment: " + err
+              });
+            });
+        })
+      })
+      .catch((err) => {
+        console.log(err);
+        reject({
+          status: 300,
+          msg:
+            "Error: get book comment: " + id
+        });
+      });
+  });
+}
+
+
 
 /**
  * ========================================== User ==========================================
@@ -422,7 +466,7 @@ async function updateUserInfoApi(info) {
       .then((querySnapShot) => {
         querySnapShot.forEach((doc) => {
           let item = doc.data();
-          item = { ...info }; // update user info here
+          Object.assign(item, info); // update user info here
 
           userRef
             .doc(item.user_id)
@@ -487,15 +531,15 @@ async function logInApi(info) {
 }
 
 
-
 export {
   getBookByIdApi,
   getBookRecommendListApi,
   getCategoriesApi,
   getAllBookApi,
-  rentBookAddApi,
-  rentBookUpdateApi,
+  addRentBookApi,
+  updateRentBookApi,
   signupApi,
   updateUserInfoApi,
   logInApi,
+  getAllCommentByBookIdApi
 };
