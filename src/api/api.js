@@ -2,7 +2,6 @@ import firebaseConfig from "../firebase";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 
-
 const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
@@ -723,7 +722,7 @@ async function renewReadingRoomStatus(info) {
         querySnapshot.forEach((doc) => {
           let item = doc.data();
 
-          item["room_capacity"] = item["room_capacity"] -1;
+          item["room_capacity"] = item["room_capacity"] - 1;
           console.log(item);
           // renew the field value below if the info contains it
 
@@ -747,11 +746,6 @@ async function renewReadingRoomStatus(info) {
   });
 }
 
-
-
-
-
-
 /**
  * Desk Booking
  * @param info:  "room_id", "seat_id", "user_id"
@@ -760,64 +754,62 @@ async function renewReadingRoomStatus(info) {
  */
 async function deskBookingApi(info) {
   //completed
-    return await new Promise((resolve, reject) => {
-      //get time and calcualte time +24hrs
-      let timestamp = new Date().getTime();
-      let date = new Date(timestamp);
-      date.setDate(date.getDate() + 1);
-      let newTimestamp = date.getTime();
-  
-      seatReservationRef
-        .add(info)
-        .then((docRef) => {
-          //update the document with extra info
-          info.reservation_id = docRef.id;
-          info.start_time = timestamp;
-          info.end_time = newTimestamp;
-          info.is_delete = false;
-          docRef.update(info);
-  
-          //renew the status in seat database
-          renewDeskStatus({
-            seat_id: info.seat_id,
-            is_available: false,
-          });
+  return await new Promise((resolve, reject) => {
+    //get time and calcualte time +24hrs
+    let timestamp = new Date().getTime();
+    let date = new Date(timestamp);
+    date.setDate(date.getDate() + 1);
+    let newTimestamp = date.getTime();
 
-          //renew the status in reading room database
-          renewReadingRoomStatus({
-            room_id: info.room_id,
-          });
-  
-          resolve({
-            status: 200,
-            msg: "ok",
-            reservation_id: info.reservation_id,
-          });
-        })
-  
-        .catch((error) => {
-          reject({
-            status: 300,
-            msg: "Error desk booking" + error,
-          });
+    seatReservationRef
+      .add(info)
+      .then((docRef) => {
+        //update the document with extra info
+        info.reservation_id = docRef.id;
+        info.start_time = timestamp;
+        info.end_time = newTimestamp;
+        info.is_delete = false;
+        docRef.update(info);
+
+        //renew the status in seat database
+        renewDeskStatus({
+          seat_id: info.seat_id,
+          is_available: false,
         });
-    });
-  }
-  
 
+        //renew the status in reading room database
+        renewReadingRoomStatus({
+          room_id: info.room_id,
+        });
 
-  // let info = { 
-  //   "room_id": "63283",
-  //   "seat_id": "79879",
-  //   "user_id": "12112",
-  // }
-  // deskBookingApi(info).then(res=>{
-  //   console.log(res);
-  // }).catch(err=>{
-  //   console.log(err);
-  // })
+        resolve({
+          status: 200,
+          msg: "ok",
+          reservation_id: info.reservation_id,
+        });
+      })
 
-  // deskBookingApi("104").then(res=>{
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error desk booking" + error,
+        });
+      });
+  });
+}
+
+// let info = {
+//   "room_id": "63283",
+//   "seat_id": "79879",
+//   "user_id": "12112",
+// }
+// deskBookingApi(info).then(res=>{
+//   console.log(res);
+// }).catch(err=>{
+//   console.log(err);
+// })
+
+// deskBookingApi("104").then(res=>{
 //   console.log(res);
 // })
 
@@ -888,8 +880,6 @@ async function deskBookingUpdateApi(info) {
       });
   });
 }
-
-
 
 export {
   getBookByIdApi,
