@@ -7,6 +7,7 @@ import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 import { useEffect, useState } from "react";
 import { getAllBookApi } from "../../api/api";
 import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
+import { message } from "antd";
 
 const Books = () => {
   // Show Carousel
@@ -20,11 +21,13 @@ const Books = () => {
         if (res.status === 200) {
           setTotalBookList(underscoreToCamelCaseKeysInArray(res.data));
         } else {
-          console.log("Error: res.msg");
+          console.log("Error: ", res.msg);
+          message.error("Something wrong when getting bookList");
         }
       })
       .catch((err) => {
         console.log("Error: ", err);
+        message.error("Something wrong when getting bookList");
       });
   }, []);
 

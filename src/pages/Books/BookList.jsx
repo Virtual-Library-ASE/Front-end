@@ -1,9 +1,13 @@
-import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+
+import { message, Popover } from "antd";
 import { LeftOutlined, LikeOutlined } from "@ant-design/icons";
+
 import { getCategoriesApi } from "../../api/api";
+import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
-import { Popover } from "antd";
 
 const BookCard = (params) => {
   let bookInfo = params.bookInfo;
@@ -47,10 +51,10 @@ const BookCard = (params) => {
 
 const BookList = (params) => {
   const navigate = useNavigate();
+
   // Get route parameters
   const routerParams = useParams();
   const isCategory = JSON.stringify(routerParams) !== "{}";
-
   let bookListTitle = isCategory ? routerParams.category : "All Books";
 
   const [bookList, setBookList] = useState([]);
@@ -58,17 +62,26 @@ const BookList = (params) => {
     setBookList(params.bookList || []);
   }, [params.bookList]);
 
+  // Get category book list
   useEffect(() => {
     if (isCategory) {
       getCategoriesApi(routerParams.category).then((res) => {
         if (res.status === 200) {
           setBookList(underscoreToCamelCaseKeysInArray(res.data));
         } else {
-          console.log("Something wrong when getting bookList");
+          console.log("Something wrong when getting bookList: ", res.msg);
+          message.error("Something wrong when getting bookList");
         }
       });
     }
   }, []);
+
+  // Show Carousel
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setCarouselDisplay(true));
+    dispatch(setFooterDisplay(true));
+  }, [dispatch]);
 
   return (
     <>
