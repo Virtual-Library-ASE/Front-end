@@ -565,6 +565,7 @@ async function getAllReadingRoomApi() {
           room_capacity: item.room_capacity,
           room_id: item.room_id,
           reader_amount: item.reader_amount,
+          thumbnail: item.thumbnail,
         };
       });
 

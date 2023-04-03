@@ -2,19 +2,19 @@ import "./Desks.css";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 import { useEffect, useState } from "react";
-import _ from "lodash";
-import { faker } from "@faker-js/faker";
 import * as React from "react";
-import { Button, DatePicker, Form, TimePicker, Modal, Select } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  TimePicker,
+  Modal,
+  Select,
+  message,
+} from "antd";
+import { getAllReadingRoomApi } from "../../api/api";
+import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
 const { Option } = Select;
-
-const MOCK_ROOM_LIST = _.times(5, () => ({
-  id: faker.database.mongodbObjectId(),
-  name: faker.name.fullName(),
-  capacity: faker.finance.amount(20, 30, 0),
-  thumbnail: faker.image.city(200, 200, true),
-  readAmount: faker.finance.amount(0, 30, 0),
-}));
 
 const formItemLayout = {
   labelCol: {
@@ -49,7 +49,24 @@ const onFinish = (fieldsValue) => {
 };
 
 const RoomList = (props) => {
-  const roomList = MOCK_ROOM_LIST;
+  const [roomList, setRoomList] = useState([]);
+
+  useEffect(() => {
+    getAllReadingRoomApi()
+      .then((res) => {
+        if (res.status === 200) {
+          setRoomList(underscoreToCamelCaseKeysInArray(res.data));
+        } else {
+          console.log("Error: ", res.msg);
+          message.error(res.msg);
+        }
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+        message.error(err);
+      });
+  }, []);
+
   return (
     <>
       <div className="room-list container">
@@ -60,13 +77,13 @@ const RoomList = (props) => {
             key={index}
           >
             <div className="left overflow-hidden w-28">
-              <img src={item.thumbnail} alt={item.name} />
+              <img src={item.thumbnail} alt={item.roomName} />
             </div>
             <div className="middle">
-              <div className="name text-base font-bold">{item.name}</div>
+              <div className="name text-base font-bold">{item.roomName}</div>
               <div className="desc text-sm">
-                There are currently {item.capacity} seats in the room, and there
-                are still {item.readAmount} seats left
+                There are currently {item.roomCapacity} seats in the room, and
+                there are still {item.readerAmount} seats left
               </div>
             </div>
             <div className="right mx-2">
