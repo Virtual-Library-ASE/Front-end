@@ -1,18 +1,10 @@
 import firebaseConfig from "../firebase";
-import _ from "lodash";
-import { faker } from "@faker-js/faker";
-//import  DateTime from DateTime
-
-// var DateTime = require('datetime-js')
-let dateObj = new Date();
-let tomorrow = new Date();
-tomorrow.setDate(dateObj.getDate() + 1);
 
 const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
-const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
+const readingRoomRef = firebaseConfig.firestore().collection("Reading_Room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
 const userEnvironmentConfigRef = firebaseConfig
   .firestore()
@@ -402,8 +394,6 @@ async function getAllCommentByBookIdApi(id) {
       });
   });
 }
-
-
 
 /**
  * ========================================== User ==========================================
