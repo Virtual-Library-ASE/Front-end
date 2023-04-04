@@ -351,7 +351,7 @@ async function getAllCommentByBookIdApi(id) {
       .where("book_id", "==", id)
       .get()
       .then((querySnapshot) => {
-        let comments = []
+        let comments = [];
         querySnapshot.forEach((doc) => {
           let item = doc.data();
 
@@ -363,7 +363,7 @@ async function getAllCommentByBookIdApi(id) {
             content: item.content,
             comment_page: item.comment_page,
             create_time: item.create_time,
-          }
+          };
 
           userRef
             .where("user_id", "==", item.user_id)
@@ -380,13 +380,13 @@ async function getAllCommentByBookIdApi(id) {
               });
             });
 
-          comments.push(tmp)
+          comments.push(tmp);
         });
 
         resolve({
           status: 200,
           msg: "ok",
-          data: comments
+          data: comments,
         });
       })
       .catch((err) => {
@@ -399,7 +399,6 @@ async function getAllCommentByBookIdApi(id) {
   });
 }
 
-
 async function addCommentByBookIdApi(info) {
   return await new Promise((resolve, reject) => {
     commentListRef
@@ -407,33 +406,34 @@ async function addCommentByBookIdApi(info) {
       .then((doc) => {
         info["create_time"] = getTimestamp();
         info["is_delete"] = false;
-        info["comment_id"] = doc.id
+        info["comment_id"] = doc.id;
         doc.update(info);
 
         resolve({
           status: 200,
           msg: "ok",
           data: {
-            "comment_id": info.comment_id
-          }
+            comment_id: info.comment_id,
+          },
         });
-        bookRef.doc(info.book_id).get()
+        bookRef
+          .doc(info.book_id)
+          .get()
           .then((doc) => {
             doc.ref.update({
               ...doc.data(),
-              comment_amount: doc.data()["comment_amount"] + 1
-            })
-          })
+              comment_amount: doc.data()["comment_amount"] + 1,
+            });
+          });
       })
       .catch((error) => {
         reject({
           status: 300,
-          msg: "Error: add comment failed" + error
+          msg: "Error: add comment failed" + error,
         });
-      })
-  })
+      });
+  });
 }
-
 
 /**
  * ========================================== User ==========================================
@@ -573,7 +573,7 @@ function getTimestamp(delay = 0) {
   date.setDate(date.getDate() + delay);
   return date.getTime();
 }
-function getAllReadingRoomApi() { }
+function getAllReadingRoomApi() {}
 
 export {
   getBookByIdApi,
@@ -587,5 +587,5 @@ export {
   logInApi,
   getAllCommentByBookIdApi,
   addCommentByBookIdApi,
-  getAllReadingRoomApi
+  getAllReadingRoomApi,
 };
