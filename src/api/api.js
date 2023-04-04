@@ -4,7 +4,7 @@ const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
-const readingRoomRef = firebaseConfig.firestore().collection("Reading_Room");
+const readingRoomRef = firebaseConfig.firestore().collection("Reading Room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
 const userEnvironmentConfigRef = firebaseConfig
   .firestore()
@@ -202,6 +202,60 @@ async function getAllBookApi() {
 }
 
 /**
+ * Get book info by name
+ * @param book_name: book name
+ * @return: a list of books based on name
+ * @usage: getBookByNameApi("Harry Potter")
+ */
+async function getBookByNameApi(name) {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    bookRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get the book name
+      const name_list = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i]["book_name"] === name) {
+          name_list.push(items[i]);
+        }
+      }
+
+      //get data based on category
+      let res = name_list.map(function (item) {
+        return {
+          category: item.category,
+          book_id: item.book_id,
+          book_name: item.book_name,
+          author: item.author,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+          recommended_amount: item.recommended_amount,
+        };
+      });
+
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get book name " + name,
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+
+
+/**
  * ========================================== User ==========================================
  */
 
@@ -282,6 +336,53 @@ async function logInApi(info) {
   });
 }
 
+/**
+ * ========================================== Reading Room ==========================================
+ */
+
+/**
+ * get all the room
+ * @returns: all the list of room
+ */
+async function getAllReadingRoomApi() {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    readingRoomRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get all the reading room
+      let res = items.map(function (item) {
+        return {
+          room_name: item.room_name,
+          room_capacity: item.room_capacity,
+          room_id: item.room_id,
+          reader_amount: item.reader_amount,
+          thumbnail: item.thumbnail
+        };
+      });
+
+      //if failed
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get all the reading room failed ",
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+
+
 export {
   getBookByIdApi,
   getBookRecommendListApi,
@@ -289,4 +390,6 @@ export {
   getAllBookApi,
   signupApi,
   logInApi,
+  getAllReadingRoomApi,
+  getBookByNameApi
 };
