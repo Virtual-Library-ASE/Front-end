@@ -428,17 +428,6 @@ async function addCommentByBookIdApi(info) {
   })
 }
 
-addCommentByBookIdApi({
-  book_id:"123213",
-  user_id:"123213",
-  comment_page:21343,
-  content:"i hate backend"
-}).then((result) => {
-  console.log(result);
-}).catch((err) => {
-  console.log(err);
-});
-
 
 /**
  * ========================================== User ==========================================
