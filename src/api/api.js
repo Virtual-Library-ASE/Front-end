@@ -352,6 +352,7 @@ async function getAllCommentByBookIdApi(id) {
       .where("book_id", "==", id)
       .get()
       .then((querySnapshot) => {
+        let promises = [];
         let comments = [];
         querySnapshot.forEach((doc) => {
           let item = doc.data();
@@ -366,7 +367,7 @@ async function getAllCommentByBookIdApi(id) {
             create_time: item.create_time,
           };
 
-          userRef
+          let promise = userRef
             .where("user_id", "==", item.user_id)
             .get()
             .then((querySnapShot) => {
@@ -375,20 +376,26 @@ async function getAllCommentByBookIdApi(id) {
               });
             })
             .catch((err) => {
-              reject({
-                status: 300,
-                msg: "Error: get book comment: " + err,
-              });
+              throw new Error("Error: get book comment: " + err);
             });
-
+          promises.push(promise);
           comments.push(tmp);
         });
 
-        resolve({
-          status: 200,
-          msg: "ok",
-          data: comments,
-        });
+        Promise.all(promises)
+          .then(() => {
+            resolve({
+              status: 200,
+              msg: "ok",
+              data: comments,
+            });
+          })
+          .catch((err) => {
+            reject({
+              status: 300,
+              msg: "Error: get book comment: " + err,
+            });
+          });
       })
       .catch((err) => {
         reject({

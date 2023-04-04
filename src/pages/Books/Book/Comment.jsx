@@ -1,7 +1,15 @@
 import { useSelector } from "react-redux";
-import { Button, Form, Input, message, Modal, Switch } from "antd";
-import React, { useState } from "react";
-import { addCommentByBookIdApi } from "../../../api/api";
+import { Button, Form, Input, message, Modal, Popconfirm, Switch } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  addCommentByBookIdApi,
+  getAllCommentByBookIdApi,
+} from "../../../api/api";
+import {
+  timestampToDate,
+  underscoreToCamelCaseKeysInArray,
+} from "../../../resources/js/common";
+import { useParams } from "react-router-dom";
 
 const formItemLayout = {
   labelCol: {
@@ -136,8 +144,28 @@ const CommentModal = (props) => {
 
 const Comment = (params) => {
   const isLogin = useSelector((state) => state.isLogin);
+  const userInfo = useSelector((state) => state.userInfo);
 
   const [isCommentModel, setCommentModel] = useState(false);
+  const [commentList, setCommentList] = useState([]);
+
+  // Get route parameters
+  const routerParams = useParams();
+
+  useEffect(() => {
+    getAllCommentByBookIdApi(routerParams.id)
+      .then((res) => {
+        if (res.status === 200) {
+          setCommentList(underscoreToCamelCaseKeysInArray(res.data));
+        } else {
+          console.log("Error: res.msg");
+        }
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+      });
+  }, []);
+
   const handleCommentModal = (bool) => {
     setCommentModel(bool);
   };
@@ -150,6 +178,11 @@ const Comment = (params) => {
 
     handleCommentModal(true);
   };
+
+  const deleteComment = () => {
+    console.log("delete comment");
+  };
+
   return (
     <>
       <div className="comment-list mt-20">
@@ -162,14 +195,35 @@ const Comment = (params) => {
             Add
           </Button>
         </h2>
-        {comments.map((comment) => (
-          <div key={comment.id} className="comment pb-2 mb-2">
-            <div className="comment-name font-bold">{comment.name}</div>
-            <div className="comment-content my-1">{comment.content}</div>
-            <div className="comment-details text-sm">
-              <span className="comment-post-time">
-                Posted on {comment.update_time}
-              </span>
+        {commentList.map((comment, index) => (
+          <div
+            key={index}
+            className="comment pb-2 mb-2 flex justify-between items-center"
+          >
+            <div>
+              <div className="comment-name font-bold">{comment.userName}</div>
+              <div className="comment-content my-1">{comment.content}</div>
+              <div className="comment-details text-sm">
+                <span className="comment-post-time">
+                  Posted on {comment.createTime}
+                </span>
+              </div>
+            </div>
+            <div>
+              {comment.userId === userInfo.userId ? (
+                <Popconfirm
+                  title="Delete the comment"
+                  description="Are you sure to delete this comment?"
+                  onConfirm={deleteComment}
+                  onCancel={() => {}}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button>Delete</Button>
+                </Popconfirm>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         ))}
