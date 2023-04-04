@@ -20,7 +20,12 @@ export default function BubblyBtn(params) {
     <>
       <button
         style={btnStyle}
-        className={"bubbly-button " + (isAnimate ? "animate" : "")}
+        disabled={params.disabled}
+        className={
+          "bubbly-button " +
+          (params.disabled ? "isActive " : "active ") +
+          (isAnimate ? "animate" : "")
+        }
         onClick={handleAnimate}
       >
         {params.text}

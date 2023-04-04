@@ -101,6 +101,7 @@ const BookBody = (params) => {
                 <div className="btn-group mt-4">
                   <BubblyBtn
                     text="Rent this book"
+                    disabled={!details.status}
                     handleEvent={() => {
                       params.handleReserveModal(true);
                     }}

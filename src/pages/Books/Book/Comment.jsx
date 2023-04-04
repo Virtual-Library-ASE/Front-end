@@ -30,23 +30,6 @@ const formItemLayout = {
   },
 };
 
-const comments = [
-  {
-    id: 1,
-    name: "John Doe",
-    content: "Great article! Thanks for sharing.",
-    comment_date: "2022-10-10",
-    update_time: "2022-10-11 15:30:00",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    content: "I found this article really helpful. Keep up the good work!",
-    comment_date: "2022-10-12",
-    update_time: "2022-10-12 08:45:00",
-  },
-];
-
 const CommentModal = (props) => {
   const [form] = Form.useForm();
   const handleClose = () => {

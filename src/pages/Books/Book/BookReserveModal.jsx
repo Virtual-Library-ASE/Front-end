@@ -47,8 +47,8 @@ const BookReserveModal = (props) => {
     let req = {
       user_id: userInfo.userId,
       book_id: bookDetail.bookId,
-      start_time: values["range-time-picker"][0].unix(),
-      end_time: values["range-time-picker"][1].unix(),
+      start_time: values["range-time-picker"][0].unix() * 1000,
+      end_time: values["range-time-picker"][1].unix() * 1000,
     };
 
     addBookRentApi(req)
