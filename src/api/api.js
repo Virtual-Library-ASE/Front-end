@@ -10,6 +10,7 @@ const userEnvironmentConfigRef = firebaseConfig
   .firestore()
   .collection("User_environment_config");
 const messageRef = firebaseConfig.firestore().collection("Message");
+const userModelRef = firebaseConfig.firestore().collection("User_model");
 const modelRef = firebaseConfig.firestore().collection("Model");
 const seatReservationRef = firebaseConfig
   .firestore()
@@ -390,7 +391,6 @@ async function getAllCommentByBookIdApi(id) {
         });
       })
       .catch((err) => {
-        console.log(err);
         reject({
           status: 300,
           msg: "Error: get book comment: " + id,
@@ -596,6 +596,69 @@ async function updateSeatReserApi(info) {
 }
 
 /**
+ * ========================================== Model ==========================================
+ */
+
+/**
+ * User signup
+ * @param info: user's information
+ * @return: { status: 200, msg: "ok" }
+ * @usage: signup(infoObj)
+ */
+async function addUserModelApi(info) {
+  return await new Promise((resolve, reject) => {
+    userModelRef
+      .add(info)
+      .then((doc) => {
+        info.is_delete = false;
+        doc.update(info);
+
+        resolve({
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error: add user model failed: " + info + " Error msg: " + error,
+        });
+      });
+  });
+}
+
+/**
+ * User signup
+ * @param info: user's information
+ * @return: { status: 200, msg: "ok" }
+ * @usage: signup(infoObj)
+ */
+async function updateUserModelApi(info) {
+  return await new Promise((resolve, reject) => {
+    userModelRef
+      .where("user_id", "==", info.user_id)
+      .get()
+      .then((querySnapshot) => {
+        let doc = querySnapshot.docs[0];
+        let newInfo = Object.assign(doc.data(), info);
+        doc.ref.update(newInfo);
+
+        resolve({
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg:
+            "Error: update user model failed: " + info + " Error msg: " + error,
+        });
+      });
+  });
+}
+
+/**
  * ========================================== User ==========================================
  */
 
@@ -667,7 +730,6 @@ async function updateUserInfoApi(info) {
               });
             })
             .catch((err) => {
-              console.log(err);
               reject({
                 status: 300,
                 msg:
@@ -754,6 +816,38 @@ async function getUserSeatInfoApi(user_id) {
   });
 }
 
+/**
+ * Get User Model Info
+ * @param user_id:
+ * @returns {Promise<unknown>}
+ */
+async function getUserModelInfoApi(user_id) {
+  return await new Promise((resolve, reject) => {
+    userModelRef
+      .where("user_id", "==", user_id)
+      .get()
+      .then((querySnapshot) => {
+        let res = [];
+        querySnapshot.forEach((doc) => {
+          delete doc.data()["is_delete"];
+          delete doc.data()["create_time"];
+          res.push(doc.data());
+        });
+        resolve({
+          data: res,
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error msg: " + error,
+        });
+      });
+  });
+}
+
 function getTimestamp(delay = 0) {
   let timestamp = new Date().getTime();
   let date = new Date(timestamp);
@@ -764,6 +858,9 @@ function getTimestamp(delay = 0) {
 export {
   addSeatReserApi,
   updateSeatReserApi,
+  addUserModelApi,
+  updateUserModelApi,
+  getUserModelInfoApi,
   getBookByIdApi,
   getBookRecommendListApi,
   getCategoriesApi,
