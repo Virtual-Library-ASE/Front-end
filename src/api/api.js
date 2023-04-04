@@ -571,7 +571,6 @@ async function logInApi(info) {
       });
   });
 }
-function getAllReadingRoomApi() { }
 
 function getTimestamp(delay = 0) {
   let timestamp = new Date().getTime();
@@ -591,5 +590,5 @@ export {
   updateUserInfoApi,
   logInApi,
   getAllCommentByBookIdApi,
-  getAllReadingRoomApi
+  addCommentByBookIdApi
 };
