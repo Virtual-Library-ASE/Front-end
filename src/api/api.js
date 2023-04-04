@@ -245,7 +245,7 @@ async function renewBookStatus(info) {
  * usage: rentBookAddApi(infoObj)
  */
 
-async function addRentBookApi(info) {
+async function addBookRentApi(info) {
   return await new Promise((resolve, reject) => {
     // get time and calculate time +7days
     let timestamp = new Date().getTime();
@@ -351,28 +351,26 @@ async function getAllCommentByBookIdApi(id) {
       .where("book_id", "==", id)
       .get()
       .then((querySnapshot) => {
+        let comments = []
         querySnapshot.forEach((doc) => {
           let item = doc.data();
+
+          let tmp = {
+            book_id: item.book_id,
+            comment_id: item.comment_id,
+            user_id: item.user_id,
+            user_name: null,
+            content: item.content,
+            comment_page: item.comment_page,
+            create_time: item.create_time,
+          }
 
           userRef
             .where("user_id", "==", item.user_id)
             .get()
             .then((querySnapShot) => {
               querySnapShot.forEach((userDoc) => {
-                let res = {
-                  book_id: item.book_id,
-                  comment_id: item.comment_id,
-                  user_id: item.user_id,
-                  user_name: userDoc.data().user_name,
-                  content: item.content,
-                  comment_page: item.comment_page,
-                  create_time: item.create_time,
-                };
-                resolve({
-                  status: 200,
-                  msg: "ok",
-                  data: res,
-                });
+                tmp["user_name"] = userDoc.data().user_name;
               });
             })
             .catch((err) => {
@@ -381,6 +379,14 @@ async function getAllCommentByBookIdApi(id) {
                 msg: "Error: get book comment: " + err,
               });
             });
+
+            comments.push(tmp)
+        });
+
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: comments
         });
       })
       .catch((err) => {
@@ -392,6 +398,36 @@ async function getAllCommentByBookIdApi(id) {
       });
   });
 }
+
+
+async function addCommentByBookIdApi(info) {
+  return await new Promise((resolve,reject)=>{
+    commentListRef
+      .add(info)
+      .then((doc)=>{
+        debugger
+        info["create_time"]= getTimestamp();
+        info["is_delete"]= false;
+        info["comment_id"]= doc.id
+        doc.update(info);
+
+        resolve({
+          status:200,
+          msg:"ok",
+          data:{
+            "comment_id":info.comment_id
+          }
+        });
+      })
+      .catch((error)=>{
+        reject({
+          status:300,
+          msg:"Error: add comment failed"+ error
+        });
+      })
+  })
+}
+
 
 /**
  * ========================================== User ==========================================
@@ -417,11 +453,11 @@ async function signupApi(info) {
         } else {
           userRef
             .add(info)
-            .then((docRef) => {
+            .then((doc) => {
               // Update the document with its ID
-              info.user_id = docRef.id;
+              info.user_id = doc.id;
               info.is_delete = false;
-              docRef.update(info);
+              doc.update(info);
 
               resolve({
                 status: 200,
@@ -525,15 +561,23 @@ async function logInApi(info) {
   });
 }
 
+function getTimestamp(delay = 0) {
+  let timestamp = new Date().getTime();
+  let date = new Date(timestamp);
+  date.setDate(date.getDate() + delay);
+  return date.getTime();
+}
+
 export {
   getBookByIdApi,
   getBookRecommendListApi,
   getCategoriesApi,
   getAllBookApi,
-  addRentBookApi,
+  addBookRentApi,
   updateRentBookApi,
   signupApi,
   updateUserInfoApi,
   logInApi,
   getAllCommentByBookIdApi,
+  addCommentByBookIdApi
 };
