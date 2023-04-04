@@ -405,7 +405,6 @@ async function addCommentByBookIdApi(info) {
     commentListRef
       .add(info)
       .then((doc)=>{
-        debugger
         info["create_time"]= getTimestamp();
         info["is_delete"]= false;
         info["comment_id"]= doc.id
