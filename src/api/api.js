@@ -394,6 +394,60 @@ async function getAllCommentByBookIdApi(id) {
 }
 
 /**
+ * Get book info by name
+ * @param book_name: book_name
+ * @return: a list of books based on name
+ * @usage: getBookByNameApi("Harry Potter")
+ */
+async function getBookByNameApi(name) {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    bookRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get the book name
+      const name_list = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i]["book_name"] === name) {
+          name_list.push(items[i]);
+        }
+      }
+
+      //get data based on category
+      let res = name_list.map(function (item) {
+        return {
+          category: item.category,
+          book_id: item.book_id,
+          book_name: item.book_name,
+          author: item.author,
+          book_url: item.book_url,
+          thumbnail: item.thumbnail,
+          recommended_amount: item.recommended_amount,
+        };
+      });
+
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get book name " + name,
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+
+
+/**
  * ========================================== User ==========================================
  */
 
@@ -582,5 +636,6 @@ export {
   updateUserInfoApi,
   logInApi,
   getAllCommentByBookIdApi,
-  getAllReadingRoomApi
+  getAllReadingRoomApi,
+  getBookByNameApi
 };
