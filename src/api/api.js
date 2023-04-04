@@ -4,7 +4,7 @@ const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
-const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
+const readingRoomRef = firebaseConfig.firestore().collection("Reading Room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
 const userEnvironmentConfigRef = firebaseConfig
   .firestore()
@@ -524,6 +524,52 @@ async function logInApi(info) {
       });
   });
 }
+/**
+ * ========================================== Reading Room ==========================================
+ */
+
+/**
+ * get all the room
+ * @returns: all the list of room
+ */
+async function getAllReadingRoomApi() {
+  return await new Promise((resolve, reject) => {
+    // Traverse all the data
+    readingRoomRef.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+
+      //get all the reading room
+      let res = items.map(function (item) {
+        return {
+          room_name: item.room_name,
+          room_capacity: item.room_capacity,
+          room_id: item.room_id,
+          reader_amount: item.reader_amount,
+          thumbnail: item.thumbnail
+        };
+      });
+
+      //if failed
+      if (!res)
+        reject({
+          status: 300,
+          msg: "get all the reading room failed ",
+        });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
+
 
 export {
   getBookByIdApi,
@@ -536,4 +582,5 @@ export {
   updateUserInfoApi,
   logInApi,
   getAllCommentByBookIdApi,
+  getAllReadingRoomApi
 };
