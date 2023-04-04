@@ -4,11 +4,11 @@ const bookReserRef = firebaseConfig.firestore().collection("Book_reservation");
 const bookRef = firebaseConfig.firestore().collection("Book");
 const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
-const readingRoomRef = firebaseConfig.firestore().collection("Reading_Room");
+const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
 const userEnvironmentConfigRef = firebaseConfig
   .firestore()
-  .collection("User_Environment_Config");
+  .collection("User_environment_config");
 const messageRef = firebaseConfig.firestore().collection("Message");
 const modelRef = firebaseConfig.firestore().collection("Model");
 const seatReservationRef = firebaseConfig
@@ -202,6 +202,125 @@ async function getAllBookApi() {
 }
 
 /**
+ * ========================================== Seat ==========================================
+ */
+
+async function addSeatReserApi(info) {
+  return await new Promise((resolve, reject) => {
+    // 1. Query rest available seats of this room
+    seatRef
+      .where("room_id", "==", info.room_id)
+      .where("is_available", "==", true)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.size) {
+          reject({
+            status: 300,
+            msg: "No extra seat in this room!",
+          });
+        }
+        // 2. Assign the first seat to this user
+        let seat_doc = querySnapshot.docs[0];
+        let seat_id = seat_doc.data()["seat_id"];
+
+        // 3. Add this reservation info to Seat_reservation collection
+        let newInfo = {
+          user_id: info["user_id"],
+          seat_id: seat_id,
+          start_time: info["start_time"],
+          end_time: info["end_time"],
+          create_time: getTimestamp(),
+          return_time: getTimestamp(1),
+        };
+        seatReservationRef
+          .add(newInfo)
+          .then((docRef) => {
+            info.reservation_id = docRef.id;
+            info.is_delete = false;
+            docRef.update(info);
+
+            resolve({
+              status: 200,
+              msg: "ok",
+              data: {
+                reservation_id: docRef.id,
+              },
+            });
+          })
+          .catch((error) => {
+            reject({
+              status: 300,
+              msg: "Error: rent seat failed: " + info + " Error msg: " + error,
+            });
+          });
+
+        // 4.Update state of this seat
+        seat_doc.ref.update({
+          ...seat_doc.data(),
+          is_available: false,
+        });
+
+        // 5.Update reader_amount of this room
+        readingRoomRef
+          .doc(info.room_id)
+          .get()
+          .then((doc) => {
+            doc.ref.update({
+              ...doc.data(),
+              reader_amount: doc.data()["reader_amount"] + 1,
+            });
+          })
+          .catch((err) => {
+            reject({
+              status: 300,
+              msg:
+                "Error: update reader_amount error " +
+                info +
+                " Error msg: " +
+                err,
+            });
+          });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg:
+            "Error: update reader_amount error " +
+            info +
+            " Error msg: " +
+            error,
+        });
+      });
+  });
+}
+
+async function updateSeatReserApi(info) {
+  return await new Promise((resolve, reject) => {
+    //judge if the input info is correct in database
+    seatReservationRef
+      .doc(info.reservation_id)
+      .get()
+      .then((doc) => {
+        let item = doc.data();
+        Object.assign(item, info);
+        doc.ref.update(item);
+
+        resolve({
+          data: item,
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Seat Reservation update error " + info + " Error msg: " + error,
+        });
+      });
+  });
+}
+
+/**
  * ========================================== User ==========================================
  */
 
@@ -213,7 +332,6 @@ async function getAllBookApi() {
  */
 async function signupApi(info) {
   return await new Promise((resolve, reject) => {
-    //
     userRef
       .where("email", "==", info.email)
       .get()
@@ -282,11 +400,48 @@ async function logInApi(info) {
   });
 }
 
+/**
+ * Get User's seat info
+ * @param user_id:
+ * @returns {Promise<unknown>}
+ */
+async function getUserSeatInfoApi(user_id) {
+  return await new Promise((resolve, reject) => {
+    //judge if the input info is correct in database
+    seatReservationRef
+      .where("user_id", "==", user_id)
+      .get()
+      .then((querySnapshot) => {
+        resolve({
+          data: querySnapshot.docs[0].data(),
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error msg: " + error,
+        });
+      });
+  });
+}
+
+function getTimestamp(delay = 0) {
+  let timestamp = new Date().getTime();
+  let date = new Date(timestamp);
+  date.setDate(date.getDate() + delay);
+  return date.getTime();
+}
+
 export {
+  addSeatReserApi,
+  updateSeatReserApi,
   getBookByIdApi,
   getBookRecommendListApi,
   getCategoriesApi,
   getAllBookApi,
+  getUserSeatInfoApi,
   signupApi,
   logInApi,
 };
