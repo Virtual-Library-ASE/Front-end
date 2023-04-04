@@ -399,13 +399,45 @@ async function getAllCommentByBookIdApi(id) {
   });
 }
 
-// getAllCommentByBookIdApi("4jKs5VubbLpTvCkAoa2N").then(res => {
-//   console.log(res);
-// }).catch(
-//   err => {
-//     console.log(err);
-//   }
-// )
+
+async function addCommentByBookIdApi(info) {
+  return await new Promise((resolve,reject)=>{
+    commentListRef
+      .add(info)
+      .then((doc)=>{
+        debugger
+        info["create_time"]= getTimestamp();
+        info["is_delete"]= false;
+        info["comment_id"]= doc.id
+        doc.update(info);
+
+        resolve({
+          status:200,
+          msg:"ok",
+          data:{
+            "comment_id":info.comment_id
+          }
+        });
+      })
+      .catch((error)=>{
+        reject({
+          status:300,
+          msg:"Error: add comment failed"+ error
+        });
+      })
+  })
+}
+
+addCommentByBookIdApi({
+  book_id:"123213",
+  user_id:"123213",
+  comment_page:21343,
+  content:"i hate backend"
+}).then((result) => {
+  console.log(result);
+}).catch((err) => {
+  console.log(err);
+});
 
 
 /**
@@ -432,11 +464,11 @@ async function signupApi(info) {
         } else {
           userRef
             .add(info)
-            .then((docRef) => {
+            .then((doc) => {
               // Update the document with its ID
-              info.user_id = docRef.id;
+              info.user_id = doc.id;
               info.is_delete = false;
-              docRef.update(info);
+              doc.update(info);
 
               resolve({
                 status: 200,
@@ -540,6 +572,13 @@ async function logInApi(info) {
   });
 }
 function getAllReadingRoomApi() { }
+
+function getTimestamp(delay = 0) {
+  let timestamp = new Date().getTime();
+  let date = new Date(timestamp);
+  date.setDate(date.getDate() + delay);
+  return date.getTime();
+}
 
 export {
   getBookByIdApi,
