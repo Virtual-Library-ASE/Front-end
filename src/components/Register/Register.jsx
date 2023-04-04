@@ -1,14 +1,19 @@
 import "./Register.css";
-import { Button, Checkbox, Form, Input, Select, Modal } from "antd";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Select,
+  Modal,
+  DatePicker,
+  message,
+} from "antd";
 import React from "react";
+import { signupApi } from "../../api/api";
+import { getRandomNumber } from "../../resources/js/common";
 
 const { Option } = Select;
-
-interface DataNodeType {
-  value: string;
-  label: string;
-  children?: DataNodeType[];
-}
 
 const formItemLayout = {
   labelCol: {
@@ -34,15 +39,48 @@ const tailFormItemLayout = {
   },
 };
 
-const App = (props) => {
+const Register = (props) => {
   const [form] = Form.useForm();
 
   const handleClose = () => {
     props.handleRegister(false);
   };
 
-  const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
+  const handleClear = () => {
+    form.resetFields();
+  };
+
+  let onFinish = (values) => {
+    const avatarBasicUrl =
+      "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/";
+
+    let req = {
+      user_name: values.nickname,
+      email: values.email,
+      password: values.password,
+      avatar: avatarBasicUrl + getRandomNumber() + ".jpg",
+      phone: values.phone,
+      gender: values.gender,
+      birth_date: values.birthDate.unix(),
+      desc: values.desc,
+    };
+
+    signupApi(req)
+      .then((res) => {
+        if (res.status === 200) {
+          message.success("Successfully Register");
+          handleClose();
+          toLogin();
+        } else {
+          console.log("Something wrong when user register");
+        }
+
+        handleClear();
+      })
+      .catch((err) => {
+        console.log("Something wrong when user register: ", err);
+        message.error("Register Failed: ", err);
+      });
   };
 
   const toLogin = () => {
@@ -178,7 +216,15 @@ const App = (props) => {
           </Form.Item>
 
           <Form.Item
-            name="intro"
+            name="birthDate"
+            label="Birth Date"
+            rules={[{ required: true, message: "Please pick your date!" }]}
+          >
+            <DatePicker className="w-full" />
+          </Form.Item>
+
+          <Form.Item
+            name="desc"
             label="Intro"
             className="intro"
             rules={[{ required: true, message: "Please input Intro" }]}
@@ -207,6 +253,7 @@ const App = (props) => {
               </a>
             </Checkbox>
           </Form.Item>
+
           <Form.Item {...tailFormItemLayout}>
             <Button
               type="primary"
@@ -229,4 +276,4 @@ const App = (props) => {
   );
 };
 
-export default App;
+export default Register;

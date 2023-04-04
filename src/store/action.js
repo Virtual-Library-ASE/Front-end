@@ -3,6 +3,11 @@ export const setLogin = (bool) => ({
   data: bool,
 });
 
+export const setUserInfo = (bool) => ({
+  type: "SET_USER_INFO",
+  data: bool,
+});
+
 export const setCarouselDisplay = (bool) => ({
   type: "SET_CAROUSEL_STATUS",
   data: bool,

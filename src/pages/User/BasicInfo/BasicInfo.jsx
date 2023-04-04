@@ -2,15 +2,23 @@ import { Button, Form, Input, message, Modal } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import React, { useState, useImperativeHandle } from "react";
 
+const getBirthDateFormat = (timeStamp) => {
+  let date = new Date(timeStamp);
+  let DD = String(date.getDate()).padStart(2, "0");
+  let MM = String(date.getMonth() + 1).padStart(2, "0");
+  let yyyy = date.getFullYear();
+
+  return yyyy + "-" + MM + "-" + DD;
+};
 const getBasicInfoArr = (infoData) => {
   return [
     {
       label: "Name",
-      value: infoData.name,
+      value: infoData.userName,
     },
     {
       label: "Password",
-      value: infoData.password,
+      value: infoData.password.replace(/./g, "*"),
     },
     {
       label: "Email",
@@ -26,7 +34,7 @@ const getBasicInfoArr = (infoData) => {
     },
     {
       label: "Birth Date",
-      value: infoData.birthDate,
+      value: getBirthDateFormat(infoData.birthDate),
     },
     {
       label: "Description",
@@ -52,8 +60,17 @@ const BasicModal = (props) => {
 
   let onFinish = (values) => {
     console.log(values);
-    message.success("Successfully logged in");
+    message.success("Updated Successfully");
     setModalOpen(false);
+  };
+
+  let handleClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleDisabledIpt = (label) => {
+    const disabledArr = ["Email"];
+    return disabledArr.indexOf(label) >= 0;
   };
 
   return (
@@ -63,6 +80,7 @@ const BasicModal = (props) => {
         centered
         open={modalOpen}
         footer={null}
+        onCancel={handleClose}
       >
         <Form
           name="normal_login"
@@ -86,12 +104,17 @@ const BasicModal = (props) => {
                 },
               ]}
             >
-              <Input />
+              <Input
+                type={item.label === "Password" ? "password" : "text"}
+                disabled={handleDisabledIpt(item.label)}
+              />
             </Form.Item>
           ))}
 
           <div className="w-full text-right">
-            <Button className="login-form-button mr-2">Cancel</Button>
+            <Button className="login-form-button mr-2" onClick={handleClose}>
+              Cancel
+            </Button>
             <Button
               type="primary"
               htmlType="submit"

@@ -122,7 +122,7 @@ async function getCategoriesApi(category) {
       });
 
       //get the category
-      const category_list = [];
+      let category_list = [];
       for (let i = 0; i < items.length; i++) {
         if (items[i]["category"] === category) {
           category_list.push(items[i]);
@@ -198,6 +198,240 @@ async function getAllBookApi() {
         data: res,
       });
     });
+  });
+}
+
+/**
+ * change the book status
+ * @param {*} info : book id and status
+ * @returns status:200, msg:"ok"
+ */
+
+async function renewBookStatus(info) {
+  return await new Promise((resolve, reject) => {
+    bookRef
+      .where("book_id", "==", info["book_id"])
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+          item["status"] = info["status"];
+
+          // renew the field value below if the info contains it
+          bookRef
+            .doc(info["book_id"])
+            .update(item)
+            .then(() => {
+              resolve({
+                statue: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                statue: 300,
+                msg: "Error update book status! " + error,
+              });
+            });
+        });
+      });
+  });
+}
+
+/**
+ *  insert book reservation info to database
+ * @param  info : contain book reservation information
+ * @returns status:200, msg:"ok"
+ * usage: rentBookAddApi(infoObj)
+ */
+
+async function addBookRentApi(info) {
+  return await new Promise((resolve, reject) => {
+    // get time and calculate time +7days
+    let timestamp = new Date().getTime();
+    let date = new Date(timestamp);
+    date.setDate(date.getDate() + 7);
+    let newTimestamp = date.getTime();
+
+    bookReserRef
+      .add(info)
+      .then((docRef) => {
+        //update the document with extra info
+        info["reservation_id"] = docRef.id;
+        info["create_time"] = timestamp;
+        info["return_time"] = newTimestamp;
+        docRef.update(info);
+
+        //renew the status in book
+        renewBookStatus({
+          book_id: info["book_id"],
+          status: false,
+        });
+
+        resolve({
+          status: 200,
+          msg: "ok",
+          reservation_id: info["reservation_id"],
+        });
+      })
+
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error add book renting" + error,
+        });
+      });
+  });
+}
+
+/**
+ * update booking renting info
+ * @param info: renting book status info
+ * @returns status:200, msg:"ok"
+ */
+async function updateRentBookApi(info) {
+  return await new Promise((resolve, reject) => {
+    // check the content of info in database based on reservation_id
+    bookReserRef
+      .where("reservation_id", "==", info.reservation_id)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+
+          // renew the field value below if the info contains it
+          item["user_id"] = info["user_id"] || item["user_id"];
+          item["is_delete"] = info["is_delete"] || item["is_delete"];
+          item["book_id"] = info["book_id"] || item["book_id"];
+          item["start_time"] = info["start_time"] || item["start_time"];
+          item["end_time"] = info["end_time"] || item["end_time"];
+
+          //renew the status in book
+          renewBookStatus({
+            book_id: info.book_id,
+            status: true,
+          });
+          //update info based on reservation_id
+          bookReserRef
+            .doc(info.reservation_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((error) => {
+              reject({
+                status: 300,
+                msg: "Error update renting status! " + error,
+              });
+            });
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error update renting status! " + error,
+        });
+      });
+  });
+}
+
+/**
+ * get all the comment in one book
+ * @param {*} id :book_id
+ * @returns :book_id,comment_id,user_id,user_name,content,comment_page,create_time
+ * Usage: getAllCommentByBookIdApi()
+ */
+async function getAllCommentByBookIdApi(id) {
+  return await new Promise((resolve, reject) => {
+    // traverse all the data from comment list
+    commentListRef
+      .where("book_id", "==", id)
+      .get()
+      .then((querySnapshot) => {
+        let comments = [];
+        querySnapshot.forEach((doc) => {
+          let item = doc.data();
+
+          let tmp = {
+            book_id: item.book_id,
+            comment_id: item.comment_id,
+            user_id: item.user_id,
+            user_name: null,
+            content: item.content,
+            comment_page: item.comment_page,
+            create_time: item.create_time,
+          };
+
+          userRef
+            .where("user_id", "==", item.user_id)
+            .get()
+            .then((querySnapShot) => {
+              querySnapShot.forEach((userDoc) => {
+                tmp["user_name"] = userDoc.data().user_name;
+              });
+            })
+            .catch((err) => {
+              reject({
+                status: 300,
+                msg: "Error: get book comment: " + err,
+              });
+            });
+
+          comments.push(tmp);
+        });
+
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: comments,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        reject({
+          status: 300,
+          msg: "Error: get book comment: " + id,
+        });
+      });
+  });
+}
+
+async function addCommentByBookIdApi(info) {
+  return await new Promise((resolve, reject) => {
+    commentListRef
+      .add(info)
+      .then((doc) => {
+        info["create_time"] = getTimestamp();
+        info["is_delete"] = false;
+        info["comment_id"] = doc.id;
+        doc.update(info);
+
+        resolve({
+          status: 200,
+          msg: "ok",
+          data: {
+            comment_id: info.comment_id,
+          },
+        });
+        bookRef
+          .doc(info.book_id)
+          .get()
+          .then((doc) => {
+            doc.ref.update({
+              ...doc.data(),
+              comment_amount: doc.data()["comment_amount"] + 1,
+            });
+          });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error: add comment failed" + error,
+        });
+      });
   });
 }
 
@@ -336,7 +570,7 @@ async function signupApi(info) {
       .where("email", "==", info.email)
       .get()
       .then((queryRes) => {
-        if (queryRes) {
+        if (queryRes.size) {
           reject({
             status: 300,
             msg: "Error: email already exists",
@@ -344,11 +578,11 @@ async function signupApi(info) {
         } else {
           userRef
             .add(info)
-            .then((docRef) => {
+            .then((doc) => {
               // Update the document with its ID
-              info.user_id = docRef.id;
+              info.user_id = doc.id;
               info.is_delete = false;
-              docRef.update(info);
+              doc.update(info);
 
               resolve({
                 status: 200,
@@ -367,6 +601,50 @@ async function signupApi(info) {
 }
 
 /**
+ * update user info
+ * @param info: user's information
+ * @return:  status: 200, msg: "ok"
+ * @usage: updateUserInfoApi(infoObj)
+ */
+async function updateUserInfoApi(info) {
+  return await new Promise((resolve, reject) => {
+    userRef
+      .where("user_id", "==", info.user_id)
+      .get()
+      .then((querySnapShot) => {
+        querySnapShot.forEach((doc) => {
+          let item = doc.data();
+          Object.assign(item, info); // update user info here
+
+          userRef
+            .doc(item.user_id)
+            .update(item)
+            .then(() => {
+              resolve({
+                status: 200,
+                msg: "ok",
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+              reject({
+                status: 300,
+                msg:
+                  "Error: update user failed: " + info + " Error msg: " + err,
+              });
+            });
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error: update user failed: " + info + " Error msg: " + error,
+        });
+      });
+  });
+}
+
+/**
  * user login
  * @param  info: email and password
  * @returns  user details, status:200, msg:"ok"
@@ -380,16 +658,24 @@ async function logInApi(info) {
       .where("password", "==", info.password)
       .get()
       .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          let item = doc.data();
-          delete item["is_delete"];
-
-          resolve({
-            data: item,
-            status: 200,
-            msg: "ok",
+        // Judge the result of same email and password
+        if (querySnapshot.empty) {
+          reject({
+            status: 300,
+            msg: "The user does not exist or password is wrong!",
           });
-        });
+        } else {
+          querySnapshot.forEach((doc) => {
+            let item = doc.data();
+            delete item["is_delete"];
+
+            resolve({
+              data: item,
+              status: 200,
+              msg: "ok",
+            });
+          });
+        }
       })
       .catch((error) => {
         reject({
@@ -427,6 +713,8 @@ async function getUserSeatInfoApi(user_id) {
   });
 }
 
+function getAllReadingRoomApi() {}
+
 function getTimestamp(delay = 0) {
   let timestamp = new Date().getTime();
   let date = new Date(timestamp);
@@ -441,7 +729,13 @@ export {
   getBookRecommendListApi,
   getCategoriesApi,
   getAllBookApi,
+  addBookRentApi,
+  updateRentBookApi,
   getUserSeatInfoApi,
   signupApi,
+  updateUserInfoApi,
   logInApi,
+  getAllCommentByBookIdApi,
+  addCommentByBookIdApi,
+  getAllReadingRoomApi,
 };

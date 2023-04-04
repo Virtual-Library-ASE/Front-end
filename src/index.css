@@ -35,3 +35,9 @@ button,
 [type="submit"] {
   background-color: #fff;
 }
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

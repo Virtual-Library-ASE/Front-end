@@ -2,19 +2,19 @@ import "./Desks.css";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 import { useEffect, useState } from "react";
-import _ from "lodash";
-import { faker } from "@faker-js/faker";
 import * as React from "react";
-import { Button, DatePicker, Form, TimePicker, Modal, Select } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  TimePicker,
+  Modal,
+  Select,
+  message,
+} from "antd";
+import { getAllReadingRoomApi } from "../../api/api";
+import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
 const { Option } = Select;
-
-const MOCK_ROOM_LIST = _.times(5, () => ({
-  id: faker.database.mongodbObjectId(),
-  name: faker.name.fullName(),
-  capacity: faker.finance.amount(20, 30, 0),
-  thumbnail: faker.image.city(200, 200, true),
-  readAmount: faker.finance.amount(0, 30, 0),
-}));
 
 const formItemLayout = {
   labelCol: {
@@ -34,6 +34,9 @@ const formItemLayout = {
     },
   },
 };
+
+let readingRoomList = [];
+
 const onFinish = (fieldsValue) => {
   // Should format date value before submit.
   const rangeTimeValue = fieldsValue["range-time-picker"];
@@ -49,24 +52,43 @@ const onFinish = (fieldsValue) => {
 };
 
 const RoomList = (props) => {
-  const roomList = MOCK_ROOM_LIST;
+  const [roomList, setRoomList] = useState([]);
+
+  useEffect(() => {
+    getAllReadingRoomApi()
+      .then((res) => {
+        if (res.status === 200) {
+          let roomData = underscoreToCamelCaseKeysInArray(res.data);
+          setRoomList(roomData);
+          readingRoomList = roomData;
+        } else {
+          console.log("Error: ", res.msg);
+          message.error(res.msg);
+        }
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+        message.error(err);
+      });
+  }, []);
+
   return (
     <>
       <div className="room-list container">
-        <h2 className="text-xl font-bold mb-2">Rooms</h2>
+        <h2 className="text-xl font-bold mb-2">Reading Rooms</h2>
         {roomList.map((item, index) => (
           <div
             className="room-card h-32 w-full rounded my-4 p-2 flex justify-between items-center"
             key={index}
           >
             <div className="left overflow-hidden w-28">
-              <img src={item.thumbnail} alt={item.name} />
+              <img src={item.thumbnail} alt={item.roomName} />
             </div>
             <div className="middle">
-              <div className="name text-base font-bold">{item.name}</div>
+              <div className="name text-base font-bold">{item.roomName}</div>
               <div className="desc text-sm">
-                There are currently {item.capacity} seats in the room, and there
-                are still {item.readAmount} seats left
+                There are currently {item.roomCapacity} seats in the room, and
+                there are still {item.readerAmount} seats left
               </div>
             </div>
             <div className="right mx-2">
@@ -109,9 +131,11 @@ const ReserveModal = (props) => {
             rules={[{ required: true, message: "Please select room!" }]}
           >
             <Select placeholder="select room">
-              <Option value="0">Room 1</Option>
-              <Option value="1">Room 2</Option>
-              <Option value="2">Room 3</Option>
+              {readingRoomList.map((item, index) => (
+                <Option value={index} key={index}>
+                  {item.roomName}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
 
@@ -159,7 +183,6 @@ const Desks = () => {
   const dispatch = useDispatch();
   const [isReserve, setReserveModal] = useState(false);
   const handleReserveModal = (bool) => {
-    console.log(bool);
     setReserveModal(bool);
   };
 
