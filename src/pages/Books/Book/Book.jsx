@@ -6,6 +6,7 @@ import { underscoreToCamelCaseKeys } from "../../../resources/js/common";
 import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
 import { getBookByIdApi } from "../../../api/api";
 
+import { LeftOutlined } from "@ant-design/icons";
 import BubblyBtn from "../../../components/BubblyBtn/BubblyBtn";
 import BookReserveModal from "./BookReserveModal";
 import "./Book.css";
@@ -22,7 +23,9 @@ const BookHeader = (params) => {
             <div
               className="iconBox cursor-pointer"
               onClick={() => navigate(-1)}
-            ></div>
+            >
+              <LeftOutlined className="text-2xl" title="Return" />
+            </div>
           </div>
 
           <div className="info absolute bottom-4">
