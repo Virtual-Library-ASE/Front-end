@@ -380,7 +380,7 @@ async function getAllCommentByBookIdApi(id) {
               });
             });
 
-            comments.push(tmp)
+          comments.push(tmp)
         });
 
         resolve({
@@ -401,27 +401,34 @@ async function getAllCommentByBookIdApi(id) {
 
 
 async function addCommentByBookIdApi(info) {
-  return await new Promise((resolve,reject)=>{
+  return await new Promise((resolve, reject) => {
     commentListRef
       .add(info)
-      .then((doc)=>{
-        info["create_time"]= getTimestamp();
-        info["is_delete"]= false;
-        info["comment_id"]= doc.id
+      .then((doc) => {
+        info["create_time"] = getTimestamp();
+        info["is_delete"] = false;
+        info["comment_id"] = doc.id
         doc.update(info);
 
         resolve({
-          status:200,
-          msg:"ok",
-          data:{
-            "comment_id":info.comment_id
+          status: 200,
+          msg: "ok",
+          data: {
+            "comment_id": info.comment_id
           }
         });
+        bookRef.doc(info.book_id).get()
+          .then((doc) => {
+            doc.ref.update({
+              ...doc.data(),
+              comment_amount: doc.data()["comment_amount"] + 1
+            })
+          })
       })
-      .catch((error)=>{
+      .catch((error) => {
         reject({
-          status:300,
-          msg:"Error: add comment failed"+ error
+          status: 300,
+          msg: "Error: add comment failed" + error
         });
       })
   })
@@ -566,6 +573,7 @@ function getTimestamp(delay = 0) {
   date.setDate(date.getDate() + delay);
   return date.getTime();
 }
+function getAllReadingRoomApi() { }
 
 export {
   getBookByIdApi,
@@ -578,5 +586,6 @@ export {
   updateUserInfoApi,
   logInApi,
   getAllCommentByBookIdApi,
-  addCommentByBookIdApi
+  addCommentByBookIdApi,
+  getAllReadingRoomApi
 };
