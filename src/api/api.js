@@ -436,6 +436,47 @@ async function addCommentByBookIdApi(info) {
 }
 
 /**
+ * ========================================== Room ==========================================
+ */
+
+/**
+ * Get all reading room
+ * @returns {Promise<unknown>}
+ */
+async function getAllReadingRoomApi() {
+  return await new Promise((resolve, reject) => {
+    readingRoomRef.onSnapshot((querySnapshot) => {
+      if (!querySnapshot.size)
+        reject({
+          status: 300,
+          msg: "No room available",
+        });
+
+      let items = [];
+      querySnapshot.forEach((doc) => {
+        delete doc.data()["is_delete"];
+
+        items.push({
+          ...doc.data(),
+          rest_amount:
+            doc.data()["room_capacity"] - doc.data()["reader_amount"],
+          is_available: Boolean(
+            doc.data()["room_capacity"] - doc.data()["reader_amount"]
+          ),
+        });
+      });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: items,
+      });
+    });
+  });
+}
+
+/**
  * ========================================== Seat ==========================================
  */
 
@@ -712,8 +753,6 @@ async function getUserSeatInfoApi(user_id) {
       });
   });
 }
-
-function getAllReadingRoomApi() {}
 
 function getTimestamp(delay = 0) {
   let timestamp = new Date().getTime();
