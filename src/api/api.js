@@ -828,11 +828,19 @@ async function getUserSeatInfoApi(user_id) {
       .where("user_id", "==", user_id)
       .get()
       .then((querySnapshot) => {
-        resolve({
-          data: querySnapshot.docs[0].data(),
-          status: 200,
-          msg: "ok",
-        });
+        if (querySnapshot.size) {
+          resolve({
+            data: querySnapshot.docs[0].data(),
+            status: 200,
+            msg: "ok",
+          });
+        } else {
+          resolve({
+            data: [],
+            status: 200,
+            msg: "ok",
+          });
+        }
       })
       .catch((error) => {
         reject({

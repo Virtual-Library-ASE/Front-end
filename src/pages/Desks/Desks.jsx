@@ -32,7 +32,7 @@ const RoomList = (props) => {
       });
   }, []);
 
-  const reserveRoom = (item) => {
+  let reserveRoom = (item) => {
     if (!isLogin) {
       message.error("Please Login first!");
       return;
@@ -57,7 +57,7 @@ const RoomList = (props) => {
               <div className="name text-base font-bold">{item.roomName}</div>
               <div className="desc text-sm">
                 There are currently {item.roomCapacity} seats in the room, and
-                there are still {item.readerAmount} seats left
+                there are still {item.restAmount} seats left
               </div>
             </div>
             <div className="right mx-2">
