@@ -818,9 +818,11 @@ async function updateUserInfoApi(info) {
             .doc(item.user_id)
             .update(item)
             .then(() => {
+              delete item["is_delete"];
               resolve({
                 status: 200,
                 msg: "ok",
+                data: item,
               });
             })
             .catch((err) => {
