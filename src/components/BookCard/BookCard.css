@@ -44,7 +44,7 @@
   transition: background-color 1s, transform 160ms;
 }
 
-.figure:hover img,
+.figure:hover .home-book-thumbnail,
 .figure.hover img {
   border-radius: 1.5% 4% 2% 3%;
   -webkit-transform: scale(1.3) rotate(-3deg);

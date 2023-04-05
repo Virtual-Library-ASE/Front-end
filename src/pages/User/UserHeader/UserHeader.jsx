@@ -1,5 +1,5 @@
-import { Avatar } from "antd";
 import "./UserHeader.css";
+import BasicAvatar from "../../../components/BasicAvatar/BasicAvatar";
 
 export default function Header(params) {
   let infoData = params.infoData;
@@ -9,7 +9,7 @@ export default function Header(params) {
         <div className="inner-header flex justify-center items-center text-center h-72 w-full m-0 p-0">
           <div className="user-info">
             <div className="avatar">
-              <Avatar className="" size={128} src={infoData.avatar} />
+              <BasicAvatar index={5} />
             </div>
             <div className="info">
               <h2 className="text-xl mt-2">{infoData.userName}</h2>

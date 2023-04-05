@@ -30,6 +30,11 @@ const formItemLayout = {
   },
 };
 
+let updateCommentList = false;
+const toggleUpdateCommentList = () => {
+  updateCommentList = !updateCommentList;
+};
+
 const CommentModal = (props) => {
   const [form] = Form.useForm();
   const handleClose = () => {
@@ -55,6 +60,7 @@ const CommentModal = (props) => {
         if (res.status === 200) {
           message.success("Successfully Comment!");
           handleClose();
+          toggleUpdateCommentList();
         } else {
           console.log("Something wrong when add comment!");
         }
@@ -147,7 +153,7 @@ const Comment = (params) => {
       .catch((err) => {
         console.log("Error: ", err);
       });
-  }, []);
+  }, [updateCommentList]);
 
   const handleCommentModal = (bool) => {
     setCommentModel(bool);
@@ -164,6 +170,7 @@ const Comment = (params) => {
 
   const deleteComment = () => {
     console.log("delete comment");
+    toggleUpdateCommentList();
   };
 
   return (
@@ -198,7 +205,6 @@ const Comment = (params) => {
                   title="Delete the comment"
                   description="Are you sure to delete this comment?"
                   onConfirm={deleteComment}
-                  onCancel={() => {}}
                   okText="Yes"
                   cancelText="No"
                 >
