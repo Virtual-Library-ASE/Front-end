@@ -112,7 +112,7 @@ const Header = (params) => {
               onClick={() => handleAvatarModel(true)}
             >
               <BasicAvatar
-                index={isUpdate ? avatarIndex : infoData["avatar_index"]}
+                index={isUpdate ? avatarIndex : infoData["avatarIndex"]}
               />
             </div>
             <div className="info">
