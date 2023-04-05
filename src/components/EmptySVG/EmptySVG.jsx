@@ -16,7 +16,6 @@ const EmptySVG = (params) => {
               y="0"
               width="104"
               height="47"
-              background-color="#ffffff"
             >
               <g id="avion">
                 <path
@@ -26,43 +25,43 @@ const EmptySVG = (params) => {
                 <path
                   d="M23 36C28 37 69 43 80 40 88 38 98 34 102 29 82 32 22 36 23 36Z"
                   stroke="#ffffff00"
-                  stroke-width="1"
+                  strokeWidth="1"
                   fill="#14647f"
                 />
                 <path
                   d="M42 39C48 40 60 40 67 40 71 32 72 26 72 26L44 29C44 29 44 35 42 39Z"
                   stroke="#ffffff00"
-                  stroke-width="1"
+                  strokeWidth="1"
                   fill="#0c3b4d"
                 />
                 <path
                   d="M7 16C7 16 9 20 10 22 13 27 16 13 16 13L7 16Z"
                   stroke="#ffffff00"
-                  stroke-width="1"
+                  strokeWidth="1"
                   fill="#0c3b4d"
                 />
                 <path
                   d="M40 29C40 29 41 34 34 42 27 51 48 46 58 39 74 28 72 25 72 25L40 29Z"
                   stroke="#ffffff00"
-                  stroke-width="1"
+                  strokeWidth="1"
                   fill="#006e96"
                 />
                 <path
                   d="M5 14C5 14 6 15 3 19 1 22 10 20 13 17 19 11 17 11 17 11L5 14Z"
                   stroke="#ffffff00"
-                  stroke-width="1"
+                  strokeWidth="1"
                   fill="#006e96"
                 />
                 <path
                   d="M90 10C88 8 83 4 80 3 78 3 68 7 68 8 70 12 80 8 90 10Z"
                   stroke="#ffffff00"
-                  stroke-width="1"
+                  strokeWidth="1"
                   fill="#0c3b4d"
                 />
                 <path
                   d="M89 9C87 7 82 3 79 2 77 2 67 6 67 7 69 11 79 7 89 9Z"
                   stroke="#ffffff00"
-                  stroke-width="1"
+                  strokeWidth="1"
                   fill="#afe2ff"
                 />
               </g>

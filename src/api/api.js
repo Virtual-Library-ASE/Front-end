@@ -685,6 +685,24 @@ async function updateUserModelApi(info) {
   });
 }
 
+async function getAllModelApi() {
+  return await new Promise((resolve, reject) => {
+    modelRef.onSnapshot((querySnapshot) => {
+      let res = [];
+      querySnapshot.forEach((doc) => {
+        delete doc.data()["is_delete"];
+        res.push(doc.data());
+      });
+
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
+
 /**
  * ========================================== User ==========================================
  */
@@ -862,17 +880,37 @@ async function getUserModelInfoApi(user_id) {
       .where("user_id", "==", user_id)
       .get()
       .then((querySnapshot) => {
-        let res = [];
-        querySnapshot.forEach((doc) => {
-          delete doc.data()["is_delete"];
-          delete doc.data()["create_time"];
-          res.push(doc.data());
-        });
-        resolve({
-          data: res,
-          status: 200,
-          msg: "ok",
-        });
+        if (querySnapshot.empty) {
+          resolve({
+            data: {},
+            status: 200,
+            msg: "ok",
+          });
+        }
+
+        let item = querySnapshot.docs[0].data();
+        modelRef
+          .doc(item.model_id)
+          .get()
+          .then((doc) => {
+            item.thumbnail = doc.data()["thumbnail"];
+            item.model_name = doc.data()["model_name"];
+            item.create_time = doc.data()["create_time"];
+
+            delete item["is_delete"];
+
+            resolve({
+              data: item,
+              status: 200,
+              msg: "ok",
+            });
+          })
+          .catch((err) => {
+            reject({
+              status: 300,
+              msg: "Error msg: " + err,
+            });
+          });
       })
       .catch((error) => {
         reject({
@@ -895,6 +933,7 @@ export {
   updateSeatReserApi,
   addUserModelApi,
   updateUserModelApi,
+  getAllModelApi,
   getUserModelInfoApi,
   getBookByIdApi,
   getBookRecommendListApi,

@@ -1,0 +1,9 @@
+.model-list * {
+  transition: all 0.35s ease;
+}
+.model-active {
+  border: 1px solid #d9c5b6;
+  box-shadow: 3px 5px 5px #d9c5b6;
+  width: calc(49% - 2px);
+  height: calc(100% - 2px);
+}
