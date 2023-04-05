@@ -5,6 +5,7 @@ import {
   addUserModelApi,
   getAllModelApi,
   getUserModelInfoApi,
+  updateUserModelApi,
 } from "../../../api/api";
 import {
   underscoreToCamelCaseKeys,
@@ -30,6 +31,14 @@ const ModelModal = (params) => {
 
   const userInfo = useSelector((state) => state.userInfo);
 
+  const handleSubmit = () => {
+    if (params.isChangeModel) {
+      changeModel();
+    } else {
+      addNewModel();
+    }
+  };
+
   let addNewModel = () => {
     let req = {
       model_id: activeModelInfo.modelId,
@@ -37,12 +46,10 @@ const ModelModal = (params) => {
       user_name: userInfo.userName,
     };
 
-    console.log(req);
-
     addUserModelApi(req)
       .then((res) => {
         if (res.status === 200) {
-          message.success("Successfully Comment!");
+          message.success("Successfully Change Model!");
           handleClose();
         } else {
           console.log("Something wrong when add comment!");
@@ -51,7 +58,31 @@ const ModelModal = (params) => {
       })
       .catch((err) => {
         console.log("Something wrong when add comment: ", err);
-        message.error("Add comment Failed: ", err);
+        message.error("Add User Model Failed: ", err);
+      });
+  };
+
+  let changeModel = () => {
+    let req = {
+      model_id: activeModelInfo.modelId,
+      thumbnail: activeModelInfo.thumbnail,
+      user_id: userInfo.userId,
+    };
+
+    updateUserModelApi(req)
+      .then((res) => {
+        if (res.status === 200) {
+          message.success("Successfully Change Model!");
+          params.setModelInfo(activeModelInfo);
+          handleClose();
+        } else {
+          console.log("Something wrong when add comment!");
+        }
+        setActiveIndex(-1);
+      })
+      .catch((err) => {
+        console.log("Something wrong when add comment: ", err);
+        message.error("Add User Model Failed: ", err);
       });
   };
 
@@ -89,7 +120,7 @@ const ModelModal = (params) => {
 
         <div className="text-center">
           <Button
-            onClick={addNewModel}
+            onClick={handleSubmit}
             className="mt-4 w-1/2"
             type="primary"
             disabled={currActiveIndex === -1}
@@ -106,26 +137,35 @@ const ModelInfo = () => {
   const [modelInfo, setModelInfo] = useState({});
   const [modelList, setModelList] = useState([]);
   const [isShowModal, setShowModal] = useState(false);
+  const [isChangeModel, setChangeModel] = useState(false);
   const userInfo = useSelector((state) => state.userInfo);
 
   const handleModelModal = (bool) => {
     setShowModal(bool);
   };
 
-  useEffect(() => {
-    getUserModelInfoApi(userInfo.userId)
-      .then((res) => {
-        console.log(res);
-        if (res.status === 200 && JSON.stringify(res.data) !== "{}") {
-          setModelInfo(underscoreToCamelCaseKeys(res.data));
-        } else {
-          console.log("Error: res.msg");
-        }
-      })
-      .catch((err) => {
-        console.log("Error: ", err);
-      });
+  const changeModel = () => {
+    setChangeModel(true);
+    setShowModal(true);
+  };
 
+  useEffect(() => {
+    if (userInfo.userId) {
+      getUserModelInfoApi(userInfo.userId)
+        .then((res) => {
+          if (res.status === 200 && JSON.stringify(res.data) !== "{}") {
+            setModelInfo(underscoreToCamelCaseKeys(res.data));
+          } else {
+            console.log("Error: res.msg");
+          }
+        })
+        .catch((err) => {
+          console.log("Error: ", err);
+        });
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
     getAllModelApi()
       .then((res) => {
         let resData = res.data.filter(
@@ -144,14 +184,12 @@ const ModelInfo = () => {
         <h2 className="text-2xl font-bold my-4">
           <span className="mr-4">Model</span>
           {JSON.stringify(modelInfo) === "{}" ? (
-            <div>
-              <Button
-                onClick={() => handleModelModal(true)}
-                style={{ backgroundColor: "#bdb29b", color: "#fff" }}
-              >
-                Add
-              </Button>
-            </div>
+            <Button
+              onClick={() => handleModelModal(true)}
+              style={{ backgroundColor: "#bdb29b", color: "#fff" }}
+            >
+              Add
+            </Button>
           ) : (
             ""
           )}
@@ -172,10 +210,7 @@ const ModelInfo = () => {
             </div>
             <div className="right">
               <div className="m-8 info-value edit-text cursor-pointer">
-                <span
-                  className="text-base mr-2"
-                  onClick={() => handleModelModal(true)}
-                >
+                <span className="text-base mr-2" onClick={() => changeModel()}>
                   Change Model
                 </span>
                 <EditOutlined />
@@ -191,8 +226,10 @@ const ModelInfo = () => {
 
       <ModelModal
         isShowModal={isShowModal}
+        isChangeModel={isChangeModel}
         modelInfo={modelInfo}
         modelList={modelList}
+        setModelInfo={setModelInfo}
         handleModelModal={handleModelModal}
       />
     </>

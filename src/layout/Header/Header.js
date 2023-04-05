@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Header.css";
 import Search from "../../components/Search/Search";
 import Login from "../../components/Login/Login";
@@ -6,7 +6,7 @@ import Register from "../../components/Register/Register";
 import { useDispatch, useSelector } from "react-redux";
 import { UserOutlined, LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 import { message, Modal } from "antd";
-import { setLogin } from "../../store/action";
+import { setLogin, setUserInfo } from "../../store/action";
 import { useNavigate } from "react-router-dom";
 
 function BasicHeader(props) {
@@ -36,6 +36,14 @@ function BasicHeader(props) {
   };
 
   const isCurrLogin = useSelector((state) => state.isLogin);
+
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (userInfo) {
+      dispatch(setLogin(true));
+      dispatch(setUserInfo(userInfo));
+    }
+  }, []);
 
   return (
     <>

@@ -492,6 +492,7 @@ async function addSeatReserApi(info) {
     // 1. Check if a seat has been reserved
     seatReservationRef
       .where("user_id", "==", info.user_id)
+      .where("is_delete", "==", false)
       .get()
       .then((querySnapshot) => {
         if (querySnapshot.size) {
@@ -501,89 +502,109 @@ async function addSeatReserApi(info) {
           });
         }
 
-        // 2. Query rest available seats of this room
-        seatRef
-          .where("room_id", "==", info.room_id)
-          .where("is_available", "==", true)
+        // 2. Get Room thumbnail
+        readingRoomRef
+          .doc(info.room_id)
           .get()
-          .then((querySnapshot) => {
-            if (!querySnapshot.size) {
-              reject({
-                status: 300,
-                msg: "No extra seat in this room!",
-              });
-            }
-            // 3. Assign the first seat to this user
-            let seat_doc = querySnapshot.docs[0];
-            let seat_id = seat_doc.data()["seat_id"];
+          .then((doc) => {
+            let thumbnail = doc.data()["thumbnail"];
+            let room_name = doc.data()["room_name"];
 
-            // 4. Add this reservation info to Seat_reservation collection
-            let newInfo = {
-              user_id: info["user_id"],
-              seat_id: seat_id,
-              start_time: info["start_time"],
-              end_time: info["end_time"],
-              create_time: getTimestamp(),
-              return_time: getTimestamp(1),
-            };
-            seatReservationRef
-              .add(newInfo)
-              .then((docRef) => {
-                info.reservation_id = docRef.id;
-                info.is_delete = false;
-                docRef.update(info);
+            // 3. Query rest available seats of this room
+            seatRef
+              .where("room_id", "==", info.room_id)
+              .where("is_available", "==", true)
+              .get()
+              .then((querySnapshot) => {
+                if (!querySnapshot.size) {
+                  reject({
+                    status: 300,
+                    msg: "No extra seat in this room!",
+                  });
+                }
+                // 3. Assign the first seat to this user
+                let seat_doc = querySnapshot.docs[0];
+                let seat_id = seat_doc.data()["seat_id"];
 
-                resolve({
-                  status: 200,
-                  msg: "ok",
-                  data: {
-                    reservation_id: docRef.id,
-                  },
+                // 4. Add this reservation info to Seat_reservation collection
+                let newInfo = {
+                  user_id: info["user_id"],
+                  seat_id: seat_id,
+                  start_time: info["start_time"],
+                  end_time: info["end_time"],
+                  create_time: getTimestamp(),
+                  return_time: getTimestamp(1),
+                  thumbnail: thumbnail,
+                  room_name: room_name,
+                };
+                seatReservationRef
+                  .add(newInfo)
+                  .then((docRef) => {
+                    info.reservation_id = docRef.id;
+                    info.is_delete = false;
+                    docRef.update(info);
+
+                    resolve({
+                      status: 200,
+                      msg: "ok",
+                      data: {
+                        reservation_id: docRef.id,
+                      },
+                    });
+                  })
+                  .catch((error) => {
+                    reject({
+                      status: 300,
+                      msg:
+                        "Error: rent seat failed: " +
+                        info +
+                        " Error msg: " +
+                        error,
+                    });
+                  });
+
+                // 5.Update state of this seat
+                seat_doc.ref.update({
+                  ...seat_doc.data(),
+                  is_available: false,
                 });
+
+                // 6.Update reader_amount of this room
+                readingRoomRef
+                  .doc(info.room_id)
+                  .get()
+                  .then((doc) => {
+                    doc.ref.update({
+                      ...doc.data(),
+                      reader_amount: doc.data()["reader_amount"] + 1,
+                    });
+                  })
+                  .catch((err) => {
+                    reject({
+                      status: 300,
+                      msg:
+                        "Error: update reader_amount error " +
+                        info +
+                        " Error msg: " +
+                        err,
+                    });
+                  });
               })
               .catch((error) => {
-                reject({
-                  status: 300,
-                  msg:
-                    "Error: rent seat failed: " + info + " Error msg: " + error,
-                });
-              });
-
-            // 5.Update state of this seat
-            seat_doc.ref.update({
-              ...seat_doc.data(),
-              is_available: false,
-            });
-
-            // 6.Update reader_amount of this room
-            readingRoomRef
-              .doc(info.room_id)
-              .get()
-              .then((doc) => {
-                doc.ref.update({
-                  ...doc.data(),
-                  reader_amount: doc.data()["reader_amount"] + 1,
-                });
-              })
-              .catch((err) => {
                 reject({
                   status: 300,
                   msg:
                     "Error: update reader_amount error " +
                     info +
                     " Error msg: " +
-                    err,
+                    error,
                 });
               });
           })
-          .catch((error) => {
+          .catch((err) => {
             reject({
               status: 300,
-              msg:
-                "Error: update reader_amount error " +
-                info +
-                " Error msg: " +
-                error,
+              msg: "Error: get room thumbnail failed. Error msg: " + err,
             });
           });
       })
@@ -844,6 +865,7 @@ async function getUserSeatInfoApi(user_id) {
     //judge if the input info is correct in database
     seatReservationRef
       .where("user_id", "==", user_id)
+      .where("is_delete", "==", false)
       .get()
       .then((querySnapshot) => {
         if (querySnapshot.size) {

@@ -1,8 +1,12 @@
 import { Image, message } from "antd";
 import { CloseCircleOutlined, RollbackOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { getUserSeatInfoApi } from "../../../api/api";
-import { underscoreToCamelCaseKeysInArray } from "../../../resources/js/common";
+import { getUserSeatInfoApi, updateSeatReserApi } from "../../../api/api";
+import {
+  timestampToDate,
+  underscoreToCamelCaseKeys,
+  underscoreToCamelCaseKeysInArray,
+} from "../../../resources/js/common";
 import { useSelector } from "react-redux";
 import EmptySVG from "../../../components/EmptySVG/EmptySVG";
 
@@ -53,39 +57,66 @@ const BookInfo = (params) => {
 };
 
 const DeskInfo = (params) => {
+  let deskInfo = params.deskInfo;
+
+  const cancelDesk = () => {
+    let req = {
+      reservation_id: deskInfo.reservationId,
+      is_delete: true,
+    };
+
+    updateSeatReserApi(req)
+      .then((res) => {
+        if (res.status === 200) {
+          message.success("Successfully cancel!");
+          params.setDeskInfo({});
+        } else {
+          console.log("Error: res.msg");
+        }
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+        message.error(err.msg);
+      });
+  };
+
   return (
     <>
       <h2 className="text-xl font-bold mt-4 mb-2">Desk Records</h2>
-      {params.deskList.length ? (
-        params.deskList.map((item, index) => (
-          <div className="desk rounded p-2 flex justify-between items-center">
-            <div className="left flex">
-              <Image
-                width={150}
-                preview={false}
-                src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-              />
-              <div className="book-info ml-4 text-base py-4">
-                <div className="name text-xl font-bold">Jack</div>
-                <div className="author info-value mb-2">Jack</div>
-                <div className="rent-date">
-                  Rent Date:{" "}
-                  <span className="info-value">2022-12-12 13:14</span>
-                </div>
-                <div className="return-date">
-                  Return Date:{" "}
-                  <span className="info-value">2023-01-12 13:14</span>
-                </div>
-              </div>
+      {JSON.stringify(params.deskInfo) !== "{}" ? (
+        <div className="desk rounded p-2 flex justify-between items-center">
+          <div className="left flex">
+            <div className="img-container flex items-center">
+              <Image width={150} preview={false} src={deskInfo.thumbnail} />
             </div>
-            <div className="right">
-              <div className="m-8 info-value edit-text cursor-pointer">
-                <span className="text-base mr-2">Cancel</span>
-                <CloseCircleOutlined />
+            <div className="book-info ml-4 text-base py-4">
+              <div className="room-name text-xl font-bold">
+                {deskInfo.roomName}
+              </div>
+              <div className="start-date">
+                Start Date:{" "}
+                <span className="info-value">
+                  {timestampToDate(deskInfo.startTime)}
+                </span>
+              </div>
+              <div className="end-date">
+                End Date:{" "}
+                <span className="info-value">
+                  {timestampToDate(deskInfo.endTime)}
+                </span>
               </div>
             </div>
           </div>
-        ))
+          <div className="right">
+            <div
+              className="m-8 info-value edit-text cursor-pointer"
+              onClick={cancelDesk}
+            >
+              <span className="text-base mr-2">Cancel</span>
+              <CloseCircleOutlined />
+            </div>
+          </div>
+        </div>
       ) : (
         <div>
           <EmptySVG text={"No Seat Records"} />
@@ -97,27 +128,29 @@ const DeskInfo = (params) => {
 
 export default function RentInfo() {
   const [bookList, setBookList] = useState([]);
-  const [deskList, setDeskList] = useState([]);
+  const [deskInfo, setDeskInfo] = useState([]);
 
   const userInfo = useSelector((state) => state.userInfo);
 
   useEffect(() => {
-    getUserSeatInfoApi(userInfo.userId)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.length) {
-            let resData = underscoreToCamelCaseKeysInArray(res.data);
-            setDeskList(resData);
+    if (userInfo.userId) {
+      getUserSeatInfoApi(userInfo.userId)
+        .then((res) => {
+          console.log(res);
+          if (res.status === 200) {
+            if (JSON.stringify(res.data) !== "{}") {
+              setDeskInfo(underscoreToCamelCaseKeys(res.data));
+            }
+          } else {
+            console.log("Error: res.msg");
+            message.error(res.msg);
           }
-        } else {
-          console.log("Error: res.msg");
-          message.error(res.msg);
-        }
-      })
-      .catch((err) => {
-        console.log("Error: ", err);
-        message.error(err.msg);
-      });
+        })
+        .catch((err) => {
+          console.log("Error: ", err);
+          message.error(err.msg);
+        });
+    }
 
     // getUserBookInfoApi(userInfo.userId)
     //   .then((res) => {
@@ -132,7 +165,7 @@ export default function RentInfo() {
     //   .catch((err) => {
     //     console.log("Error: ", err);
     //   });
-  }, []);
+  }, [userInfo]);
 
   return (
     <>
@@ -141,7 +174,7 @@ export default function RentInfo() {
         <div className="rent-content">
           <BookInfo bookList={bookList} />
 
-          <DeskInfo deskList={deskList} />
+          <DeskInfo deskInfo={deskInfo} setDeskInfo={setDeskInfo} />
         </div>
       </div>
     </>

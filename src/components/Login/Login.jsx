@@ -19,6 +19,10 @@ export default function Login(props) {
     form.resetFields();
   };
 
+  const saveUserDataInLocal = (item) => {
+    localStorage.setItem("userInfo", JSON.stringify(item));
+  };
+
   let onFinish = (values) => {
     logInApi({
       email: values.email,
@@ -30,6 +34,8 @@ export default function Login(props) {
 
           dispatch(setLogin(true));
           dispatch(setUserInfo(underscoreToCamelCaseKeys(res.data)));
+
+          saveUserDataInLocal(underscoreToCamelCaseKeys(res.data));
 
           handleClear();
           handleClose();
