@@ -1,4 +1,4 @@
-import { Image } from "antd";
+import { Image, message } from "antd";
 import { CloseCircleOutlined, RollbackOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { getUserSeatInfoApi } from "../../../api/api";
@@ -104,15 +104,19 @@ export default function RentInfo() {
   useEffect(() => {
     getUserSeatInfoApi(userInfo.userId)
       .then((res) => {
-        if (res.status === 200 && res.data.length) {
-          let resData = underscoreToCamelCaseKeysInArray(res.data);
-          setDeskList(resData);
+        if (res.status === 200) {
+          if (res.data.length) {
+            let resData = underscoreToCamelCaseKeysInArray(res.data);
+            setDeskList(resData);
+          }
         } else {
           console.log("Error: res.msg");
+          message.error(res.msg);
         }
       })
       .catch((err) => {
         console.log("Error: ", err);
+        message.error(err.msg);
       });
 
     // getUserBookInfoApi(userInfo.userId)
