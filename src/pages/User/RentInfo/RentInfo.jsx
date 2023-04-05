@@ -1,4 +1,4 @@
-import { Image, message } from "antd";
+import { Image, message, Popconfirm } from "antd";
 import { CloseCircleOutlined, RollbackOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { getUserSeatInfoApi, updateSeatReserApi } from "../../../api/api";
@@ -108,13 +108,18 @@ const DeskInfo = (params) => {
             </div>
           </div>
           <div className="right">
-            <div
-              className="m-8 info-value edit-text cursor-pointer"
-              onClick={cancelDesk}
+            <Popconfirm
+              title="Cancel the seat"
+              description="Are you sure to cancel this seat?"
+              onConfirm={cancelDesk}
+              okText="Yes"
+              cancelText="No"
             >
-              <span className="text-base mr-2">Cancel</span>
-              <CloseCircleOutlined />
-            </div>
+              <div className="m-8 info-value edit-text cursor-pointer">
+                <span className="text-base mr-2">Cancel</span>
+                <CloseCircleOutlined />
+              </div>
+            </Popconfirm>
           </div>
         </div>
       ) : (
@@ -136,7 +141,6 @@ export default function RentInfo() {
     if (userInfo.userId) {
       getUserSeatInfoApi(userInfo.userId)
         .then((res) => {
-          console.log(res);
           if (res.status === 200) {
             if (JSON.stringify(res.data) !== "{}") {
               setDeskInfo(underscoreToCamelCaseKeys(res.data));

@@ -9,6 +9,11 @@ import { getAllReadingRoomApi } from "../../api/api";
 import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
 
 let readingRoomList = [];
+let updateRoomList = false;
+
+const toggleUpdateRoomList = () => {
+  updateRoomList = !updateRoomList;
+};
 
 const RoomList = (props) => {
   const [roomList, setRoomList] = useState([]);
@@ -30,7 +35,7 @@ const RoomList = (props) => {
         console.log("Error: ", err);
         message.error(err);
       });
-  }, []);
+  }, [updateRoomList]);
 
   let reserveRoom = (item) => {
     if (!isLogin) {
@@ -101,6 +106,7 @@ const Desks = () => {
         <ReserveModal
           isShow={isReserve}
           currRoomInfo={currRoomInfo}
+          toggleUpdateRoomList={toggleUpdateRoomList}
           readingRoomList={readingRoomList}
           handleReserveModal={handleReserveModal}
         ></ReserveModal>

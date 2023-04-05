@@ -66,6 +66,7 @@ const ReserveModal = (props) => {
       .then((res) => {
         if (res.status === 200) {
           message.success("Successfully Reserve!");
+          props.toggleUpdateRoomList();
         } else {
           console.log("Error: ", res.msg);
           message.error(res.msg);

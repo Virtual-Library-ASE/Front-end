@@ -24,7 +24,6 @@ const ModelModal = (params) => {
   };
 
   const activeModel = (item, index) => {
-    console.log(item, index);
     setActiveIndex(index);
     setActiveModelInfo(item);
   };

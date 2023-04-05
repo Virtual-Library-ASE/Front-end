@@ -628,6 +628,34 @@ async function updateSeatReserApi(info) {
         Object.assign(item, info);
         doc.ref.update(item);
 
+        if (item.is_delete) {
+          readingRoomRef
+            .doc(item.room_id)
+            .get()
+            .then((doc) => {
+              readingRoomRef.doc(item.room_id).update({
+                ...doc.data(),
+                reader_amount: doc.data()["reader_amount"] - 1,
+              });
+            })
+            .catch((err) => {
+              reject({
+                status: 300,
+                msg: "Reduce reader amount error. Error msg: " + err,
+              });
+            });
+
+          seatRef
+            .doc(item.seat_id)
+            .get()
+            .then((doc) => {
+              seatRef.doc(item.seat_id).update({
+                ...doc.data(),
+                is_available: true,
+              });
+            });
+        }
+
         resolve({
           data: item,
           status: 200,
