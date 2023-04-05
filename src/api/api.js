@@ -489,88 +489,108 @@ async function getAllReadingRoomApi() {
 
 async function addSeatReserApi(info) {
   return await new Promise((resolve, reject) => {
-    // 1. Query rest available seats of this room
-    seatRef
-      .where("room_id", "==", info.room_id)
-      .where("is_available", "==", true)
+    // 1. Check if a seat has been reserved
+    seatReservationRef
+      .where("user_id", "==", info.user_id)
       .get()
       .then((querySnapshot) => {
-        if (!querySnapshot.size) {
+        if (querySnapshot.size) {
           reject({
             status: 300,
-            msg: "No extra seat in this room!",
+            msg: "You have reserved a seat!",
           });
         }
-        // 2. Assign the first seat to this user
-        let seat_doc = querySnapshot.docs[0];
-        let seat_id = seat_doc.data()["seat_id"];
 
-        // 3. Add this reservation info to Seat_reservation collection
-        let newInfo = {
-          user_id: info["user_id"],
-          seat_id: seat_id,
-          start_time: info["start_time"],
-          end_time: info["end_time"],
-          create_time: getTimestamp(),
-          return_time: getTimestamp(1),
-        };
-        seatReservationRef
-          .add(newInfo)
-          .then((docRef) => {
-            info.reservation_id = docRef.id;
-            info.is_delete = false;
-            docRef.update(info);
+        // 2. Query rest available seats of this room
+        seatRef
+          .where("room_id", "==", info.room_id)
+          .where("is_available", "==", true)
+          .get()
+          .then((querySnapshot) => {
+            if (!querySnapshot.size) {
+              reject({
+                status: 300,
+                msg: "No extra seat in this room!",
+              });
+            }
+            // 3. Assign the first seat to this user
+            let seat_doc = querySnapshot.docs[0];
+            let seat_id = seat_doc.data()["seat_id"];
 
-            resolve({
-              status: 200,
-              msg: "ok",
-              data: {
-                reservation_id: docRef.id,
-              },
+            // 4. Add this reservation info to Seat_reservation collection
+            let newInfo = {
+              user_id: info["user_id"],
+              seat_id: seat_id,
+              start_time: info["start_time"],
+              end_time: info["end_time"],
+              create_time: getTimestamp(),
+              return_time: getTimestamp(1),
+            };
+            seatReservationRef
+              .add(newInfo)
+              .then((docRef) => {
+                info.reservation_id = docRef.id;
+                info.is_delete = false;
+                docRef.update(info);
+
+                resolve({
+                  status: 200,
+                  msg: "ok",
+                  data: {
+                    reservation_id: docRef.id,
+                  },
+                });
+              })
+              .catch((error) => {
+                reject({
+                  status: 300,
+                  msg:
+                    "Error: rent seat failed: " + info + " Error msg: " + error,
+                });
+              });
+
+            // 5.Update state of this seat
+            seat_doc.ref.update({
+              ...seat_doc.data(),
+              is_available: false,
             });
+
+            // 6.Update reader_amount of this room
+            readingRoomRef
+              .doc(info.room_id)
+              .get()
+              .then((doc) => {
+                doc.ref.update({
+                  ...doc.data(),
+                  reader_amount: doc.data()["reader_amount"] + 1,
+                });
+              })
+              .catch((err) => {
+                reject({
+                  status: 300,
+                  msg:
+                    "Error: update reader_amount error " +
+                    info +
+                    " Error msg: " +
+                    err,
+                });
+              });
           })
           .catch((error) => {
-            reject({
-              status: 300,
-              msg: "Error: rent seat failed: " + info + " Error msg: " + error,
-            });
-          });
-
-        // 4.Update state of this seat
-        seat_doc.ref.update({
-          ...seat_doc.data(),
-          is_available: false,
-        });
-
-        // 5.Update reader_amount of this room
-        readingRoomRef
-          .doc(info.room_id)
-          .get()
-          .then((doc) => {
-            doc.ref.update({
-              ...doc.data(),
-              reader_amount: doc.data()["reader_amount"] + 1,
-            });
-          })
-          .catch((err) => {
             reject({
               status: 300,
               msg:
                 "Error: update reader_amount error " +
                 info +
                 " Error msg: " +
-                err,
+                error,
             });
           });
       })
-      .catch((error) => {
+      .catch((err) => {
         reject({
           status: 300,
-          msg:
-            "Error: update reader_amount error " +
-            info +
-            " Error msg: " +
-            error,
+          msg: "Error: query user error. Error msg: " + err,
         });
       });
   });

@@ -1,58 +1,18 @@
 import "./Desks.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 import { useEffect, useState } from "react";
 import * as React from "react";
-import {
-  Button,
-  DatePicker,
-  Form,
-  TimePicker,
-  Modal,
-  Select,
-  message,
-} from "antd";
+import { message } from "antd";
+import ReserveModal from "./SeatReserveModal/SeatReserveModal";
 import { getAllReadingRoomApi } from "../../api/api";
 import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
-const { Option } = Select;
-
-const formItemLayout = {
-  labelCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 8,
-    },
-  },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 16,
-    },
-  },
-};
 
 let readingRoomList = [];
 
-const onFinish = (fieldsValue) => {
-  // Should format date value before submit.
-  const rangeTimeValue = fieldsValue["range-time-picker"];
-  const values = {
-    ...fieldsValue,
-    "date-picker": fieldsValue["date-picker"].format("YYYY-MM-DD"),
-    "range-time-picker": [
-      rangeTimeValue[0].format("YYYY-MM-DD HH:mm:ss"),
-      rangeTimeValue[1].format("YYYY-MM-DD HH:mm:ss"),
-    ],
-  };
-  console.log("Received values of form: ", values);
-};
-
 const RoomList = (props) => {
   const [roomList, setRoomList] = useState([]);
+  const isLogin = useSelector((state) => state.isLogin);
 
   useEffect(() => {
     getAllReadingRoomApi()
@@ -71,6 +31,15 @@ const RoomList = (props) => {
         message.error(err);
       });
   }, []);
+
+  const reserveRoom = (item) => {
+    if (!isLogin) {
+      message.error("Please Login first!");
+      return;
+    }
+    props.handleReserveModal(true);
+    props.setCurrRoomInfo(item);
+  };
 
   return (
     <>
@@ -94,7 +63,7 @@ const RoomList = (props) => {
             <div className="right mx-2">
               <button
                 className="reserve-btn rounded-3xl px-2 py-1 cursor-pointer"
-                onClick={() => props.handleReserveModal(true)}
+                onClick={() => reserveRoom(item)}
               >
                 Reserve
               </button>
@@ -106,82 +75,12 @@ const RoomList = (props) => {
   );
 };
 
-const ReserveModal = (props) => {
-  const handleClose = () => {
-    props.handleReserveModal(false);
-  };
-  return (
-    <>
-      <Modal
-        title="Reserve"
-        centered
-        open={props.isShow}
-        width={500}
-        footer={null}
-        onCancel={handleClose}
-      >
-        <Form
-          name="time_related_controls"
-          {...formItemLayout}
-          onFinish={onFinish}
-        >
-          <Form.Item
-            name="room"
-            label="Room"
-            rules={[{ required: true, message: "Please select room!" }]}
-          >
-            <Select placeholder="select room">
-              {readingRoomList.map((item, index) => (
-                <Option value={index} key={index}>
-                  {item.roomName}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="date-picker"
-            label="DatePicker"
-            rules={[{ required: true, message: "Please pick your date!" }]}
-          >
-            <DatePicker />
-          </Form.Item>
-          <Form.Item
-            name="range-time-picker"
-            label="Time Range"
-            rules={[
-              { required: true, message: "Please pick your time range!" },
-            ]}
-          >
-            <TimePicker.RangePicker />
-          </Form.Item>
-
-          <Form.Item
-            wrapperCol={{
-              xs: {
-                span: 24,
-                offset: 0,
-              },
-              sm: {
-                span: 16,
-                offset: 8,
-              },
-            }}
-          >
-            <Button type="primary" htmlType="submit">
-              Reserve
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </>
-  );
-};
-
 const Desks = () => {
   // Show Carousel
   const dispatch = useDispatch();
   const [isReserve, setReserveModal] = useState(false);
+  const [currRoomInfo, setCurrRoomInfo] = useState({});
+
   const handleReserveModal = (bool) => {
     setReserveModal(bool);
   };
@@ -195,9 +94,14 @@ const Desks = () => {
   return (
     <>
       <div className="Rooms">
-        <RoomList handleReserveModal={handleReserveModal}></RoomList>
+        <RoomList
+          handleReserveModal={handleReserveModal}
+          setCurrRoomInfo={setCurrRoomInfo}
+        ></RoomList>
         <ReserveModal
           isShow={isReserve}
+          currRoomInfo={currRoomInfo}
+          readingRoomList={readingRoomList}
           handleReserveModal={handleReserveModal}
         ></ReserveModal>
       </div>
