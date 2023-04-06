@@ -58,6 +58,7 @@ const BookInfo = (params) => {
 
 const DeskInfo = (params) => {
   let deskInfo = params.deskInfo;
+  console.log("deskInfo", deskInfo);
 
   const cancelDesk = () => {
     let req = {
