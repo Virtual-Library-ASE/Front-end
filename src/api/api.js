@@ -402,6 +402,13 @@ async function getAllCommentByBookIdApi(id) {
   });
 }
 
+
+/**
+ * add a user's comment of a book.
+ * @param {*} info :
+ * @returns status:200,msg:ok
+ * usage: addCommentByBookIdApi(infoObj)
+ */
 async function addCommentByBookIdApi(info) {
   return await new Promise((resolve, reject) => {
     commentListRef
@@ -437,6 +444,60 @@ async function addCommentByBookIdApi(info) {
       });
   });
 }
+
+
+/**
+ * update the comment by comment id
+ * @param {*} info :comment_id,is_delete
+ * @returns status: 200, msg:ok
+ * usage: updateCommentByIdApi(infoObj)
+ */
+async function updateCommentByIdApi(info) {
+  return await new Promise((resolve, reject) => {
+    commentListRef
+      .doc(info.comment_id)
+      .get()
+      .then((doc)=>{
+        let mergeData = Object.assign(doc.data(), info);
+        commentListRef.doc(info.comment_id).update(mergeData);
+
+        resolve({
+          status: 200,
+          msg: "ok"
+        });
+      })
+
+   
+    bookRef
+      .doc(info.book_id)
+      .get()
+      .then((doc) => {
+        doc.ref.update({
+          ...doc.data(),
+          comment_amount: doc.data()["comment_amount"] - 1,
+
+
+        })
+
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "update comment amount" + error
+        })
+      })
+
+  })
+
+}
+
+
+
+
+
+
+
+
 
 /**
  * ========================================== Room ==========================================
@@ -746,14 +807,14 @@ async function getUserBookReservationApi(id) {
 
         if (querySnapShot.empty) {
           resolve({
-            data:[],
+            data: [],
             status: 200,
             msg: "ok",
           });
         }
         else {
-          let reservation_list= [];
-        
+          let reservation_list = [];
+
           querySnapShot.forEach((doc) => {
             let item = doc.data();
             delete item["create_time"];
@@ -1046,5 +1107,6 @@ export {
   getAllCommentByBookIdApi,
   addCommentByBookIdApi,
   getAllReadingRoomApi,
-  getUserBookReservationApi
+  getUserBookReservationApi,
+  updateCommentByIdApi
 };
