@@ -732,7 +732,7 @@ async function updateUserModelApi(info) {
 
 /**
  * get users' record of book reservation
- * @param {*} id: user_id 
+ * @param {*} id: user_id
  * @returns user_id, book_id, start_time, end_time
  * usage:getUserBookReservationApi(id)
  */
@@ -743,42 +743,37 @@ async function getUserBookReservationApi(id) {
       .where("is_delete", "==", false)
       .get()
       .then((querySnapShot) => {
-
         if (querySnapShot.empty) {
           resolve({
-            data:[],
+            data: [],
             status: 200,
             msg: "ok",
           });
-        }
-        else {
-          let reservation_list= [];
-        
+        } else {
+          let reservation_list = [];
+
           querySnapShot.forEach((doc) => {
             let item = doc.data();
             delete item["create_time"];
             delete item["return_time"];
             delete item["is_delete"];
             reservation_list.push(item);
-          })
+          });
           resolve({
             data: reservation_list,
             status: 200,
             msg: "ok",
           });
         }
-
       })
       .catch((error) => {
         reject({
           status: 300,
-          msg: "Show book reservation record" + error
-        })
-      })
-  })
+          msg: "Show book reservation record" + error,
+        });
+      });
+  });
 }
-
-
 
 async function getAllModelApi() {
   return await new Promise((resolve, reject) => {
@@ -1046,5 +1041,5 @@ export {
   getAllCommentByBookIdApi,
   addCommentByBookIdApi,
   getAllReadingRoomApi,
-  getUserBookReservationApi
+  getUserBookReservationApi,
 };
