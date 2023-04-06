@@ -278,24 +278,59 @@ async function addBookRentApi(info) {
           msg: "Error add book renting" + error,
         });
       });
-      bookRef
+    bookRef
       .doc(info.book_id)
       .get()
-      .then((doc)=>{
+      .then((doc) => {
         doc.ref.update({
           ...doc.data(),
-          read_amount:doc.data()["read_amount"]+1,
+          read_amount: doc.data()["read_amount"] + 1,
         })
 
       })
-      .catch((error)=>{
+      .catch((error) => {
         reject({
-          status:300,
-          msg:"update read amount" +error
+          status: 300,
+          msg: "update read amount" + error
         })
       })
   });
 }
+
+/**
+ * update recommend amount based on book id
+ * @param {*} info :book_id, recommend:+1, -1
+ * @returns status:200, msg:ok
+ * usage: updateRecommendAmountApi(infoObj)
+ */
+async function updateRecommendAmountApi(info) {
+  return await new Promise((resolve, reject) => {
+    bookRef
+      .doc(info.book_id)
+      .get()
+      .then((doc) => {
+        doc.ref.update({
+          ...doc.data(),
+          recommended_amount: doc.data()["recommended_amount"] + info.recommend
+
+        })
+        resolve({
+          status: 200,
+          msg: "ok"
+        })
+
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "update recommend amount" + error
+        })
+      })
+  })
+}
+
+
+
 
 /**
  * update booking renting info
@@ -473,7 +508,7 @@ async function updateCommentByIdApi(info) {
     commentListRef
       .doc(info.comment_id)
       .get()
-      .then((doc)=>{
+      .then((doc) => {
         let mergeData = Object.assign(doc.data(), info);
         commentListRef.doc(info.comment_id).update(mergeData);
 
@@ -483,7 +518,7 @@ async function updateCommentByIdApi(info) {
         });
       })
 
-   
+
     bookRef
       .doc(info.book_id)
       .get()
@@ -1116,5 +1151,6 @@ export {
   addCommentByBookIdApi,
   getAllReadingRoomApi,
   getUserBookReservationApi,
-  updateCommentByIdApi
+  updateCommentByIdApi,
+  updateRecommendAmountApi
 };
