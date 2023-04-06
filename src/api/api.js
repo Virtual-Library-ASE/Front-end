@@ -6,10 +6,6 @@ const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
 const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
-const userEnvironmentConfigRef = firebaseConfig
-  .firestore()
-  .collection("User_environment_config");
-const messageRef = firebaseConfig.firestore().collection("Message");
 const userModelRef = firebaseConfig.firestore().collection("User_model");
 const modelRef = firebaseConfig.firestore().collection("Model");
 const seatReservationRef = firebaseConfig
@@ -734,6 +730,51 @@ async function updateUserModelApi(info) {
   });
 }
 
+/**
+ * get users' record of book reservation
+ * @param {*} id: user_id
+ * @returns user_id, book_id, start_time, end_time
+ * usage:getUserBookReservationApi(id)
+ */
+async function getUserBookReservationApi(id) {
+  return await new Promise((resolve, reject) => {
+    bookReserRef
+      .where("user_id", "==", id)
+      .where("is_delete", "==", false)
+      .get()
+      .then((querySnapShot) => {
+        if (querySnapShot.empty) {
+          resolve({
+            data: [],
+            status: 200,
+            msg: "ok",
+          });
+        } else {
+          let reservation_list = [];
+
+          querySnapShot.forEach((doc) => {
+            let item = doc.data();
+            delete item["create_time"];
+            delete item["return_time"];
+            delete item["is_delete"];
+            reservation_list.push(item);
+          });
+          resolve({
+            data: reservation_list,
+            status: 200,
+            msg: "ok",
+          });
+        }
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Show book reservation record" + error,
+        });
+      });
+  });
+}
+
 async function getAllModelApi() {
   return await new Promise((resolve, reject) => {
     modelRef.onSnapshot((querySnapshot) => {
@@ -1000,4 +1041,5 @@ export {
   getAllCommentByBookIdApi,
   addCommentByBookIdApi,
   getAllReadingRoomApi,
+  getUserBookReservationApi,
 };
