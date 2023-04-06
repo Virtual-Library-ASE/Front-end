@@ -1,7 +1,11 @@
 import { Image, message, Popconfirm } from "antd";
 import { CloseCircleOutlined, RollbackOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { getUserSeatInfoApi, updateSeatReserApi } from "../../../api/api";
+import {
+  getUserSeatInfoApi,
+  updateSeatReserApi,
+  getUserBookReservationApi,
+} from "../../../api/api";
 import {
   timestampToDate,
   underscoreToCamelCaseKeys,
@@ -11,6 +15,13 @@ import { useSelector } from "react-redux";
 import EmptySVG from "../../../components/EmptySVG/EmptySVG";
 
 const BookInfo = (params) => {
+  const cancelBook = (item) => {
+    let req = {
+      reservation_id: item.reservationId,
+      is_delete: true,
+    };
+  };
+
   return (
     <>
       <h2 className="text-xl font-bold mb-2">Book Records</h2>
@@ -18,23 +29,26 @@ const BookInfo = (params) => {
       <div className="book-records">
         {params.bookList.length ? (
           params.bookList.map((item, index) => (
-            <div className="book rounded p-2 flex justify-between items-center">
+            <div
+              className="book rounded my-2 p-2 flex justify-between items-center"
+              key={index}
+            >
               <div className="left flex">
-                <Image
-                  width={150}
-                  preview={false}
-                  src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-                />
+                <Image width={150} preview={false} src={item.thumbnail} />
                 <div className="book-info ml-4 text-base py-4">
-                  <div className="name text-xl font-bold">Jack</div>
-                  <div className="author info-value mb-2">Jack</div>
+                  <div className="name text-xl font-bold">{item.bookName}</div>
+                  <div className="author info-value mb-2">{item.author}</div>
                   <div className="rent-date">
                     Rent Date:{" "}
-                    <span className="info-value">2022-12-12 13:14</span>
+                    <span className="info-value">
+                      {timestampToDate(item.startTime)}
+                    </span>
                   </div>
                   <div className="return-date">
                     Return Date:{" "}
-                    <span className="info-value">2023-01-12 13:14</span>
+                    <span className="info-value">
+                      {timestampToDate(item.endTime)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -43,6 +57,19 @@ const BookInfo = (params) => {
                   <span className="text-base mr-2">Return</span>
                   <RollbackOutlined />
                 </div>
+
+                <Popconfirm
+                  title="Cancel the seat"
+                  description="Are you sure to cancel this seat?"
+                  onConfirm={() => cancelBook(item)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <div className="m-8 info-value edit-text cursor-pointer">
+                    <span className="text-base mr-2">Return</span>
+                    <RollbackOutlined />
+                  </div>
+                </Popconfirm>
               </div>
             </div>
           ))
@@ -58,7 +85,6 @@ const BookInfo = (params) => {
 
 const DeskInfo = (params) => {
   let deskInfo = params.deskInfo;
-  console.log("deskInfo", deskInfo);
 
   const cancelDesk = () => {
     let req = {
@@ -157,19 +183,19 @@ export default function RentInfo() {
         });
     }
 
-    // getUserBookInfoApi(userInfo.userId)
-    //   .then((res) => {
-    //     console.log(res);
-    //     if (res.status === 200 && JSON.stringify(res.data) === "{}") {
-    //       let resData = underscoreToCamelCaseKeys(res.data);
-    //       setDeskList(resData);
-    //     } else {
-    //       console.log("Error: res.msg");
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log("Error: ", err);
-    //   });
+    getUserBookReservationApi(userInfo.userId)
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200 && res.data.length) {
+          let resData = underscoreToCamelCaseKeysInArray(res.data);
+          setBookList(resData);
+        } else {
+          console.log("Error: res.msg");
+        }
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+      });
   }, [userInfo]);
 
   return (
