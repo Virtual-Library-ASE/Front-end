@@ -83,7 +83,7 @@ const DeskInfo = (params) => {
   return (
     <>
       <h2 className="text-xl font-bold mt-4 mb-2">Desk Records</h2>
-      {JSON.stringify(params.deskInfo) !== "{}" ? (
+      {JSON.stringify(deskInfo) !== "{}" ? (
         <div className="desk rounded p-2 flex justify-between items-center">
           <div className="left flex">
             <div className="img-container flex items-center">
@@ -133,7 +133,7 @@ const DeskInfo = (params) => {
 
 export default function RentInfo() {
   const [bookList, setBookList] = useState([]);
-  const [deskInfo, setDeskInfo] = useState([]);
+  const [deskInfo, setDeskInfo] = useState({});
 
   const userInfo = useSelector((state) => state.userInfo);
 

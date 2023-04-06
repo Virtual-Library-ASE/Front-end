@@ -24,9 +24,15 @@ function BasicHeader(props) {
   };
 
   let confirmLogOut = () => {
-    message.success("Successfully logged out");
+    // Remove the userInfo from localStorage
+    localStorage.removeItem("userInfo");
+
     dispatch(setLogin(false));
     handleLogOut(false);
+
+    window.location.reload();
+
+    // message.success("Successfully logged out");
   };
   const handleRegister = (bool) => {
     setRegister(bool);
