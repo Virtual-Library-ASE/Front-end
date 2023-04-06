@@ -1,52 +1,58 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
 import Main from "./Main/Main";
 import BasicCarousel from "../components/Carousel/Carousel";
 import { useSelector } from "react-redux";
 
+const navList = [
+  {
+    title: "Home",
+    path: "/home",
+  },
+  {
+    title: "Books",
+    path: "/books",
+  },
+  {
+    title: "Desks",
+    path: "/desks",
+  },
+  {
+    title: "About",
+    path: "/about",
+  },
+];
+
 export default function Layouts() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [navIndex, setNavIndex] = useState({
-    isActiveIndex: 0,
-  });
+  const [isActiveIndex, setNavIndex] = useState(0);
+
+  const { pathname } = location;
+  const findPathIndex = () => {
+    return navList.findIndex((item) => item.path === pathname);
+  };
+
+  useEffect(() => {
+    setNavIndex(findPathIndex());
+  }, [pathname]);
 
   const isShowCarousel = useSelector((state) => state.isShowCarousel);
   const isShowFooter = useSelector((state) => state.isShowFooter);
 
-  const [navList] = useState({
-    navList: [
-      {
-        title: "Home",
-        path: "/home",
-      },
-      {
-        title: "Books",
-        path: "/books",
-      },
-      {
-        title: "Desks",
-        path: "/desks",
-      },
-      {
-        title: "About",
-        path: "/about",
-      },
-    ],
-  });
-
   const handleNav = (index) => {
-    setNavIndex({ isActiveIndex: index });
-    navigate(navList.navList[index].path);
+    // setNavIndex({ isActiveIndex: index });
+    navigate(navList[index].path);
   };
   return (
     <>
       <div className="app">
         <Header
-          isActiveIndex={navIndex.isActiveIndex}
-          navItems={navList.navList}
+          isActiveIndex={isActiveIndex}
+          navItems={navList}
           onClick={(index) => handleNav(index)}
         />
         {isShowCarousel ? <BasicCarousel /> : ""}

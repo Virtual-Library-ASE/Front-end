@@ -1,8 +1,14 @@
-const ImageCard = ({ url, text }) => {
+import { useNavigate } from "react-router-dom";
+
+const ImageCard = ({ url, text, path }) => {
+  const navigate = useNavigate();
   return (
     <div className="item relative w-1/2 overflow-hidden">
       <img src={url} alt={url} className="rounded cursor-default" />
-      <div className="btn absolute overflow-hidden w-2/5 h-14 p-1 top-1/2 left-1/2 text-xl font-bold text-center rounded cursor-pointer">
+      <div
+        className="btn absolute overflow-hidden w-2/5 h-14 p-1 top-1/2 left-1/2 text-xl font-bold text-center rounded cursor-pointer"
+        onClick={() => navigate(path)}
+      >
         {text}
       </div>
     </div>
@@ -16,8 +22,8 @@ function Reservation() {
     <div className="reservation">
       <h2 className="text-xl font-bold mb-2 mt-4">Start Reading</h2>
       <div className="flex px-2 justify-between">
-        <ImageCard url={book} text="Book a desk"></ImageCard>
-        <ImageCard url={desk} text="Rent a book"></ImageCard>
+        <ImageCard url={book} text="Book a desk" path="/books"></ImageCard>
+        <ImageCard url={desk} text="Rent a book" path="/desks"></ImageCard>
       </div>
     </div>
   );

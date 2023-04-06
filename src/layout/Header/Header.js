@@ -29,10 +29,9 @@ function BasicHeader(props) {
 
     dispatch(setLogin(false));
     handleLogOut(false);
+    message.success("Successfully logged out");
 
-    window.location.reload();
-
-    // message.success("Successfully logged out");
+    navigate("/home");
   };
   const handleRegister = (bool) => {
     setRegister(bool);
@@ -50,6 +49,17 @@ function BasicHeader(props) {
       dispatch(setUserInfo(userInfo));
     }
   }, []);
+
+  const toUser = () => {
+    const userInfo = localStorage.getItem("userInfo");
+    if (!userInfo) {
+      message.error("You should login first!");
+
+      handleLogin(true);
+      return;
+    }
+    navigate("/user");
+  };
 
   return (
     <>
@@ -82,10 +92,7 @@ function BasicHeader(props) {
               <Search />
             </li>
             <li className="item user-icon mr-4">
-              <UserOutlined
-                className="text-2xl"
-                onClick={() => navigate("./user")}
-              />
+              <UserOutlined className="text-2xl" onClick={toUser} />
             </li>
             <li className="item">
               {isCurrLogin ? (

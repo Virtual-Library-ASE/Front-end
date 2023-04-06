@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 export default function Main() {
   return (
-    <div className="body">
+    <div className="Main body">
       <Outlet />
     </div>
   );

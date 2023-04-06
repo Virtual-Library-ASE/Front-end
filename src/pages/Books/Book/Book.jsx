@@ -11,6 +11,7 @@ import BubblyBtn from "../../../components/BubblyBtn/BubblyBtn";
 import BookReserveModal from "./BookReserveModal";
 import Comment from "./Comment";
 import "./Book.css";
+import { message } from "antd";
 
 const BookHeader = (params) => {
   const detail = params.details;
@@ -73,12 +74,22 @@ const BookBody = (params) => {
     },
   ];
 
+  const handleRentBookEvent = () => {
+    const userInfo = localStorage.getItem("userInfo");
+    if (!userInfo) {
+      message.error("You should login first!");
+      return;
+    }
+
+    params.handleReserveModal(true);
+  };
+
   return (
     <>
       <div className="body">
         <div className="content">
           <div className="basic flex">
-            <div className="left pr-4">
+            <div className="left mt-4 pr-4">
               <p className="desc">{details.desc}</p>
 
               <div className="text-base mt-4 leading-8">
@@ -103,7 +114,7 @@ const BookBody = (params) => {
                     text="Rent this book"
                     disabled={!details.status}
                     handleEvent={() => {
-                      params.handleReserveModal(true);
+                      handleRentBookEvent();
                     }}
                   />
                 </div>

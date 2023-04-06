@@ -16,6 +16,19 @@ export default function BubblyBtn(params) {
     margin: params.margin ? params.margin : "0.5rem",
   };
 
+  const debounce = (func, delay) => {
+    let timerId;
+    return function (...args) {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+      timerId = setTimeout(() => {
+        func.apply(this, args);
+        timerId = null;
+      }, delay);
+    };
+  };
+
   return (
     <>
       <button
@@ -26,7 +39,7 @@ export default function BubblyBtn(params) {
           (params.disabled ? "isActive " : "active ") +
           (isAnimate ? "animate" : "")
         }
-        onClick={handleAnimate}
+        onClick={debounce(handleAnimate, 300)}
       >
         {params.text}
       </button>

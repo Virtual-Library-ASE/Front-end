@@ -9,7 +9,6 @@ function HomeBookList() {
   useEffect(() => {
     getBookRecommendListApi(20)
       .then((res) => {
-        console.log(res);
         if (res.status === 200) {
           setBookList(underscoreToCamelCaseKeysInArray(res.data));
         } else {
