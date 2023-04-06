@@ -46,10 +46,10 @@ const routes = [
       },
     ],
   },
-  {
-    path: "*",
-    element: <Navigate to="/404" />,
-  },
+  // {
+  //   path: "*",
+  //   element: <Navigate to="/404" />,
+  // },
 ];
 const Router = () => {
   return useRoutes(routes);

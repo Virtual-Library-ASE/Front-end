@@ -55,10 +55,13 @@
     radial-gradient(circle, #bdb29b 20%, transparent 20%);
   background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 10% 10%, 20% 20%;
 }
-.bubbly-button:active {
+.bubbly-button.active:active {
   transform: scale(0.9);
   background-color: #ada791;
   box-shadow: 0 2px 25px rgba(227, 177, 139, 0.2);
+}
+.bubbly-button.isActive {
+  cursor: not-allowed;
 }
 .bubbly-button.animate:before {
   display: block;

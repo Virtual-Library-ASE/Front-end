@@ -1,7 +1,8 @@
-import React, { useState } from "react";
 import { Button, DatePicker, Form, message, Modal } from "antd";
-import { addBookRentApi } from "../../../api/api";
+import * as React from "react";
 import { useSelector } from "react-redux";
+import { addSeatReserApi } from "../../../api/api";
+import { useState } from "react";
 const { RangePicker } = DatePicker;
 
 const formItemLayout = {
@@ -10,7 +11,7 @@ const formItemLayout = {
       span: 24,
     },
     sm: {
-      span: 8,
+      span: 6,
     },
   },
   wrapperCol: {
@@ -18,61 +19,27 @@ const formItemLayout = {
       span: 24,
     },
     sm: {
-      span: 16,
+      span: 18,
     },
   },
 };
 
-const BookReserveModal = (props) => {
-  const [dates, setDates] = useState(null);
-  const [value, setValue] = useState(null);
-
-  const bookDetail = props.bookDetail;
+const ReserveModal = (props) => {
+  const [form] = Form.useForm();
   const userInfo = useSelector((state) => state.userInfo);
-
   const handleClose = () => {
     props.handleReserveModal(false);
+    handleClear();
   };
 
-  const onFinish = (values) => {
-    if (!userInfo.userId) {
-      message.error("Something wrong about user id");
-      return;
-    }
-    if (!bookDetail.bookId) {
-      message.error("Something wrong about book id");
-      return;
-    }
-
-    let req = {
-      user_id: userInfo.userId,
-      book_id: bookDetail.bookId,
-      start_time: values["range-time-picker"][0].unix() * 1000,
-      end_time: values["range-time-picker"][1].unix() * 1000,
-    };
-
-    addBookRentApi(req)
-      .then((res) => {
-        if (res.status === 200) {
-          message.success("Successfully Rent!");
-          handleClose();
-        } else {
-          console.log("Error: ", res.msg);
-          message.error(res.msg);
-        }
-      })
-      .catch((err) => {
-        console.log("Error: ", err);
-        message.error(err);
-      });
-  };
-
+  const [dates, setDates] = useState(null);
+  const [value, setValue] = useState(null);
   const disabledDate = (current) => {
     if (!dates) {
       return false;
     }
-    const tooLate = dates[0] && current.diff(dates[0], "days") >= 7;
-    const tooEarly = dates[1] && dates[1].diff(current, "days") >= 7;
+    const tooLate = dates[0] && current.diff(dates[0], "days") >= 1;
+    const tooEarly = dates[1] && dates[1].diff(current, "days") >= 1;
     return !!tooEarly || !!tooLate;
   };
   const onOpenChange = (open) => {
@@ -81,6 +48,37 @@ const BookReserveModal = (props) => {
     } else {
       setDates(null);
     }
+  };
+
+  const handleClear = () => {
+    form.resetFields();
+  };
+
+  const onFinish = (values) => {
+    let req = {
+      user_id: userInfo.userId,
+      room_id: props.currRoomInfo["roomId"],
+      start_time: values["range-time-picker"][0].unix() * 1000,
+      end_time: values["range-time-picker"][1].unix() * 1000,
+    };
+
+    addSeatReserApi(req)
+      .then((res) => {
+        if (res.status === 200) {
+          message.success("Successfully Reserve!");
+          props.toggleUpdateRoomList();
+        } else {
+          console.log("Error: ", res.msg);
+          message.error(res.msg);
+        }
+        props.handleReserveModal(false);
+        handleClear();
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+        message.error(err.msg);
+        props.handleReserveModal(false);
+      });
   };
 
   return (
@@ -95,24 +93,22 @@ const BookReserveModal = (props) => {
       >
         <Form
           name="time_related_controls"
+          form={form}
           {...formItemLayout}
           onFinish={onFinish}
         >
-          <Form.Item name="BookTitle" label="Book">
-            <span className="font-bold">{bookDetail.bookName}</span>
-          </Form.Item>
-          <Form.Item name="BookAuthor" label="Author">
-            {bookDetail.author}
-          </Form.Item>
+          <Form.Item label="Room">{props.currRoomInfo.roomName}</Form.Item>
 
           <Form.Item
             name="range-time-picker"
-            label="Date Range"
+            label="Time Range"
             rules={[
-              { required: true, message: "Please pick your date range!" },
+              { type: "array", required: true, message: "Please select time!" },
             ]}
           >
             <RangePicker
+              showTime
+              format="YYYY-MM-DD HH:mm:ss"
               value={dates || value}
               disabledDate={disabledDate}
               onCalendarChange={(val) => setDates(val)}
@@ -128,8 +124,8 @@ const BookReserveModal = (props) => {
                 offset: 0,
               },
               sm: {
-                span: 16,
-                offset: 8,
+                span: 18,
+                offset: 6,
               },
             }}
           >
@@ -143,4 +139,4 @@ const BookReserveModal = (props) => {
   );
 };
 
-export default BookReserveModal;
+export default ReserveModal;

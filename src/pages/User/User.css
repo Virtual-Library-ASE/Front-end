@@ -15,3 +15,7 @@
 .model-container {
   border: 1px solid #d3d3d3;
 }
+
+.avatar-active {
+  background-color: #d9c5b6;
+}

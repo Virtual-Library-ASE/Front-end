@@ -7,6 +7,8 @@ import Announcement from "./Announcement/Announcement";
 import BasicInfo from "./BasicInfo/BasicInfo";
 import RentInfo from "./RentInfo/RentInfo";
 import ModelInfo from "./ModelInfo/ModelInfo";
+import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const Body = (param) => {
   return (
@@ -24,22 +26,35 @@ const Body = (param) => {
   );
 };
 
+const checkLoginState = () => {
+  const userInfo = localStorage.getItem("userInfo");
+  return Boolean(userInfo);
+};
+
 const User = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
     // Show Carousel
     dispatch(setCarouselDisplay(false));
     // dispatch(setFooterDisplay(false));
+
+    if (!checkLoginState()) {
+      message.error("You should login first!");
+
+      navigate("/home");
+    }
   }, [dispatch]);
 
-  const infoData = useSelector((state) => state.userInfo);
+  const userInfo = useSelector((state) => state.userInfo);
 
   return (
     <>
       <div className="user">
-        <UserHeader infoData={infoData} />
+        <UserHeader infoData={userInfo} />
 
-        <Body infoData={infoData} />
+        <Body infoData={userInfo} />
       </div>
     </>
   );

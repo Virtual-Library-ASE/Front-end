@@ -1,6 +1,12 @@
 import { Button, Form, Input, message, Modal } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import React, { useState, useImperativeHandle } from "react";
+import { updateUserInfoApi } from "../../../api/api";
+import { underscoreToCamelCaseKeys } from "../../../resources/js/common";
+import { setUserInfo } from "../../../store/action";
+import { useDispatch, useSelector } from "react-redux";
+
+let password = "";
 
 const getBirthDateFormat = (timeStamp) => {
   let date = new Date(timeStamp);
@@ -11,6 +17,7 @@ const getBirthDateFormat = (timeStamp) => {
   return yyyy + "-" + MM + "-" + DD;
 };
 const getBasicInfoArr = (infoData) => {
+  password = infoData.password;
   return [
     {
       label: "Name",
@@ -44,6 +51,8 @@ const getBasicInfoArr = (infoData) => {
 };
 
 const BasicModal = (props) => {
+  const dispatch = useDispatch();
+
   // Use useImperativeHandle to expose some properties that can be accessed by external refs
   useImperativeHandle(props.onRef, () => {
     // Need to return the exposed interface
@@ -53,6 +62,7 @@ const BasicModal = (props) => {
   });
 
   const [modalOpen, setModalOpen] = useState(false);
+  const userInfo = useSelector((state) => state.userInfo);
 
   const basicInfoArr = getBasicInfoArr(props.infoData);
   let formInitialValues = {};
@@ -60,8 +70,35 @@ const BasicModal = (props) => {
 
   let onFinish = (values) => {
     console.log(values);
+    let req = {
+      user_name: values["Name"],
+      desc: values["Description"],
+      gender: values["Gender"],
+      password: password,
+      phone: values["Phone Number"],
+      user_id: userInfo.userId,
+      birth_date: values["Birth Date"],
+    };
+
+    updateUserInfoApi(req)
+      .then((res) => {
+        if (res.status === 200) {
+          message.success("Successfully update!");
+
+          let userInfo = underscoreToCamelCaseKeys(res.data);
+          dispatch(setUserInfo(userInfo));
+          localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        } else {
+          console.log("Error!", res);
+        }
+        handleClose();
+      })
+      .catch((err) => {
+        message.error("Update Failed: ", err);
+        handleClose();
+      });
+
     message.success("Updated Successfully");
-    setModalOpen(false);
   };
 
   let handleClose = () => {

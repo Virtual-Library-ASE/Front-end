@@ -6,9 +6,12 @@ import { underscoreToCamelCaseKeys } from "../../../resources/js/common";
 import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
 import { getBookByIdApi } from "../../../api/api";
 
+import { LeftOutlined } from "@ant-design/icons";
 import BubblyBtn from "../../../components/BubblyBtn/BubblyBtn";
 import BookReserveModal from "./BookReserveModal";
+import Comment from "./Comment";
 import "./Book.css";
+import { message } from "antd";
 
 const BookHeader = (params) => {
   const detail = params.details;
@@ -22,7 +25,9 @@ const BookHeader = (params) => {
             <div
               className="iconBox cursor-pointer"
               onClick={() => navigate(-1)}
-            ></div>
+            >
+              <LeftOutlined className="text-2xl" title="Return" />
+            </div>
           </div>
 
           <div className="info absolute bottom-4">
@@ -36,46 +41,56 @@ const BookHeader = (params) => {
 };
 
 const BookBody = (params) => {
-  const detail = params.details;
+  const details = params.details;
 
   const infoList = [
     {
       label: "Author: ",
-      value: detail.author,
+      value: details.author,
     },
     {
       label: "Font Amount: ",
-      value: detail.fontAmount,
+      value: details.fontAmount,
     },
     {
       label: "Language: ",
-      value: detail.language,
+      value: details.language,
     },
     {
       label: "State: ",
-      value: detail.status ? "Rent Available" : "Rent Unavailable",
+      value: details.status ? "Rent Available" : "Rent Unavailable",
     },
     {
       label: "ISBN: ",
-      value: detail.ISBN,
+      value: details.ISBN,
     },
     {
       label: "Read Amount: ",
-      value: detail.readAmount,
+      value: details.readAmount,
     },
     {
       label: "Upload time: ",
-      value: detail.uploadTime,
+      value: details.uploadTime,
     },
   ];
+
+  const handleRentBookEvent = () => {
+    const userInfo = localStorage.getItem("userInfo");
+    if (!userInfo) {
+      message.error("You should login first!");
+      return;
+    }
+
+    params.handleReserveModal(true);
+  };
 
   return (
     <>
       <div className="body">
         <div className="content">
           <div className="basic flex">
-            <div className="left pr-4">
-              <p className="desc">{detail.desc}</p>
+            <div className="left mt-4 pr-4">
+              <p className="desc">{details.desc}</p>
 
               <div className="text-base mt-4 leading-8">
                 {infoList.map((info) => (
@@ -90,15 +105,16 @@ const BookBody = (params) => {
               <div className="right-bd relative">
                 <div className="thumbnail">
                   <div className="img-container">
-                    <img src={detail.thumbnail} alt={detail.title} />
+                    <img src={details.thumbnail} alt={details.title} />
                   </div>
                 </div>
 
                 <div className="btn-group mt-4">
                   <BubblyBtn
                     text="Rent this book"
+                    disabled={!details.status}
                     handleEvent={() => {
-                      params.handleReserveModal(true);
+                      handleRentBookEvent();
                     }}
                   />
                 </div>
@@ -106,47 +122,8 @@ const BookBody = (params) => {
             </div>
           </div>
 
-          <Comment />
+          <Comment details={details} />
         </div>
-      </div>
-    </>
-  );
-};
-
-const comments = [
-  {
-    id: 1,
-    name: "John Doe",
-    content: "Great article! Thanks for sharing.",
-    comment_date: "2022-10-10",
-    update_time: "2022-10-11 15:30:00",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    content: "I found this article really helpful. Keep up the good work!",
-    comment_date: "2022-10-12",
-    update_time: "2022-10-12 08:45:00",
-  },
-  // Add more comments here
-];
-
-const Comment = () => {
-  return (
-    <>
-      <div className="comment-list mt-20">
-        <h2 className="text-2xl font-bold my-4">Comments</h2>
-        {comments.map((comment) => (
-          <div key={comment.id} className="comment pb-2 mb-2">
-            <div className="comment-name font-bold">{comment.name}</div>
-            <div className="comment-content my-1">{comment.content}</div>
-            <div className="comment-details text-sm">
-              <span className="comment-post-time">
-                Posted on {comment.update_time}
-              </span>
-            </div>
-          </div>
-        ))}
       </div>
     </>
   );

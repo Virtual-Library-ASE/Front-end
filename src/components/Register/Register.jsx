@@ -9,9 +9,10 @@ import {
   DatePicker,
   message,
 } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { signupApi } from "../../api/api";
 import { getRandomNumber } from "../../resources/js/common";
+import DancingDog from "../DancingDog/DancingDog";
 
 const { Option } = Select;
 
@@ -39,8 +40,39 @@ const tailFormItemLayout = {
   },
 };
 
+const AgreementModel = (props) => {
+  const handleClose = () => {
+    props.setAgreement(false);
+  };
+
+  return (
+    <>
+      <Modal
+        title=""
+        centered
+        open={props.isAgreement}
+        width={300}
+        footer={null}
+        onCancel={handleClose}
+      >
+        <div className="pt-20 text-center">
+          <DancingDog />
+          <Button className="my-4" onClick={handleClose}>
+            Fine!
+          </Button>
+        </div>
+      </Modal>
+    </>
+  );
+};
+
 const Register = (props) => {
   const [form] = Form.useForm();
+  const [isAgreement, setAgreement] = useState(false);
+
+  const clickAgreement = () => {
+    setAgreement(true);
+  };
 
   const handleClose = () => {
     props.handleRegister(false);
@@ -248,9 +280,9 @@ const Register = (props) => {
           >
             <Checkbox>
               I have read the{" "}
-              <a href="/" className="agreement">
+              <span className="agreement" onClick={clickAgreement}>
                 agreement
-              </a>
+              </span>
             </Checkbox>
           </Form.Item>
 
@@ -272,6 +304,8 @@ const Register = (props) => {
           </Form.Item>
         </Form>
       </Modal>
+
+      <AgreementModel isAgreement={isAgreement} setAgreement={setAgreement} />
     </>
   );
 };
