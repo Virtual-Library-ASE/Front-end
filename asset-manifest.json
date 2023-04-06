@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/react-gh-pages/static/css/main.9e2da2f2.css",
+    "main.js": "/react-gh-pages/static/js/main.a10c1ee4.js",
+    "static/js/787.8886e40e.chunk.js": "/react-gh-pages/static/js/787.8886e40e.chunk.js",
+    "static/media/desk.jpg": "/react-gh-pages/static/media/desk.9ba31a0d3e98d1d9a75c.jpg",
+    "static/media/team.jpg": "/react-gh-pages/static/media/team.3f248fbd16833d9b2eec.jpg",
+    "static/media/book.jpg": "/react-gh-pages/static/media/book.a486d86bf243ecdd49b7.jpg",
+    "static/media/logo.png": "/react-gh-pages/static/media/logo.27e3b0824e195ae61f02.png",
+    "static/media/museo-slab-500.ttf": "/react-gh-pages/static/media/museo-slab-500.a07f51c7ffeeddf541cc.ttf",
+    "static/media/library.jpg": "/react-gh-pages/static/media/library.542ef78a394e46666094.jpg",
+    "static/media/museo-slab-500.woff": "/react-gh-pages/static/media/museo-slab-500.4ecade91d5a396653b93.woff",
+    "index.html": "/react-gh-pages/index.html",
+    "main.9e2da2f2.css.map": "/react-gh-pages/static/css/main.9e2da2f2.css.map",
+    "main.a10c1ee4.js.map": "/react-gh-pages/static/js/main.a10c1ee4.js.map",
+    "787.8886e40e.chunk.js.map": "/react-gh-pages/static/js/787.8886e40e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9e2da2f2.css",
+    "static/js/main.a10c1ee4.js"
+  ]
+}
