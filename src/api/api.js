@@ -530,8 +530,6 @@ async function addSeatReserApi(info) {
                   end_time: info["end_time"],
                   create_time: getTimestamp(),
                   return_time: getTimestamp(1),
-                  thumbnail: thumbnail,
-                  room_name: room_name,
                 };
                 seatReservationRef
                   .add(newInfo)
@@ -940,11 +938,20 @@ async function getUserSeatInfoApi(user_id) {
       .get()
       .then((querySnapshot) => {
         if (querySnapshot.size) {
-          resolve({
-            data: querySnapshot.docs[0].data(),
-            status: 200,
-            msg: "ok",
-          });
+          let item = querySnapshot.docs[0].data();
+          readingRoomRef
+            .doc(item.room_id)
+            .get()
+            .then((doc) => {
+              item["thumbnail"] = doc.data()["thumbnail"];
+              item["room_name"] = doc.data()["room_name"];
+
+              resolve({
+                data: item,
+                status: 200,
+                msg: "ok",
+              });
+            });
         } else {
           resolve({
             data: [],
