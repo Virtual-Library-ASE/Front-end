@@ -6,6 +6,7 @@ const userRef = firebaseConfig.firestore().collection("User");
 const commentListRef = firebaseConfig.firestore().collection("Comment_list");
 const readingRoomRef = firebaseConfig.firestore().collection("Reading_room");
 const seatRef = firebaseConfig.firestore().collection("Seat");
+const userModelRef = firebaseConfig.firestore().collection("User_model");
 const modelRef = firebaseConfig.firestore().collection("Model");
 const seatReservationRef = firebaseConfig
   .firestore()
@@ -347,7 +348,8 @@ async function getAllCommentByBookIdApi(id) {
       .where("book_id", "==", id)
       .get()
       .then((querySnapshot) => {
-        let comments = []
+        let promises = [];
+        let comments = [];
         querySnapshot.forEach((doc) => {
           let item = doc.data();
 
@@ -359,9 +361,9 @@ async function getAllCommentByBookIdApi(id) {
             content: item.content,
             comment_page: item.comment_page,
             create_time: item.create_time,
-          }
+          };
 
-          userRef
+          let promise = userRef
             .where("user_id", "==", item.user_id)
             .get()
             .then((querySnapShot) => {
@@ -370,23 +372,28 @@ async function getAllCommentByBookIdApi(id) {
               });
             })
             .catch((err) => {
-              reject({
-                status: 300,
-                msg: "Error: get book comment: " + err,
-              });
+              throw new Error("Error: get book comment: " + err);
             });
-
-          comments.push(tmp)
+          promises.push(promise);
+          comments.push(tmp);
         });
 
-        resolve({
-          status: 200,
-          msg: "ok",
-          data: comments
-        });
+        Promise.all(promises)
+          .then(() => {
+            resolve({
+              status: 200,
+              msg: "ok",
+              data: comments,
+            });
+          })
+          .catch((err) => {
+            reject({
+              status: 300,
+              msg: "Error: get book comment: " + err,
+            });
+          });
       })
       .catch((err) => {
-        console.log(err);
         reject({
           status: 300,
           msg: "Error: get book comment: " + id,
@@ -395,7 +402,6 @@ async function getAllCommentByBookIdApi(id) {
   });
 }
 
-
 async function addCommentByBookIdApi(info) {
   return await new Promise((resolve, reject) => {
     commentListRef
@@ -403,31 +409,325 @@ async function addCommentByBookIdApi(info) {
       .then((doc) => {
         info["create_time"] = getTimestamp();
         info["is_delete"] = false;
-        info["comment_id"] = doc.id
+        info["comment_id"] = doc.id;
         doc.update(info);
 
         resolve({
           status: 200,
           msg: "ok",
           data: {
-            "comment_id": info.comment_id
-          }
+            comment_id: info.comment_id,
+          },
         });
-        bookRef.doc(info.book_id).get()
+        bookRef
+          .doc(info.book_id)
+          .get()
           .then((doc) => {
             doc.ref.update({
               ...doc.data(),
-              comment_amount: doc.data()["comment_amount"] + 1
-            })
-          })
+              comment_amount: doc.data()["comment_amount"] + 1,
+            });
+          });
       })
       .catch((error) => {
         reject({
           status: 300,
-          msg: "Error: add comment failed" + error
+          msg: "Error: add comment failed" + error,
+        });
+      });
+  });
+}
+
+/**
+ * ========================================== Room ==========================================
+ */
+
+/**
+ * Get all reading room
+ * @returns {Promise<unknown>}
+ */
+async function getAllReadingRoomApi() {
+  return await new Promise((resolve, reject) => {
+    readingRoomRef.onSnapshot((querySnapshot) => {
+      if (!querySnapshot.size)
+        reject({
+          status: 300,
+          msg: "No room available",
+        });
+
+      let items = [];
+      querySnapshot.forEach((doc) => {
+        delete doc.data()["is_delete"];
+
+        items.push({
+          ...doc.data(),
+          rest_amount:
+            doc.data()["room_capacity"] - doc.data()["reader_amount"],
+          is_available: Boolean(
+            doc.data()["room_capacity"] - doc.data()["reader_amount"]
+          ),
+        });
+      });
+
+      // if success
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: items,
+      });
+    });
+  });
+}
+
+/**
+ * ========================================== Seat ==========================================
+ */
+
+async function addSeatReserApi(info) {
+  return await new Promise((resolve, reject) => {
+    // 1. Check if a seat has been reserved
+    seatReservationRef
+      .where("user_id", "==", info.user_id)
+      .where("is_delete", "==", false)
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.size) {
+          reject({
+            status: 300,
+            msg: "You have reserved a seat!",
+          });
+        }
+
+        // 2. Get Room thumbnail
+        readingRoomRef
+          .doc(info.room_id)
+          .get()
+          .then((doc) => {
+            let thumbnail = doc.data()["thumbnail"];
+            let room_name = doc.data()["room_name"];
+
+            // 3. Query rest available seats of this room
+            seatRef
+              .where("room_id", "==", info.room_id)
+              .where("is_available", "==", true)
+              .get()
+              .then((querySnapshot) => {
+                if (!querySnapshot.size) {
+                  reject({
+                    status: 300,
+                    msg: "No extra seat in this room!",
+                  });
+                }
+                // 3. Assign the first seat to this user
+                let seat_doc = querySnapshot.docs[0];
+                let seat_id = seat_doc.data()["seat_id"];
+
+                // 4. Add this reservation info to Seat_reservation collection
+                let newInfo = {
+                  user_id: info["user_id"],
+                  seat_id: seat_id,
+                  start_time: info["start_time"],
+                  end_time: info["end_time"],
+                  create_time: getTimestamp(),
+                  return_time: getTimestamp(1),
+                  thumbnail: thumbnail,
+                  room_name: room_name,
+                };
+                seatReservationRef
+                  .add(newInfo)
+                  .then((docRef) => {
+                    info.reservation_id = docRef.id;
+                    info.is_delete = false;
+                    docRef.update(info);
+
+                    resolve({
+                      status: 200,
+                      msg: "ok",
+                      data: {
+                        reservation_id: docRef.id,
+                      },
+                    });
+                  })
+                  .catch((error) => {
+                    reject({
+                      status: 300,
+                      msg:
+                        "Error: rent seat failed: " +
+                        info +
+                        " Error msg: " +
+                        error,
+                    });
+                  });
+
+                // 5.Update state of this seat
+                seat_doc.ref.update({
+                  ...seat_doc.data(),
+                  is_available: false,
+                });
+
+                // 6.Update reader_amount of this room
+                readingRoomRef
+                  .doc(info.room_id)
+                  .get()
+                  .then((doc) => {
+                    doc.ref.update({
+                      ...doc.data(),
+                      reader_amount: doc.data()["reader_amount"] + 1,
+                    });
+                  })
+                  .catch((err) => {
+                    reject({
+                      status: 300,
+                      msg:
+                        "Error: update reader_amount error " +
+                        info +
+                        " Error msg: " +
+                        err,
+                    });
+                  });
+              })
+              .catch((error) => {
+                reject({
+                  status: 300,
+                  msg:
+                    "Error: update reader_amount error " +
+                    info +
+                    " Error msg: " +
+                    error,
+                });
+              });
+          })
+          .catch((err) => {
+            reject({
+              status: 300,
+              msg: "Error: get room thumbnail failed. Error msg: " + err,
+            });
+          });
+      })
+      .catch((err) => {
+        reject({
+          status: 300,
+          msg: "Error: query user error. Error msg: " + err,
+        });
+      });
+  });
+}
+
+async function updateSeatReserApi(info) {
+  return await new Promise((resolve, reject) => {
+    //judge if the input info is correct in database
+    seatReservationRef
+      .doc(info.reservation_id)
+      .get()
+      .then((doc) => {
+        let item = doc.data();
+        Object.assign(item, info);
+        doc.ref.update(item);
+
+        if (item.is_delete) {
+          readingRoomRef
+            .doc(item.room_id)
+            .get()
+            .then((doc) => {
+              readingRoomRef.doc(item.room_id).update({
+                ...doc.data(),
+                reader_amount: doc.data()["reader_amount"] - 1,
+              });
+            })
+            .catch((err) => {
+              reject({
+                status: 300,
+                msg: "Reduce reader amount error. Error msg: " + err,
+              });
+            });
+
+          seatRef
+            .doc(item.seat_id)
+            .get()
+            .then((doc) => {
+              seatRef.doc(item.seat_id).update({
+                ...doc.data(),
+                is_available: true,
+              });
+            });
+        }
+
+        resolve({
+          data: item,
+          status: 200,
+          msg: "ok",
         });
       })
-  })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Seat Reservation update error " + info + " Error msg: " + error,
+        });
+      });
+  });
+}
+
+/**
+ * ========================================== Model ==========================================
+ */
+
+/**
+ * User signup
+ * @param info: user's information
+ * @return: { status: 200, msg: "ok" }
+ * @usage: signup(infoObj)
+ */
+async function addUserModelApi(info) {
+  return await new Promise((resolve, reject) => {
+    userModelRef
+      .add(info)
+      .then((doc) => {
+        info.is_delete = false;
+        doc.update(info);
+
+        resolve({
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error: add user model failed: " + info + " Error msg: " + error,
+        });
+      });
+  });
+}
+
+/**
+ * User signup
+ * @param info: user's information
+ * @return: { status: 200, msg: "ok" }
+ * @usage: signup(infoObj)
+ */
+async function updateUserModelApi(info) {
+  return await new Promise((resolve, reject) => {
+    userModelRef
+      .where("user_id", "==", info.user_id)
+      .get()
+      .then((querySnapshot) => {
+        let doc = querySnapshot.docs[0];
+        let newInfo = Object.assign(doc.data(), info);
+        doc.ref.update(newInfo);
+
+        resolve({
+          status: 200,
+          msg: "ok",
+        });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg:
+            "Error: update user model failed: " + info + " Error msg: " + error,
+        });
+      });
+  });
 }
 
 
@@ -482,6 +782,75 @@ async function getUserBookReservationApi(id) {
 
 
 
+
+
+/**
+ * get users' record of book reservation
+ * @param {*} id: user_id 
+ * @returns user_id, book_id, start_time, end_time
+ * usage:getUserBookReservationApi(id)
+ */
+async function getUserBookReservationApi(id) {
+  return await new Promise((resolve, reject) => {
+    bookReserRef
+      .where("user_id", "==", id)
+      .where("is_delete", "==", false)
+      .get()
+      .then((querySnapShot) => {
+
+        if (querySnapShot.empty) {
+          resolve({
+            data:[],
+            status: 200,
+            msg: "ok",
+          });
+        }
+        else {
+          let reservation_list= [];
+        
+          querySnapShot.forEach((doc) => {
+            let item = doc.data();
+            delete item["create_time"];
+            delete item["return_time"];
+            delete item["is_delete"];
+            reservation_list.push(item);
+          })
+          resolve({
+            data: reservation_list,
+            status: 200,
+            msg: "ok",
+          });
+        }
+
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Show book reservation record" + error
+        })
+      })
+  })
+}
+
+
+
+async function getAllModelApi() {
+  return await new Promise((resolve, reject) => {
+    modelRef.onSnapshot((querySnapshot) => {
+      let res = [];
+      querySnapshot.forEach((doc) => {
+        delete doc.data()["is_delete"];
+        res.push(doc.data());
+      });
+
+      resolve({
+        status: 200,
+        msg: "ok",
+        data: res,
+      });
+    });
+  });
+}
 
 /**
  * ========================================== User ==========================================
@@ -549,13 +918,14 @@ async function updateUserInfoApi(info) {
             .doc(item.user_id)
             .update(item)
             .then(() => {
+              delete item["is_delete"];
               resolve({
                 status: 200,
                 msg: "ok",
+                data: item,
               });
             })
             .catch((err) => {
-              console.log(err);
               reject({
                 status: 300,
                 msg:
@@ -615,21 +985,115 @@ async function logInApi(info) {
   });
 }
 
+/**
+ * Get User's seat info
+ * @param user_id:
+ * @returns {Promise<unknown>}
+ */
+async function getUserSeatInfoApi(user_id) {
+  return await new Promise((resolve, reject) => {
+    //judge if the input info is correct in database
+    seatReservationRef
+      .where("user_id", "==", user_id)
+      .where("is_delete", "==", false)
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.size) {
+          resolve({
+            data: querySnapshot.docs[0].data(),
+            status: 200,
+            msg: "ok",
+          });
+        } else {
+          resolve({
+            data: [],
+            status: 200,
+            msg: "ok",
+          });
+        }
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error msg: " + error,
+        });
+      });
+  });
+}
+
+/**
+ * Get User Model Info
+ * @param user_id:
+ * @returns {Promise<unknown>}
+ */
+async function getUserModelInfoApi(user_id) {
+  return await new Promise((resolve, reject) => {
+    userModelRef
+      .where("user_id", "==", user_id)
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          resolve({
+            data: {},
+            status: 200,
+            msg: "ok",
+          });
+        }
+
+        let item = querySnapshot.docs[0].data();
+        modelRef
+          .doc(item.model_id)
+          .get()
+          .then((doc) => {
+            item.thumbnail = doc.data()["thumbnail"];
+            item.model_name = doc.data()["model_name"];
+            item.create_time = doc.data()["create_time"];
+
+            delete item["is_delete"];
+
+            resolve({
+              data: item,
+              status: 200,
+              msg: "ok",
+            });
+          })
+          .catch((err) => {
+            reject({
+              status: 300,
+              msg: "Error msg: " + err,
+            });
+          });
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "Error msg: " + error,
+        });
+      });
+  });
+}
+
 function getTimestamp(delay = 0) {
   let timestamp = new Date().getTime();
   let date = new Date(timestamp);
   date.setDate(date.getDate() + delay);
   return date.getTime();
 }
-function getAllReadingRoomApi() { }
 
 export {
+  addSeatReserApi,
+  updateSeatReserApi,
+  addUserModelApi,
+  updateUserModelApi,
+  getAllModelApi,
+  getUserModelInfoApi,
   getBookByIdApi,
   getBookRecommendListApi,
   getCategoriesApi,
   getAllBookApi,
   addBookRentApi,
   updateRentBookApi,
+  getUserSeatInfoApi,
   signupApi,
   updateUserInfoApi,
   logInApi,
