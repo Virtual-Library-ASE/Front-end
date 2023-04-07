@@ -257,6 +257,7 @@ async function addBookRentApi(info) {
         info["reservation_id"] = docRef.id;
         info["create_time"] = timestamp;
         info["return_time"] = newTimestamp;
+        info["is_delete"] = false;
         docRef.update(info);
 
         //renew the status in book
@@ -593,9 +594,6 @@ async function addSeatReserApi(info) {
           .doc(info.room_id)
           .get()
           .then((doc) => {
-            let thumbnail = doc.data()["thumbnail"];
-            let room_name = doc.data()["room_name"];
-
             // 3. Query rest available seats of this room
             seatRef
               .where("room_id", "==", info.room_id)
@@ -620,8 +618,6 @@ async function addSeatReserApi(info) {
                   end_time: info["end_time"],
                   create_time: getTimestamp(),
                   return_time: getTimestamp(1),
-                  thumbnail: thumbnail,
-                  room_name: room_name,
                 };
                 seatReservationRef
                   .add(newInfo)
@@ -839,22 +835,51 @@ async function getUserBookReservationApi(id) {
             status: 200,
             msg: "ok",
           });
-        } else {
-          let reservation_list = [];
-
-          querySnapShot.forEach((doc) => {
-            let item = doc.data();
-            delete item["create_time"];
-            delete item["return_time"];
-            delete item["is_delete"];
-            reservation_list.push(item);
-          });
-          resolve({
-            data: reservation_list,
-            status: 200,
-            msg: "ok",
-          });
         }
+
+        let reservation_list = [];
+        let promises = [];
+
+        querySnapShot.forEach((doc) => {
+          let item = doc.data();
+          delete item["create_time"];
+          delete item["return_time"];
+          delete item["is_delete"];
+
+          let promise = bookRef
+            .doc(item["book_id"])
+            .get()
+            .then((doc) => {
+              item["book_name"] = doc.data()["book_name"];
+              item["author"] = doc.data()["author"];
+              item["thumbnail"] = doc.data()["thumbnail"];
+
+              reservation_list.push(item);
+            })
+            .catch((err) => {
+              reject({
+                status: 300,
+                msg: "Get book info failed: " + err,
+              });
+            });
+
+          promises.push(promise);
+        });
+
+        Promise.all(promises)
+          .then(() => {
+            resolve({
+              data: reservation_list,
+              status: 200,
+              msg: "ok",
+            });
+          })
+          .catch((err) => {
+            reject({
+              status: 300,
+              msg: "Show book reservation record" + err,
+            });
+          });
       })
       .catch((error) => {
         reject({
@@ -1030,11 +1055,20 @@ async function getUserSeatInfoApi(user_id) {
       .get()
       .then((querySnapshot) => {
         if (querySnapshot.size) {
-          resolve({
-            data: querySnapshot.docs[0].data(),
-            status: 200,
-            msg: "ok",
-          });
+          let item = querySnapshot.docs[0].data();
+          readingRoomRef
+            .doc(item.room_id)
+            .get()
+            .then((doc) => {
+              item["thumbnail"] = doc.data()["thumbnail"];
+              item["room_name"] = doc.data()["room_name"];
+
+              resolve({
+                data: item,
+                status: 200,
+                msg: "ok",
+              });
+            });
         } else {
           resolve({
             data: [],

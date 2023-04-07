@@ -35,32 +35,31 @@ const BookInfo = (params) => {
             >
               <div className="left flex">
                 <Image width={150} preview={false} src={item.thumbnail} />
-                <div className="book-info ml-4 text-base py-4">
-                  <div className="name text-xl font-bold">{item.bookName}</div>
-                  <div className="author info-value mb-2">{item.author}</div>
-                  <div className="rent-date">
-                    Rent Date:{" "}
-                    <span className="info-value">
-                      {timestampToDate(item.startTime)}
-                    </span>
-                  </div>
-                  <div className="return-date">
-                    Return Date:{" "}
-                    <span className="info-value">
-                      {timestampToDate(item.endTime)}
-                    </span>
+                <div className="book-info ml-4 text-base py-4 flex items-center">
+                  <div className="info-content">
+                    <div className="name text-xl font-bold">
+                      {item.bookName}
+                    </div>
+                    <div className="author info-value mb-2">{item.author}</div>
+                    <div className="rent-date">
+                      Rent Date:{" "}
+                      <span className="info-value">
+                        {timestampToDate(item.startTime)}
+                      </span>
+                    </div>
+                    <div className="return-date">
+                      Return Date:{" "}
+                      <span className="info-value">
+                        {timestampToDate(item.endTime)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
               <div className="right">
-                <div className="m-8 info-value edit-text cursor-pointer">
-                  <span className="text-base mr-2">Return</span>
-                  <RollbackOutlined />
-                </div>
-
                 <Popconfirm
-                  title="Cancel the seat"
-                  description="Are you sure to cancel this seat?"
+                  title="Cancel the book"
+                  description="Are you sure to cancel this book?"
                   onConfirm={() => cancelBook(item)}
                   okText="Yes"
                   cancelText="No"
