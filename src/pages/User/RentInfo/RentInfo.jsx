@@ -3,8 +3,9 @@ import { CloseCircleOutlined, RollbackOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import {
   getUserSeatInfoApi,
-  updateSeatReserApi,
   getUserBookReservationApi,
+  updateSeatReserApi,
+  updateRentBookApi,
 } from "../../../api/api";
 import {
   timestampToDate,
@@ -20,6 +21,21 @@ const BookInfo = (params) => {
       reservation_id: item.reservationId,
       is_delete: true,
     };
+
+    updateRentBookApi(req)
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          message.success("Successfully cancel!");
+          params.setBookList([]);
+        } else {
+          console.log("Error: ", res.msg);
+        }
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+        message.error(err.msg);
+      });
   };
 
   return (
@@ -177,18 +193,18 @@ export default function RentInfo() {
           console.log("Error: ", err);
           message.error(err.msg);
         });
-    }
 
-    getUserBookReservationApi(userInfo.userId)
-      .then((res) => {
-        if (res.status === 200 && res.data.length) {
-          let resData = underscoreToCamelCaseKeysInArray(res.data);
-          setBookList(resData);
-        }
-      })
-      .catch((err) => {
-        console.log("Error: ", err);
-      });
+      getUserBookReservationApi(userInfo.userId)
+        .then((res) => {
+          if (res.status === 200 && res.data.length) {
+            let resData = underscoreToCamelCaseKeysInArray(res.data);
+            setBookList(resData);
+          }
+        })
+        .catch((err) => {
+          console.log("Error: ", err);
+        });
+    }
   }, [userInfo]);
 
   return (
@@ -196,7 +212,7 @@ export default function RentInfo() {
       <div className="rent-info mt-8">
         <h2 className="text-2xl font-bold mb-2">Rent Records</h2>
         <div className="rent-content">
-          <BookInfo bookList={bookList} />
+          <BookInfo bookList={bookList} setBookList={setBookList} />
 
           <DeskInfo deskInfo={deskInfo} setDeskInfo={setDeskInfo} />
         </div>

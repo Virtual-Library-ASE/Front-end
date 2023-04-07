@@ -336,40 +336,38 @@ async function updateRentBookApi(info) {
   return await new Promise((resolve, reject) => {
     // check the content of info in database based on reservation_id
     bookReserRef
-      .where("reservation_id", "==", info.reservation_id)
+      .doc(info.reservation_id)
       .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          let item = doc.data();
+      .then((doc) => {
+        let item = doc.data();
 
-          // renew the field value below if the info contains it
-          item["user_id"] = info["user_id"] || item["user_id"];
-          item["is_delete"] = info["is_delete"] || item["is_delete"];
-          item["book_id"] = info["book_id"] || item["book_id"];
-          item["start_time"] = info["start_time"] || item["start_time"];
-          item["end_time"] = info["end_time"] || item["end_time"];
+        // renew the field value below if the info contains it
+        item["user_id"] = info["user_id"] || item["user_id"];
+        item["is_delete"] = info["is_delete"] || item["is_delete"];
+        item["book_id"] = info["book_id"] || item["book_id"];
+        item["start_time"] = info["start_time"] || item["start_time"];
+        item["end_time"] = info["end_time"] || item["end_time"];
 
-          //renew the status in book
-          renewBookStatus({
-            book_id: info.book_id,
-            status: true,
-          });
-          //update info based on reservation_id
-          bookReserRef
-            .doc(info.reservation_id)
-            .update(item)
-            .then(() => {
-              resolve({
-                status: 200,
-                msg: "ok",
-              });
-            })
-            .catch((error) => {
-              reject({
-                status: 300,
-                msg: "Error update renting status! " + error,
-              });
+        // update info based on reservation_id
+        doc.ref
+          .update(item)
+          .then(() => {
+            resolve({
+              status: 200,
+              msg: "ok",
             });
+          })
+          .catch((error) => {
+            reject({
+              status: 300,
+              msg: "Error update renting status! " + error,
+            });
+          });
+
+        // renew the status in book
+        renewBookStatus({
+          book_id: item["book_id"],
+          status: true,
         });
       })
       .catch((error) => {
