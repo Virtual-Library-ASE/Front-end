@@ -269,7 +269,6 @@ async function addBookRentApi(info) {
         resolve({
           status: 200,
           msg: "ok",
-          reservation_id: info["reservation_id"],
         });
       })
 

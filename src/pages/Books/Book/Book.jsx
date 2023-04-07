@@ -180,7 +180,12 @@ const Book = () => {
     setReserveModal(bool);
   };
 
-  const updateBookState = (book) => {};
+  const updateBookState = (bool) => {
+    setBookDetail({
+      ...bookDetail,
+      status: bool,
+    });
+  };
 
   return (
     <>
