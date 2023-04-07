@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 import React, { Component } from "react";
 
 const source = _.times(5, () => ({
-  title: faker.company.companyName(),
+  title: faker.company.name(),
   description: faker.company.catchPhrase(),
   image: faker.internet.avatar(),
   price: faker.finance.amount(0, 100, 2, "$"),

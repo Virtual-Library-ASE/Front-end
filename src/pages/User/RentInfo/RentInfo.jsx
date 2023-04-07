@@ -98,7 +98,7 @@ const DeskInfo = (params) => {
           message.success("Successfully cancel!");
           params.setDeskInfo({});
         } else {
-          console.log("Error: res.msg");
+          console.log("Error: ", res.msg);
         }
       })
       .catch((err) => {
@@ -172,9 +172,6 @@ export default function RentInfo() {
             if (JSON.stringify(res.data) !== "{}") {
               setDeskInfo(underscoreToCamelCaseKeys(res.data));
             }
-          } else {
-            console.log("Error: res.msg");
-            message.error(res.msg);
           }
         })
         .catch((err) => {
@@ -185,12 +182,9 @@ export default function RentInfo() {
 
     getUserBookReservationApi(userInfo.userId)
       .then((res) => {
-        console.log(res);
         if (res.status === 200 && res.data.length) {
           let resData = underscoreToCamelCaseKeysInArray(res.data);
           setBookList(resData);
-        } else {
-          console.log("Error: res.msg");
         }
       })
       .catch((err) => {
