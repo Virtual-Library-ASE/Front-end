@@ -278,8 +278,59 @@ async function addBookRentApi(info) {
           msg: "Error add book renting" + error,
         });
       });
+    bookRef
+      .doc(info.book_id)
+      .get()
+      .then((doc) => {
+        doc.ref.update({
+          ...doc.data(),
+          read_amount: doc.data()["read_amount"] + 1,
+        })
+
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "update read amount" + error
+        })
+      })
   });
 }
+
+/**
+ * update recommend amount based on book id
+ * @param {*} info :book_id, recommend:+1, -1
+ * @returns status:200, msg:ok
+ * usage: updateRecommendAmountApi(infoObj)
+ */
+async function updateRecommendAmountApi(info) {
+  return await new Promise((resolve, reject) => {
+    bookRef
+      .doc(info.book_id)
+      .get()
+      .then((doc) => {
+        doc.ref.update({
+          ...doc.data(),
+          recommended_amount: doc.data()["recommended_amount"] + info.recommend
+
+        })
+        resolve({
+          status: 200,
+          msg: "ok"
+        })
+
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "update recommend amount" + error
+        })
+      })
+  })
+}
+
+
+
 
 /**
  * update booking renting info
@@ -402,6 +453,13 @@ async function getAllCommentByBookIdApi(id) {
   });
 }
 
+
+/**
+ * add a user's comment of a book.
+ * @param {*} info :
+ * @returns status:200,msg:ok
+ * usage: addCommentByBookIdApi(infoObj)
+ */
 async function addCommentByBookIdApi(info) {
   return await new Promise((resolve, reject) => {
     commentListRef
@@ -436,6 +494,52 @@ async function addCommentByBookIdApi(info) {
         });
       });
   });
+}
+
+
+/**
+ * update the comment by comment id
+ * @param {*} info :comment_id,is_delete
+ * @returns status: 200, msg:ok
+ * usage: updateCommentByIdApi(infoObj)
+ */
+async function updateCommentByIdApi(info) {
+  return await new Promise((resolve, reject) => {
+    commentListRef
+      .doc(info.comment_id)
+      .get()
+      .then((doc) => {
+        let mergeData = Object.assign(doc.data(), info);
+        commentListRef.doc(info.comment_id).update(mergeData);
+
+        resolve({
+          status: 200,
+          msg: "ok"
+        });
+      })
+
+
+    bookRef
+      .doc(info.book_id)
+      .get()
+      .then((doc) => {
+        doc.ref.update({
+          ...doc.data(),
+          comment_amount: doc.data()["comment_amount"] - 1,
+
+
+        })
+
+      })
+      .catch((error) => {
+        reject({
+          status: 300,
+          msg: "update comment amount" + error
+        })
+      })
+
+  })
+
 }
 
 /**
@@ -530,6 +634,8 @@ async function addSeatReserApi(info) {
                   end_time: info["end_time"],
                   create_time: getTimestamp(),
                   return_time: getTimestamp(1),
+                  thumbnail: thumbnail,
+                  room_name: room_name,
                 };
                 seatReservationRef
                   .add(newInfo)
@@ -730,7 +836,7 @@ async function updateUserModelApi(info) {
 
 /**
  * get users' record of book reservation
- * @param {*} id: user_id
+ * @param {*} id: user_id 
  * @returns user_id, book_id, start_time, end_time
  * usage:getUserBookReservationApi(id)
  */
@@ -741,13 +847,15 @@ async function getUserBookReservationApi(id) {
       .where("is_delete", "==", false)
       .get()
       .then((querySnapShot) => {
+
         if (querySnapShot.empty) {
           resolve({
             data: [],
             status: 200,
             msg: "ok",
           });
-        } else {
+        }
+        else {
           let reservation_list = [];
 
           querySnapShot.forEach((doc) => {
@@ -756,22 +864,25 @@ async function getUserBookReservationApi(id) {
             delete item["return_time"];
             delete item["is_delete"];
             reservation_list.push(item);
-          });
+          })
           resolve({
             data: reservation_list,
             status: 200,
             msg: "ok",
           });
         }
+
       })
       .catch((error) => {
         reject({
           status: 300,
-          msg: "Show book reservation record" + error,
-        });
-      });
-  });
+          msg: "Show book reservation record" + error
+        })
+      })
+  })
 }
+
+
 
 async function getAllModelApi() {
   return await new Promise((resolve, reject) => {
@@ -938,20 +1049,11 @@ async function getUserSeatInfoApi(user_id) {
       .get()
       .then((querySnapshot) => {
         if (querySnapshot.size) {
-          let item = querySnapshot.docs[0].data();
-          readingRoomRef
-            .doc(item.room_id)
-            .get()
-            .then((doc) => {
-              item["thumbnail"] = doc.data()["thumbnail"];
-              item["room_name"] = doc.data()["room_name"];
-
-              resolve({
-                data: item,
-                status: 200,
-                msg: "ok",
-              });
-            });
+          resolve({
+            data: querySnapshot.docs[0].data(),
+            status: 200,
+            msg: "ok",
+          });
         } else {
           resolve({
             data: [],
@@ -1049,4 +1151,6 @@ export {
   addCommentByBookIdApi,
   getAllReadingRoomApi,
   getUserBookReservationApi,
+  updateCommentByIdApi,
+  updateRecommendAmountApi
 };
