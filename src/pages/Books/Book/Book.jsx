@@ -84,6 +84,17 @@ const BookBody = (params) => {
     params.handleReserveModal(true);
   };
 
+  const setBookStateClass = (label) => {
+    if (label === "State: ") {
+      if (details.status) {
+        return "book-available font-bold";
+      } else {
+        return "book-unavailable font-bold";
+      }
+    }
+    return "";
+  };
+
   return (
     <>
       <div className="body">
@@ -96,7 +107,9 @@ const BookBody = (params) => {
                 {infoList.map((info) => (
                   <div className="flex" key={info.label}>
                     <span className="label font-bold w-2/5">{info.label}</span>
-                    <span>{info.value}</span>
+                    <span className={setBookStateClass(info.label)}>
+                      {info.value}
+                    </span>
                   </div>
                 ))}
               </div>
