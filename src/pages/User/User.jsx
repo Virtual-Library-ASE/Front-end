@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { setCarouselDisplay } from "../../store/action";
 import UserHeader from "./UserHeader/UserHeader";
-import Announcement from "./Announcement/Announcement";
 import BasicInfo from "./BasicInfo/BasicInfo";
 import RentInfo from "./RentInfo/RentInfo";
 import ModelInfo from "./ModelInfo/ModelInfo";
@@ -14,8 +13,6 @@ const Body = (param) => {
   return (
     <>
       <div className="content py-8">
-        <Announcement />
-
         <BasicInfo infoData={param.infoData} />
 
         <RentInfo />
