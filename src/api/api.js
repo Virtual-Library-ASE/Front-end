@@ -389,6 +389,7 @@ async function getAllCommentByBookIdApi(id) {
     // traverse all the data from comment list
     commentListRef
       .where("book_id", "==", id)
+      .where("is_delete", "==", false)
       .get()
       .then((querySnapshot) => {
         let promises = [];

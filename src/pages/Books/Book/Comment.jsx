@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import {
   addCommentByBookIdApi,
   getAllCommentByBookIdApi,
+  updateCommentByIdApi,
 } from "../../../api/api";
 import {
   timestampToDate,
@@ -28,11 +29,6 @@ const formItemLayout = {
       span: 18,
     },
   },
-};
-
-let updateCommentList = false;
-const toggleUpdateCommentList = () => {
-  updateCommentList = !updateCommentList;
 };
 
 const CommentModal = (props) => {
@@ -60,7 +56,7 @@ const CommentModal = (props) => {
         if (res.status === 200) {
           message.success("Successfully Comment!");
           handleClose();
-          toggleUpdateCommentList();
+          props.handleUpdateCommentList();
         } else {
           console.log("Something wrong when add comment!");
         }
@@ -137,7 +133,11 @@ const Comment = (params) => {
 
   const [isCommentModel, setCommentModel] = useState(false);
   const [commentList, setCommentList] = useState([]);
+  const [isUpdateCommentList, setUpdateCommentList] = useState(false);
 
+  const handleUpdateCommentList = () => {
+    setUpdateCommentList(!isUpdateCommentList);
+  };
   // Get route parameters
   const routerParams = useParams();
 
@@ -153,7 +153,7 @@ const Comment = (params) => {
       .catch((err) => {
         console.log("Error: ", err);
       });
-  }, [updateCommentList]);
+  }, [isUpdateCommentList]);
 
   const handleCommentModal = (bool) => {
     setCommentModel(bool);
@@ -168,9 +168,23 @@ const Comment = (params) => {
     handleCommentModal(true);
   };
 
-  const deleteComment = () => {
-    console.log("delete comment");
-    toggleUpdateCommentList();
+  const deleteComment = (item) => {
+    let req = {
+      comment_id: item.commentId,
+      is_delete: true,
+    };
+    updateCommentByIdApi(req)
+      .then((res) => {
+        if (res.status === 200) {
+          message.success("Successfully delete!");
+          handleUpdateCommentList();
+        } else {
+          console.log(res.msg);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -195,7 +209,7 @@ const Comment = (params) => {
               <div className="comment-content my-1">{comment.content}</div>
               <div className="comment-details text-sm">
                 <span className="comment-post-time">
-                  Posted on {comment.createTime}
+                  Posted on {timestampToDate(comment.createTime)}
                 </span>
               </div>
             </div>
@@ -204,7 +218,7 @@ const Comment = (params) => {
                 <Popconfirm
                   title="Delete the comment"
                   description="Are you sure to delete this comment?"
-                  onConfirm={deleteComment}
+                  onConfirm={() => deleteComment(comment)}
                   okText="Yes"
                   cancelText="No"
                 >
@@ -222,6 +236,7 @@ const Comment = (params) => {
         isCommentModel={isCommentModel}
         details={params.details}
         handleCommentModal={handleCommentModal}
+        handleUpdateCommentList={handleUpdateCommentList}
       />
     </>
   );
