@@ -24,10 +24,9 @@ const BookInfo = (params) => {
 
     updateRentBookApi(req)
       .then((res) => {
-        console.log(res);
         if (res.status === 200) {
           message.success("Successfully cancel!");
-          params.setBookList([]);
+          params.handleUpdateBookInfo();
         } else {
           console.log("Error: ", res.msg);
         }
@@ -177,6 +176,12 @@ export default function RentInfo() {
   const [bookList, setBookList] = useState([]);
   const [deskInfo, setDeskInfo] = useState({});
 
+  const [isUpdateBookInfo, setUpdateBookInfo] = useState(false);
+
+  const handleUpdateBookInfo = () => {
+    setUpdateBookInfo(!isUpdateBookInfo);
+  };
+
   const userInfo = useSelector((state) => state.userInfo);
 
   useEffect(() => {
@@ -205,14 +210,18 @@ export default function RentInfo() {
           console.log("Error: ", err);
         });
     }
-  }, [userInfo]);
+  }, [userInfo, isUpdateBookInfo]);
 
   return (
     <>
       <div className="rent-info mt-8">
         <h2 className="text-2xl font-bold mb-2">Rent Records</h2>
         <div className="rent-content">
-          <BookInfo bookList={bookList} setBookList={setBookList} />
+          <BookInfo
+            bookList={bookList}
+            setBookList={setBookList}
+            handleUpdateBookInfo={handleUpdateBookInfo}
+          />
 
           <DeskInfo deskInfo={deskInfo} setDeskInfo={setDeskInfo} />
         </div>
