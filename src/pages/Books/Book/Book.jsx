@@ -7,11 +7,11 @@ import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
 import { getBookByIdApi } from "../../../api/api";
 
 import { LeftOutlined } from "@ant-design/icons";
-import BubblyBtn from "../../../components/BubblyBtn/BubblyBtn";
 import BookReserveModal from "./BookReserveModal";
 import Comment from "./Comment";
 import "./Book.css";
-import { message } from "antd";
+import { Button, message } from "antd";
+import LikeBtn from "../../../components/LikeBtn/LikeBtn";
 
 const BookHeader = (params) => {
   const detail = params.details;
@@ -42,6 +42,7 @@ const BookHeader = (params) => {
 
 const BookBody = (params) => {
   const details = params.details;
+  console.log(details);
 
   const infoList = [
     {
@@ -122,14 +123,24 @@ const BookBody = (params) => {
                   </div>
                 </div>
 
-                <div className="btn-group mt-4">
-                  <BubblyBtn
-                    text="Rent this book"
+                <div className="btn-group mt-4 flex items-center">
+                  <Button
+                    className="mr-4"
+                    style={{
+                      padding: "9px 16px",
+                      fontSize: "18px",
+                      height: "auto",
+                    }}
+                    type="primary"
                     disabled={!details.status}
-                    handleEvent={() => {
+                    onClick={() => {
                       handleRentBookEvent();
                     }}
-                  />
+                  >
+                    Rent the book
+                  </Button>
+
+                  <LikeBtn details={details} />
                 </div>
               </div>
             </div>

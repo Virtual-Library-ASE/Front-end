@@ -310,7 +310,8 @@ async function updateRecommendAmountApi(info) {
       .then((doc) => {
         doc.ref.update({
           ...doc.data(),
-          recommended_amount: doc.data()["recommended_amount"] + info.recommend,
+          recommended_amount:
+            doc.data()["recommended_amount"] + info["recommend"],
         });
         resolve({
           status: 200,
