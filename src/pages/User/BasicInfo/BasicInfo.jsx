@@ -69,7 +69,6 @@ const BasicModal = (props) => {
   basicInfoArr.forEach((item) => (formInitialValues[item.label] = item.value));
 
   let onFinish = (values) => {
-    console.log(values);
     let req = {
       user_name: values["Name"],
       desc: values["Description"],
@@ -106,7 +105,7 @@ const BasicModal = (props) => {
   };
 
   const handleDisabledIpt = (label) => {
-    const disabledArr = ["Email"];
+    const disabledArr = ["Email", "Name"];
     return disabledArr.indexOf(label) >= 0;
   };
 

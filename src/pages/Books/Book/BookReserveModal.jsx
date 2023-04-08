@@ -55,6 +55,8 @@ const BookReserveModal = (props) => {
       .then((res) => {
         if (res.status === 200) {
           message.success("Successfully Rent!");
+          props.updateBookState(false);
+
           handleClose();
         } else {
           console.log("Error: ", res.msg);

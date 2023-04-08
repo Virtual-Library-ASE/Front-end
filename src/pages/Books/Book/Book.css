@@ -65,3 +65,10 @@
 .comment-post-time {
   color: #999;
 }
+
+.book-available {
+  color: #50c965;
+}
+.book-unavailable {
+  color: #fe572b;
+}
