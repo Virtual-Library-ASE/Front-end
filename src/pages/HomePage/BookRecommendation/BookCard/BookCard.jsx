@@ -1,4 +1,4 @@
-import "./BookCard.css";
+import "./BookCard.scoped.css";
 import { useNavigate } from "react-router-dom";
 import { Popover } from "antd";
 

@@ -15,15 +15,32 @@ const ImageCard = ({ url, text, path }) => {
   );
 };
 
+const reservationList = [
+  {
+    url: require("../../../resources/images/reservation/book.jpg"),
+    text: "Rent a seat",
+    path: "/books",
+  },
+  {
+    url: require("../../../resources/images/reservation/desk.jpg"),
+    text: "Rent a book",
+    path: "/desks",
+  },
+];
+
 function Reservation() {
-  const book = require("../../resources/images/reservation/book.jpg");
-  const desk = require("../../resources/images/reservation/desk.jpg");
   return (
     <div className="reservation">
-      <h2 className="text-xl font-bold mb-2 mt-4">Start Reading</h2>
+      <h2 className="text-xl font-bold mb-2 mt-4">Reservation</h2>
       <div className="flex px-2 justify-between">
-        <ImageCard url={book} text="Book a desk" path="/books"></ImageCard>
-        <ImageCard url={desk} text="Rent a book" path="/desks"></ImageCard>
+        {reservationList.map((item, index) => (
+          <ImageCard
+            key={index}
+            url={item.url}
+            text={item.text}
+            path={item.path}
+          ></ImageCard>
+        ))}
       </div>
     </div>
   );
