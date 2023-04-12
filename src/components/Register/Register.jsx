@@ -1,4 +1,4 @@
-import "./Register.css";
+import "./Register.scoped.css";
 import {
   Button,
   Checkbox,

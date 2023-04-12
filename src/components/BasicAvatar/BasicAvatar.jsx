@@ -1,4 +1,4 @@
-import "./BasicAvatar.css";
+import "./BasicAvatar.scoped.css";
 const Avatar1 = () => {
   return (
     <>

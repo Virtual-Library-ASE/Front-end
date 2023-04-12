@@ -1,4 +1,4 @@
-import "./Login.css";
+import "./Login.scoped.css";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { Button, Form, Input, Checkbox, Modal, message } from "antd";

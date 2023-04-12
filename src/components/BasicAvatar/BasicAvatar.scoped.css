@@ -294,7 +294,7 @@
 }
 
 .body--limeGreen > .avatar-horn {
-  left: 0%;
+  left: 0;
   transform: rotate(-45deg);
   width: 5px;
   border-top-right-radius: 100%;

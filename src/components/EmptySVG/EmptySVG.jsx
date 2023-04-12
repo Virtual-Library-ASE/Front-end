@@ -1,4 +1,4 @@
-import "./EmptySVG.css";
+import "./EmptySVG.scoped.css";
 
 const EmptySVG = (params) => {
   return (
