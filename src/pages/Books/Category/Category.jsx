@@ -43,7 +43,6 @@ export default function Category() {
       <h2 className="text-xl font-bold mb-4">Categories</h2>
       <div className="category-container flex justify-between">
         {categoryList.map((item, index) => (
-          // eslint-disable-next-line react/style-prop-object
           <div
             key={index}
             className="card rounded h-28 w-1/6 p-4"

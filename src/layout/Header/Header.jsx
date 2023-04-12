@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import "./Header.css";
-import Search from "../../components/Search/Search";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { setLogin, setUserInfo } from "../../store/action";
+
 import Login from "../../components/Login/Login";
 import Register from "../../components/Register/Register";
-import { useDispatch, useSelector } from "react-redux";
 import { UserOutlined, LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 import { message, Modal } from "antd";
-import { setLogin, setUserInfo } from "../../store/action";
-import { useNavigate } from "react-router-dom";
+
+import "./Header.css";
 
 function BasicHeader(props) {
   const dispatch = useDispatch();
@@ -48,7 +49,7 @@ function BasicHeader(props) {
       dispatch(setLogin(true));
       dispatch(setUserInfo(userInfo));
     }
-  }, []);
+  }, [dispatch]);
 
   const toUser = () => {
     const userInfo = localStorage.getItem("userInfo");
@@ -88,9 +89,6 @@ function BasicHeader(props) {
           </ul>
 
           <ul className="nav-list right flex">
-            <li className="item">
-              <Search />
-            </li>
             <li className="item user-icon mr-4">
               <UserOutlined className="text-2xl" onClick={toUser} />
             </li>

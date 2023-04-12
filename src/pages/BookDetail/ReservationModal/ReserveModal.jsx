@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Button, DatePicker, Form, message, Modal } from "antd";
-import { addBookRentApi } from "../../../api/api";
 import { useSelector } from "react-redux";
+
+import { addBookRentApi } from "../../../api/api";
+import { Button, DatePicker, Form, message, Modal } from "antd";
 const { RangePicker } = DatePicker;
 
 const formItemLayout = {
@@ -23,7 +24,7 @@ const formItemLayout = {
   },
 };
 
-const BookReserveModal = (props) => {
+const ReserveModal = (props) => {
   const [dates, setDates] = useState(null);
   const [value, setValue] = useState(null);
 
@@ -145,4 +146,4 @@ const BookReserveModal = (props) => {
   );
 };
 
-export default BookReserveModal;
+export default ReserveModal;

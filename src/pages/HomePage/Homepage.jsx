@@ -1,9 +1,10 @@
-import "./Homepage.css";
-import HomeBookList from "./HomeBookList";
-import Reservation from "./Reservation";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
-import { useEffect } from "react";
+
+import BookRecommendation from "./BookRecommendation/BookRecommendation";
+import Reservation from "./Reservation/Reservation";
+import "./Homepage.css";
 
 const Homepage = () => {
   // Show Carousel
@@ -13,12 +14,12 @@ const Homepage = () => {
     // Show Carousel
     dispatch(setCarouselDisplay(true));
     dispatch(setFooterDisplay(true));
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="homepage">
       <Reservation></Reservation>
-      <HomeBookList></HomeBookList>
+      <BookRecommendation></BookRecommendation>
     </div>
   );
 };

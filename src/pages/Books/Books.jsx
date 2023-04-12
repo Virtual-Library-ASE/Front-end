@@ -1,18 +1,17 @@
-import "./Books.css";
-
-import Category from "./Category";
-import BookList from "./BookList";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
-import { useEffect, useState } from "react";
+
+import { message } from "antd";
+import Category from "./Category/Category";
+import BookList from "./BookList/BookList";
+
 import { getAllBookApi } from "../../api/api";
 import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
-import { message } from "antd";
+import "./Books.css";
 
 const Books = () => {
-  // Show Carousel
   const dispatch = useDispatch();
-
   const [totalBookList, setTotalBookList] = useState([]);
 
   useEffect(() => {

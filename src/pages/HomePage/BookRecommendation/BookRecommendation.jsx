@@ -1,9 +1,9 @@
-import BookCard from "../../components/BookCard/BookCard";
-import { getBookRecommendListApi } from "../../api/api";
+import BookCard from "./BookCard/BookCard";
+import { getBookRecommendListApi } from "../../../api/api";
 import { useEffect, useState } from "react";
-import { underscoreToCamelCaseKeysInArray } from "../../resources/js/common";
+import { underscoreToCamelCaseKeysInArray } from "../../../resources/js/common";
 
-function HomeBookList() {
+function BookRecommendation() {
   const [bookList, setBookList] = useState([]);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ function HomeBookList() {
 
   return (
     <div className="book-list mt-14">
-      <h2 className="text-xl font-bold mb-2 mt-4">Book Recommended</h2>
+      <h2 className="text-xl font-bold mb-2 mt-4">Recommendation</h2>
       <div className="flex flex-wrap justify-between">
         {bookList.map((item, index) => (
           <BookCard detail={item} key={index} />
@@ -32,4 +32,4 @@ function HomeBookList() {
   );
 }
 
-export default HomeBookList;
+export default BookRecommendation;
