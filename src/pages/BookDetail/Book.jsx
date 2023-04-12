@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
+import { Button, message } from "antd";
+import { LeftOutlined } from "@ant-design/icons";
 import { underscoreToCamelCaseKeys } from "../../resources/js/common";
 import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
 import { getBookByIdApi } from "../../api/api";
 
-import { LeftOutlined } from "@ant-design/icons";
 import ReserveModal from "./ReservationModal/ReserveModal";
 import Comment from "./Comment/Comment";
-import "./Book.css";
-import { Button, message } from "antd";
 import LikeBtn from "../../components/LikeBtn/LikeBtn";
+import "./Book.css";
 
 const BookHeader = (params) => {
   const detail = params.details;
@@ -40,11 +40,18 @@ const BookHeader = (params) => {
   );
 };
 
-const BookBody = (params) => {
-  const details = params.details;
-  console.log(details);
+const handleRentBookEvent = (params) => {
+  const userInfo = localStorage.getItem("userInfo");
+  if (!userInfo) {
+    message.error("You should login first!");
+    return;
+  }
 
-  const infoList = [
+  params.handleReserveModal(true);
+};
+
+const getBookInfoList = (details) => {
+  return [
     {
       label: "Author: ",
       value: details.author,
@@ -74,27 +81,23 @@ const BookBody = (params) => {
       value: details.uploadTime,
     },
   ];
+};
 
-  const handleRentBookEvent = () => {
-    const userInfo = localStorage.getItem("userInfo");
-    if (!userInfo) {
-      message.error("You should login first!");
-      return;
+const setBookStateClass = (label, details) => {
+  if (label === "State: ") {
+    if (details.status) {
+      return "book-available font-bold";
+    } else {
+      return "book-unavailable font-bold";
     }
+  }
+  return "";
+};
 
-    params.handleReserveModal(true);
-  };
+const BookBody = (params) => {
+  const details = params.details;
 
-  const setBookStateClass = (label) => {
-    if (label === "State: ") {
-      if (details.status) {
-        return "book-available font-bold";
-      } else {
-        return "book-unavailable font-bold";
-      }
-    }
-    return "";
-  };
+  const infoList = getBookInfoList(details);
 
   return (
     <>
@@ -108,7 +111,7 @@ const BookBody = (params) => {
                 {infoList.map((info) => (
                   <div className="flex" key={info.label}>
                     <span className="label font-bold w-2/5">{info.label}</span>
-                    <span className={setBookStateClass(info.label)}>
+                    <span className={setBookStateClass(info.label, details)}>
                       {info.value}
                     </span>
                   </div>
@@ -134,7 +137,7 @@ const BookBody = (params) => {
                     type="primary"
                     disabled={!details.status}
                     onClick={() => {
-                      handleRentBookEvent();
+                      handleRentBookEvent(params);
                     }}
                   >
                     Rent the book
