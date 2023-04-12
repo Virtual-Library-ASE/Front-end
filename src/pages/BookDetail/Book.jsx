@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import { underscoreToCamelCaseKeys } from "../../../resources/js/common";
-import { setCarouselDisplay, setFooterDisplay } from "../../../store/action";
-import { getBookByIdApi } from "../../../api/api";
+import { underscoreToCamelCaseKeys } from "../../resources/js/common";
+import { setCarouselDisplay, setFooterDisplay } from "../../store/action";
+import { getBookByIdApi } from "../../api/api";
 
 import { LeftOutlined } from "@ant-design/icons";
-import BookReserveModal from "./BookReserveModal";
-import Comment from "./Comment";
+import ReserveModal from "./ReservationModal/ReserveModal";
+import Comment from "./Comment/Comment";
 import "./Book.css";
 import { Button, message } from "antd";
-import LikeBtn from "../../../components/LikeBtn/LikeBtn";
+import LikeBtn from "../../components/LikeBtn/LikeBtn";
 
 const BookHeader = (params) => {
   const detail = params.details;
@@ -178,7 +178,7 @@ const Book = () => {
       .catch((err) => {
         console.log("Error: ", err);
       });
-  }, []);
+  }, [routerParams.id]);
 
   useEffect(() => {
     // Show Carousel
@@ -207,12 +207,12 @@ const Book = () => {
           handleReserveModal={handleReserveModal}
         />
 
-        <BookReserveModal
+        <ReserveModal
           isShow={isReserve}
           bookDetail={bookDetail}
           updateBookState={updateBookState}
           handleReserveModal={handleReserveModal}
-        ></BookReserveModal>
+        ></ReserveModal>
       </div>
     </>
   );

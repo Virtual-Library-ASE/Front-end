@@ -153,7 +153,7 @@ const Comment = (params) => {
       .catch((err) => {
         console.log("Error: ", err);
       });
-  }, [isUpdateCommentList]);
+  }, [isUpdateCommentList, routerParams.id]);
 
   const handleCommentModal = (bool) => {
     setCommentModel(bool);
