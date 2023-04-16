@@ -6,6 +6,8 @@ This is a final project for the 2022 TCD University ASE (Advanced Software Engin
 
 This project is part of the web page. 
 
+- Demo: [virtual-library](https://virtual-library-ase.github.io/Front-end)
+
 ## Features
 
 - Registration 
@@ -82,7 +84,7 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 
 This project is licensed under the MIT License.
 
-## Screenshots
+## ScreenShots
 
 ![image-20230416150213490](README.assets/image-20230416150213490.png)
 
