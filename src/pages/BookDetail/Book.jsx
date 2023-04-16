@@ -140,7 +140,7 @@ const BookBody = (params) => {
                       handleRentBookEvent(params);
                     }}
                   >
-                    Rent the book
+                    Rent
                   </Button>
 
                   <LikeBtn details={details} />

@@ -7,7 +7,7 @@ p {
   color: #000;
   font-family: "Shippori Mincho", serif;
   position: relative;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 92px);
   background-color: #f3f3f3;
   display: flex;
   justify-content: center;
@@ -38,7 +38,7 @@ p {
 }
 
 .frontContent-title {
-  width: 47.8125vw;
+  width: 60%;
 }
 
 .frontContent-title-main {
@@ -58,13 +58,79 @@ p {
   line-height: 2;
 }
 
-.frontContent-img {
-  width: 34.9375vw;
+.member-avatars {
+  width: 40%;
   margin-top: 6vw;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 30px;
 }
 
-.frontContent-img img {
-  width: 100%;
+.member-avatars img {
+  cursor: pointer;
+  width: 120px;
   height: auto;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: calc(50% - 60px);
+  left: calc(50% - 60px);
+  transition: transform 0.3s ease-in-out, scale 0.3s ease-in-out;
+}
+
+.member-avatars img:nth-child(1) {
+  transform: rotate(15deg);
+  left: calc(50% + 160px);
+  top: calc(50% - 350px);
+}
+
+.member-avatars img:nth-child(2) {
+  transform: rotate(-20deg);
+  left: calc(50% - 60px);
+  top: calc(50% - 390px);
+}
+
+.member-avatars img:nth-child(3) {
+  transform: rotate(25deg);
+  left: calc(50% - 30px);
+  top: calc(50% - 240px);
+}
+
+.member-avatars img:nth-child(4) {
   transform: rotate(-10deg);
+  left: calc(50% - 190px);
+  top: calc(50% - 190px);
+}
+
+.member-avatars img:nth-child(5) {
+  transform: rotate(20deg);
+  left: calc(50% - 70px);
+  top: calc(50% - 40px);
+}
+
+.member-avatars img:nth-child(6) {
+  transform: rotate(-25deg);
+  left: calc(50% + 140px);
+  top: calc(50% - 60px);
+}
+
+.member-avatars img:nth-child(7) {
+  transform: rotate(10deg);
+  left: calc(50% - 90px);
+  top: calc(50% + 140px);
+}
+
+.member-avatars img:nth-child(8) {
+  transform: rotate(-20deg);
+  left: calc(50% + 90px);
+  top: calc(50% + 90px);
+}
+
+.member-avatars img:hover {
+  transform: rotate(360deg)  scale(1.3);
 }

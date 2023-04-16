@@ -8,7 +8,9 @@ const About = () => {
     // Show Carousel
     dispatch(setCarouselDisplay(false));
     dispatch(setFooterDisplay(false));
-  }, []);
+  }, [dispatch]);
+
+  const teamList = ["1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.jpg", "8.jpg"]
 
   return (
     <>
@@ -32,12 +34,17 @@ const About = () => {
                   to provide users with a better experience.
                 </p>
               </div>
-              <div className="frontContent-img">
-                <img
-                  src={require("../../resources/images/team.jpg")}
-                  alt=""
-                  className="img"
-                />
+              <div className="member-avatars">
+                {
+                  teamList.map((item, index) => (
+                    <img
+                      key={index}
+                      src={require("../../resources/images/about/" + item)}
+                      alt=""
+                      className="img"
+                    />
+                  ))
+                }
               </div>
             </div>
           </div>
