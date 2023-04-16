@@ -25,6 +25,7 @@ const BasicCarousel = () => {
         animationHandler="fade"
         showThumbs={false}
         showStatus={false}
+        swipeable={false}
         infiniteLoop={true}
         useKeyboardArrows
         width="100%"

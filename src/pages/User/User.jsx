@@ -33,7 +33,7 @@ const User = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Show Carousel
+    // Show BasicCarousel
     dispatch(setCarouselDisplay(false));
     // dispatch(setFooterDisplay(false));
 
@@ -42,7 +42,7 @@ const User = () => {
 
       navigate("/home");
     }
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   const userInfo = useSelector((state) => state.userInfo);
 

@@ -3,7 +3,7 @@ import "./EmptySVG.scoped.css";
 const EmptySVG = (params) => {
   return (
     <>
-      <div className="flex item-center justify-center empty">
+      <div className="flex item-center justify-center">
         <div>
           <div className="scene">
             <span className="cloud cloud--small"></span>
