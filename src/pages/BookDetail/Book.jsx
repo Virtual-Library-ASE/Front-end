@@ -157,7 +157,7 @@ const BookBody = (params) => {
 };
 
 const Book = () => {
-  // Show Carousel
+  // Show BasicCarousel
   const dispatch = useDispatch();
   const [bookDetail, setBookDetail] = useState({});
 
@@ -184,7 +184,7 @@ const Book = () => {
   }, [routerParams.id]);
 
   useEffect(() => {
-    // Show Carousel
+    // Show BasicCarousel
     dispatch(setCarouselDisplay(false));
     dispatch(setFooterDisplay(true));
   }, [dispatch]);

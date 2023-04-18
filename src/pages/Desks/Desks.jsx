@@ -81,7 +81,7 @@ const RoomList = (props) => {
 };
 
 const Desks = () => {
-  // Show Carousel
+  // Show BasicCarousel
   const dispatch = useDispatch();
   const [isReserve, setReserveModal] = useState(false);
   const [currRoomInfo, setCurrRoomInfo] = useState({});
@@ -91,7 +91,7 @@ const Desks = () => {
   };
 
   useEffect(() => {
-    // Show Carousel
+    // Show BasicCarousel
     dispatch(setCarouselDisplay(true));
     dispatch(setFooterDisplay(true));
   }, [dispatch]);

@@ -7,11 +7,11 @@ import Reservation from "./Reservation/Reservation";
 import "./Homepage.css";
 
 const Homepage = () => {
-  // Show Carousel
+  // Show BasicCarousel
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Show Carousel
+    // Show BasicCarousel
     dispatch(setCarouselDisplay(true));
     dispatch(setFooterDisplay(true));
   }, [dispatch]);

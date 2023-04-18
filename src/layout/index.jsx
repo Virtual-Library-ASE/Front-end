@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
 import Main from "./Main/Main";
-import BasicCarousel from "../components/Carousel/Carousel";
+import BasicCarousel from "../components/BasicCarousel/BasicCarousel";
 import { useSelector } from "react-redux";
 
 const navList = [
@@ -38,7 +38,7 @@ export default function Layouts() {
 
   useEffect(() => {
     setNavIndex(findPathIndex());
-  }, [pathname]);
+  }, [findPathIndex, pathname]);
 
   const isShowCarousel = useSelector((state) => state.isShowCarousel);
   const isShowFooter = useSelector((state) => state.isShowFooter);

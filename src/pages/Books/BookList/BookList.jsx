@@ -37,7 +37,7 @@ const BookList = (params) => {
     }
   }, [isCategory, routerParams.category]);
 
-  // Show Carousel
+  // Show BasicCarousel
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setCarouselDisplay(true));

@@ -31,7 +31,7 @@ const Books = () => {
   }, []);
 
   useEffect(() => {
-    // Show Carousel
+    // Show BasicCarousel
     dispatch(setCarouselDisplay(true));
     dispatch(setFooterDisplay(true));
   }, [dispatch]);

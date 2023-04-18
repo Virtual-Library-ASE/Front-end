@@ -5,7 +5,7 @@ import { useEffect } from "react";
 const About = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    // Show Carousel
+    // Show BasicCarousel
     dispatch(setCarouselDisplay(false));
     dispatch(setFooterDisplay(false));
   }, [dispatch]);

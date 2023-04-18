@@ -6,6 +6,7 @@
   "dependencies": {
     "@ant-design/cssinjs": "^1.0.0",
     "@ant-design/icons": "^5.0.1",
+    "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/roboto": "^4.5.8",
@@ -61,8 +62,21 @@
   "devDependencies": {
     "@craco/craco": "^7.1.0",
     "@faker-js/faker": "^7.6.0",
+    "babel-jest": "^29.5.0",
+    "enzyme": "^3.11.0",
     "gh-pages": "^5.0.0",
+    "jest": "^27.5.1",
     "prettier": "^2.8.4",
+    "redux-mock-store": "^1.5.4",
     "tailwindcss": "^3.2.6"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      ".*\\.(css|less|scss)$": "<rootDir>/__mocks__/styleMock.js"
+    },
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
   }
 }

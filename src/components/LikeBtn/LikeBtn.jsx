@@ -14,6 +14,7 @@ const LikeBtn = (params) => {
 
   const handleLike = () => {
     const elem = document.getElementById("paw-button");
+    if (!elem) return
 
     if (!liked) {
       // Click like
