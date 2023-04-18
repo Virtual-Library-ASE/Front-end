@@ -40,7 +40,7 @@ const tailFormItemLayout = {
   },
 };
 
-const AgreementModel = (props) => {
+export function AgreementModel(props) {
   const handleClose = () => {
     props.setAgreement(false);
   };
@@ -64,9 +64,9 @@ const AgreementModel = (props) => {
       </Modal>
     </>
   );
-};
+}
 
-const Register = (props) => {
+export default function Register(props){
   const [form] = Form.useForm();
   const [isAgreement, setAgreement] = useState(false);
 
@@ -309,5 +309,3 @@ const Register = (props) => {
     </>
   );
 };
-
-export default Register;
