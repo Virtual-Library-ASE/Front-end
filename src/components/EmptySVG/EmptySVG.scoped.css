@@ -5,23 +5,23 @@
   text-shadow: 2px 2px 0 #eee, 3px 3px 0 #707070;
 }
 
-.empty h1 {
+.empty-SVG h1 {
   padding: 1.2em;
   text-align: center;
 }
-.empty .scene {
+.empty-SVG .scene {
   position: relative;
   display: block;
   margin: 0 auto;
   width: 300px;
   height: 200px;
 }
-.empty .plane,
-.empty .cloud {
+.empty-SVG .plane,
+.empty-SVG .cloud {
   position: absolute;
 }
 /*plane animation*/
-.empty .plane {
+.empty-SVG .plane {
   animation-duration: 1s;
   animation-name: anim-plane;
   animation-iteration-count: infinite;
