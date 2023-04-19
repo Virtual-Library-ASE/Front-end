@@ -107,9 +107,9 @@ async function getBookRecommendListApi(amount) {
  * Get book info by category
  * @param category: book category
  * @return: a list of books based on category
- * @usage: getCategories("Fiction")
+ * @usage: getBookCategories("Fiction")
  */
-async function getCategoriesApi(category) {
+async function getBookCategoriesApi(category) {
   return await new Promise((resolve, reject) => {
     // Traverse all the data
     bookRef.onSnapshot((querySnapshot) => {
@@ -239,10 +239,10 @@ async function renewBookStatus(info) {
  *  insert book reservation info to database
  * @param  info : contain book reservation information
  * @returns status:200, msg:"ok"
- * usage: rentBookAddApi(infoObj)
+ * usage: addBookRentReservationApi(infoObj)
  */
 
-async function addBookRentApi(info) {
+async function addBookRentReservationApi(info) {
   return await new Promise((resolve, reject) => {
     // get time and calculate time +7days
     let timestamp = new Date().getTime();
@@ -332,7 +332,7 @@ async function updateRecommendAmountApi(info) {
  * @param info: renting book status info
  * @returns status:200, msg:"ok"
  */
-async function updateRentBookApi(info) {
+async function updateBookRentReservationApi(info) {
   return await new Promise((resolve, reject) => {
     // check the content of info in database based on reservation_id
     bookReserRef
@@ -1045,7 +1045,7 @@ async function logInApi(info) {
  * @param user_id:
  * @returns {Promise<unknown>}
  */
-async function getUserSeatInfoApi(user_id) {
+async function getUserSeatReserInfoApi(user_id) {
   return await new Promise((resolve, reject) => {
     //judge if the input info is correct in database
     seatReservationRef
@@ -1153,11 +1153,11 @@ export {
   getUserModelInfoApi,
   getBookByIdApi,
   getBookRecommendListApi,
-  getCategoriesApi,
+  getBookCategoriesApi,
   getAllBookApi,
-  addBookRentApi,
-  updateRentBookApi,
-  getUserSeatInfoApi,
+  addBookRentReservationApi,
+  updateBookRentReservationApi,
+  getUserSeatReserInfoApi,
   signupApi,
   updateUserInfoApi,
   logInApi,
