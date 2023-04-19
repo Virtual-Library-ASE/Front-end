@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "./static/css/main.aab80877.css",
-    "main.js": "./static/js/main.dd71cd0f.js",
+    "main.css": "./static/css/main.b8d5a530.css",
+    "main.js": "./static/js/main.96f8706f.js",
     "static/js/787.8886e40e.chunk.js": "./static/js/787.8886e40e.chunk.js",
     "static/media/2.png": "./static/media/2.1ae4d41bde34ee3f7460.png",
     "static/media/3.png": "./static/media/3.0b41ab85c570e34dfc0f.png",
@@ -18,12 +18,12 @@
     "static/media/library.jpg": "./static/media/library.542ef78a394e46666094.jpg",
     "static/media/museo-slab-500.woff": "./static/media/museo-slab-500.4ecade91d5a396653b93.woff",
     "index.html": "./index.html",
-    "main.aab80877.css.map": "./static/css/main.aab80877.css.map",
-    "main.dd71cd0f.js.map": "./static/js/main.dd71cd0f.js.map",
+    "main.b8d5a530.css.map": "./static/css/main.b8d5a530.css.map",
+    "main.96f8706f.js.map": "./static/js/main.96f8706f.js.map",
     "787.8886e40e.chunk.js.map": "./static/js/787.8886e40e.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.aab80877.css",
-    "static/js/main.dd71cd0f.js"
+    "static/css/main.b8d5a530.css",
+    "static/js/main.96f8706f.js"
   ]
 }
