@@ -109,7 +109,7 @@ async function getBookRecommendListApi(amount) {
  * @return: a list of books based on category
  * @usage: getBookCategories("Fiction")
  */
-async function getBookCategoriesApi(category) {
+async function getBookListByCategoriesApi(category) {
   return await new Promise((resolve, reject) => {
     // Traverse all the data
     bookRef.onSnapshot((querySnapshot) => {
@@ -242,7 +242,7 @@ async function renewBookStatus(info) {
  * usage: addBookRentReservationApi(infoObj)
  */
 
-async function addBookRentReservationApi(info) {
+async function addBookReservationApi(info) {
   return await new Promise((resolve, reject) => {
     // get time and calculate time +7days
     let timestamp = new Date().getTime();
@@ -332,7 +332,7 @@ async function updateRecommendAmountApi(info) {
  * @param info: renting book status info
  * @returns status:200, msg:"ok"
  */
-async function updateBookRentReservationApi(info) {
+async function updateBookReservationApi(info) {
   return await new Promise((resolve, reject) => {
     // check the content of info in database based on reservation_id
     bookReserRef
@@ -1045,7 +1045,7 @@ async function logInApi(info) {
  * @param user_id:
  * @returns {Promise<unknown>}
  */
-async function getUserSeatReserInfoApi(user_id) {
+async function getUserSeatReservationApi(user_id) {
   return await new Promise((resolve, reject) => {
     //judge if the input info is correct in database
     seatReservationRef
@@ -1153,11 +1153,11 @@ export {
   getUserModelInfoApi,
   getBookByIdApi,
   getBookRecommendListApi,
-  getBookCategoriesApi,
+  getBookListByCategoriesApi,
   getAllBookApi,
-  addBookRentReservationApi,
-  updateBookRentReservationApi,
-  getUserSeatReserInfoApi,
+  addBookReservationApi,
+  updateBookReservationApi,
+  getUserSeatReservationApi,
   signupApi,
   updateUserInfoApi,
   logInApi,
