@@ -113,11 +113,13 @@ const DeskInfo = (params) => {
           params.setDeskInfo({});
         } else {
           console.log("Error: ", res.msg);
+          params.setDeskInfo({});
         }
       })
       .catch((err) => {
         console.log("Error: ", err);
         message.error(err.msg);
+        params.setDeskInfo({});
       });
   };
 
@@ -204,10 +206,13 @@ export default function RentInfo() {
           if (res.status === 200 && res.data.length) {
             let resData = underscoreToCamelCaseKeysInArray(res.data);
             setBookList(resData);
+          } else {
+            setBookList([]);
           }
         })
         .catch((err) => {
           console.log("Error: ", err);
+          setBookList([]);
         });
     }
   }, [userInfo, isUpdateBookInfo]);
